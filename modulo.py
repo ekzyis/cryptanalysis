@@ -14,6 +14,13 @@ class TestModuloVsBitShift(unittest.TestCase):
     a = 256
     # 256 % 256 = 0, 0 >> 2 = 0 vs. 256 >> 2 = 64, 64 % 256 = 64
     self.assertNotEqual( (a % m) >> b, (a >> b) % m)
-    
+
+  def test_modulo_with_power_of_two_can_be_rewritten_with_bitwise_and(self):
+    for n in range(10):
+      for x in range(1024):
+        e = 2**n
+        self.assertEqual(x % e, x & (e-1))
+
+
 if __name__ == "__main__":
   unittest.main()
