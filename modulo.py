@@ -4,6 +4,9 @@ import unittest
 
 class TestModuloVsBitShift(unittest.TestCase):
   def test_modulo_and_bitshift_are_not_commutative(self):
+    """
+    This test case "proves" that the commutative law does not hold "%" and ">>"
+    """
     m = 256 # modulo
     b = 2   # bit shift
     a = 0
