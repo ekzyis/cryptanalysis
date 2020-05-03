@@ -45,6 +45,12 @@ class TestDCA(unittest.TestCase):
         for a, b in pairs_with_xor_equal_to_zero:
             output_xor = s(a) ^ s(b)
             self.assertEqual(output_xor, 0)
+        """Wow, the trivial pairs are really trivial because they are the ones with a = b.
+        Now I feel stupid that I needed to test this and didn't come up with this myself.
+        I guess I was confused that a ^ b = s(a) ^ s(b) = 0 would mean that a = s(a) and b = s(b) which is not the case.
+        And because a = b, s(a) = s(b) and therefore s(a) ^ s(b) = 0.
+        I guess I was confused because I thought a ^ b = s(a) ^ s(b) = 0 means that a = s(a) and b = s(b)
+        which is not the case. They still get permutated. I just didn't think about a ^ b = 0 <=> a = b."""
 
 
 if __name__ == "__main__":
