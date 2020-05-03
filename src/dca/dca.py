@@ -16,8 +16,7 @@ class TestDCA(unittest.TestCase):
 
     def test_that_there_are_2_to_the_power_of_n_amount_of_pairs_for_each_xor_value(self):
         """
-        Assert that the following sentence in C. Bender's Master Thesis about DCA
-        in 3.1.2 Substitution is correct (and correctly understood):
+        Assert following sentence from page 42, section 3.1.2 "Substitution".
         "Jede Eingabedifferenz ∆d kann von 2**n verschiedenen Eingabepaaren (m1, m2) mit m1 ⊕ m2 = ∆d erzeugt werden."
         """
         for n in range(8):
