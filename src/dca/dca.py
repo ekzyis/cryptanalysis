@@ -27,6 +27,14 @@ class TestDCA(unittest.TestCase):
             for pairs in xor_with_pairs.values():
                 self.assertTrue(len(pairs), 2 ** n)
 
+    def test_that_trivial_input_xor_of_0_leads_to_output_xor_of_0(self):
+        """
+        Assert following sentence from page 46, section 3.2.1 "Ein-Runden-Charakteristik".
+        "Die triviale Ein-Runden-Charakteristik hat eine Eingabedifferenz von 0,
+        was zu einer Ausgabedifferenz von 0 mit einer Wahrscheinlichkeit von 1 führt."
+        """
+        pass
+
 
 if __name__ == "__main__":
     unittest.main()
