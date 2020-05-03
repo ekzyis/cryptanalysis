@@ -1,4 +1,12 @@
 #!/usr/bin/env python
+"""
+This file is meant to fully grasp the statements in the
+Master Thesis of Christian Bender about Differential Cryptanalysis.
+Test cases assert that I come to the same conclusions.
+
+Thesis available under: https://www.cryptool.org/images/ctp/documents/MA_Bender.pdf
+"""
+
 
 import unittest
 from collections import defaultdict
