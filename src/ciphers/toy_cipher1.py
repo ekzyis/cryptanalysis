@@ -1,3 +1,8 @@
+"""
+This file implements the toy cipher 1 from C. Bender's master thesis about DCA.
+"""
+
+
 def s(n):
     """Implements the substitution box for the toy cipher 1 from C. Bender's about DCA."""
     _s = {
