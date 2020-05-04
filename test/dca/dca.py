@@ -50,7 +50,3 @@ class TestDCA(unittest.TestCase):
         I guess I was confused because I thought a ^ b = s(a) ^ s(b) = 0 means that a = s(a) and b = s(b)
         which is not the case. They still get permutated. I just didn't think about a ^ b = 0 <=> a = b
         and thus s(a) = s(b) <=> s(a) ^ s(b) = 0."""
-
-
-if __name__ == "__main__":
-    unittest.main()
