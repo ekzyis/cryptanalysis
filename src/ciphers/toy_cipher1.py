@@ -1,5 +1,5 @@
 def s(n):
-    """Returns the substitution for cipher 1 from C. Bender's master thesis."""
+    """Implements the substitution box for the toy cipher 1 from C. Bender's about DCA."""
     _s = {
         0x0: 0b0110,
         0x1: 0b0100,
