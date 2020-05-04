@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from src.feal import s0
+from ciphers.feal import s0
 
 
 class TestS0(unittest.TestCase):

@@ -37,7 +37,7 @@ class TestDCA(unittest.TestCase):
         was zu einer Ausgabedifferenz von 0 mit einer Wahrscheinlichkeit von 1 führt."
         """
         sys.path.insert(0, str((Path(__file__).parent / '..').resolve()))  # add src folder to path
-        from dca.cipher1 import s
+        from ciphers.cipher1 import s
         n = 4
         pairs_with_xor_equal_to_zero = list()
         for a in range(2 ** n):
