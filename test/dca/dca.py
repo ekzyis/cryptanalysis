@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 """
 This file is meant to fully grasp the statements in the
 Master Thesis of Christian Bender about Differential Cryptanalysis.
