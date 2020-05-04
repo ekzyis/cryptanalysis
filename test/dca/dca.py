@@ -11,6 +11,9 @@ import unittest
 from collections import defaultdict
 from pathlib import Path
 
+# noinspection PyUnresolvedReferences
+import test.context
+
 
 class TestDCA(unittest.TestCase):
 

@@ -2,6 +2,9 @@
 
 import unittest
 
+# noinspection PyUnresolvedReferences
+import test.context
+
 
 class TestModuloVsBitShift(unittest.TestCase):
     def test_modulo_and_bit_shift_are_not_commutative(self):

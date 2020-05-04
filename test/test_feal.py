@@ -1,5 +1,7 @@
 import unittest
 
+# noinspection PyUnresolvedReferences
+import test.context
 from src.feal import s0
 
 
