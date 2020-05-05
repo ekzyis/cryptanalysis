@@ -18,4 +18,4 @@ class TestFEALCipherF(unittest.TestCase):
         with self.assertRaises(ValueError):
             f(2 ** 32, 0x0)
         with self.assertRaises(ValueError):
-            f(0x0, 2 ** 32)
+            f(0x0, 2 ** 16)
