@@ -2,10 +2,10 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import split
+from util.split import split
 
 
-class TestFEALCipherSplit(unittest.TestCase):
+class TestSplit(unittest.TestCase):
 
     def test_split_splits_input_into_n_equal_sized_bitstrings(self):
         out = split(2, 2, 0)
