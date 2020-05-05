@@ -24,7 +24,7 @@ It follows a short description of the cipher and its implementation:
 Usage:
     feal [options] PLAINTEXT
 
-    -n=N, --round-number=N    Number of rounds
+    -n=N, --round-number=N    Number of rounds [default: 32]
 """
 
 from docopt import docopt
