@@ -37,7 +37,9 @@ def split(n, size, bits):
         raise ValueError("n can not be 0 or 1")
     if bits >= 2 ** (n * size):
         raise ValueError("Input larger than concatenation of bitstrings")
-    return [(bits >> 2 ** i) % 2 ** size for i in range(n)]
+    bitstrings = [(bits >> i * size) % 2 ** size for i in range(n)]
+    bitstrings.reverse()
+    return bitstrings
 
 
 def encrypt(text):

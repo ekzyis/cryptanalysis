@@ -36,6 +36,11 @@ class TestFEALCipher(unittest.TestCase):
         self.assertEqual(out[1], 0b0101)
         self.assertEqual(out[2], 0b1100)
         self.assertEqual(out[3], 0b0011)
+        out = split(3, 4, 0b110101010011)
+        self.assertEqual(len(out), 3)
+        self.assertEqual(out[0], 0b1101)
+        self.assertEqual(out[1], 0b0101)
+        self.assertEqual(out[2], 0b0011)
 
     def test_split_raises_error_when_input_is_larger_than_concatenation_of_bitstrings(self):
         with self.assertRaises(ValueError):
