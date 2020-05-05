@@ -5,7 +5,7 @@ import test.context
 from ciphers.feal import fk
 
 
-class TestFealFk(unittest.TestCase):
+class TestFEALCipherFk(unittest.TestCase):
 
     def test_fk_returns_expected_output_as_specificed_in_reference(self):
         """In section 5.2 of https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf,
