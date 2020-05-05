@@ -39,6 +39,6 @@ class TestFEALCipher(unittest.TestCase):
 
     def test_split_raises_error_when_n_is_less_than_or_equal_to_1(self):
         with self.assertRaises(ValueError):
-            split(0, 2, 0b1111)
+            split(0, 2, 1)
         with self.assertRaises(ValueError):
-            split(1, 2, 0b1111)
+            split(1, 2, 1)
