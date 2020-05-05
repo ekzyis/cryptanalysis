@@ -30,6 +30,13 @@ Usage:
 from docopt import docopt
 
 
+def encrypt(text):
+    """Encrpyts the given 64-bit text and returns the 64-bit ciphertext.
+    Raises error if text is longer than 64-bit."""
+    if text >= 2 ** 64:
+        raise ValueError("Plaintext must be 64-bit")
+
+
 def main():
     args = docopt(__doc__)
     print(args)
