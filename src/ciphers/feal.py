@@ -45,6 +45,27 @@ def _s(a, b, i):
     return rot_left((a + b + i) % 256, 2, 8)
 
 
+def f(a, b):
+    """f-function of FEAL-NX.
+    a must be 32-bit and b must be 16-bit long
+    Used during en-/decryption.
+    See section 5.1 and figure 3 in
+    https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf"""
+    if a >= 2 ** 32 or b >= 2 ** 16:
+        raise ValueError("Input keys must be 32-bit")
+    a = split(n=4, size=8, bits=a)
+    b = split(n=2, size=8, bits=b)
+    f1 = a[1] ^ b[0]
+    f2 = a[2] ^ b[1]
+    f1 ^= a[0]
+    f2 ^= a[3]
+    f1 = s1(f1, f2)
+    f2 = s0(f2, f1)
+    f0 = s0(a[0], f1)
+    f3 = s1(a[3], f2)
+    return f0 << 24 | f1 << 16 | f2 << 8 | f3
+
+
 def fk(a, b):
     """f_k-function of FEAL-NX.
     Input keys must be 32-bit.
