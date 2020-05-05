@@ -22,7 +22,9 @@ It follows a short description of the cipher and its implementation:
     - NTT Secure Platform Laboratories, https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
 
 Usage:
-    feal <PLAINTEXT>
+    feal [options] PLAINTEXT
+
+    -n=N, --round-number=N    Number of rounds
 """
 
 from docopt import docopt
