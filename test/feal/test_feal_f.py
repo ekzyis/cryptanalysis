@@ -16,6 +16,6 @@ class TestFEALCipherF(unittest.TestCase):
 
     def test_f_raises_value_error_when_input_keys_are_not_32_bit(self):
         with self.assertRaises(ValueError):
-            f(0xF000F000F, 0x0000000)
+            f(2 ** 32, 0x0)
         with self.assertRaises(ValueError):
-            f(0x00000000, 0xF000F000F)
+            f(0x0, 2 ** 32)

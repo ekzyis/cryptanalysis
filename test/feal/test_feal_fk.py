@@ -11,11 +11,11 @@ class TestFEALCipherFk(unittest.TestCase):
         """In section 5.2 of https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf,
         there are example inputs with the expected output.
         """
-        f = fk(0x00000000, 0x00000000)
+        f = fk(0x0, 0x0)
         self.assertEqual(f, 0x10041044)
 
     def test_fk_raises_value_error_when_input_keys_are_not_32_bit(self):
         with self.assertRaises(ValueError):
-            fk(0xF000F000F, 0x0000000)
+            fk(2 ** 32, 0x0)
         with self.assertRaises(ValueError):
-            fk(0x00000000, 0xF000F000F)
+            fk(0x0, 2 ** 32)
