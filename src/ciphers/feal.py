@@ -29,6 +29,40 @@ Usage:
 
 from docopt import docopt
 
+from util.rot import rot_left
+from util.split import split
+
+
+def s0(a, b):
+    return _s(a, b, 0)
+
+
+def s1(a, b):
+    return _s(a, b, 1)
+
+
+def _s(a, b, i):
+    return rot_left((a + b + i) % 256, 2, 8)
+
+
+def fk(a, b):
+    """f_k-function of FEAL-NX.
+    Input keys must be 32-bit.
+    Used during key schedule to generate the subkeys for each iteration.
+    See section 5.2 and figure 4 in
+    https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf"""
+    if a >= 2 ** 32 or b > 2 ** 32:
+        raise ValueError("Input keys must be 32-bit")
+    a = split(n=4, size=8, bits=a)
+    b = split(n=4, size=8, bits=b)
+    fk1 = a[1] ^ a[0]
+    fk2 = a[2] ^ a[3]
+    fk1 = s1(fk1, fk2 ^ b[0])
+    fk2 = s0(fk2, fk1 ^ b[1])
+    fk0 = s0(a[0], fk1 ^ b[2])
+    fk3 = s1(a[3], fk2 ^ b[3])
+    return fk0 << 24 | fk1 << 16 | fk2 << 8 | fk3
+
 
 def encrypt(text):
     """Encrpyts the given 64-bit text and returns the 64-bit ciphertext.
