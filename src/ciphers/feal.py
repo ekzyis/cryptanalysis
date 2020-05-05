@@ -31,7 +31,13 @@ from docopt import docopt
 
 
 def split(n, size, bits):
-    pass
+    """Splits the input bits into n bitstring with given size.
+    Raises error when n is equal to 0 or 1 or concatenation of bitstring is smaller than input bits."""
+    if n == 0 or n == 1:
+        raise ValueError("n can not be 0 or 1")
+    if bits >= 2 ** (n * size):
+        raise ValueError("Input larger than concatenation of bitstrings")
+    return [(bits >> 2 ** i) % 2 ** size for i in range(n)]
 
 
 def encrypt(text):
