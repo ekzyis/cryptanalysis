@@ -29,6 +29,14 @@ class TestFEALCipher(unittest.TestCase):
         for o in out:
             self.assertEqual(o, 2 ** 8 - 1)
 
+    def test_split_returns_correct_order_of_bitstrings(self):
+        out = split(4, 4, 0b1010010111000011)
+        self.assertEqual(len(out), 4)
+        self.assertEqual(out[0], 0b1010)
+        self.assertEqual(out[1], 0b0101)
+        self.assertEqual(out[2], 0b1100)
+        self.assertEqual(out[3], 0b0011)
+
     def test_split_raises_error_when_input_is_larger_than_concatenation_of_bitstrings(self):
         with self.assertRaises(ValueError):
             split(2, 2, 2 ** 4)
