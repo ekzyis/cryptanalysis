@@ -13,3 +13,9 @@ class TestFEALCipherFk(unittest.TestCase):
         """
         f = fk(0x00000000, 0x00000000)
         self.assertEqual(f, 0x10041044)
+
+    def test_fk_raises_value_error_when_input_keys_are_not_32_bit(self):
+        with self.assertRaises(ValueError):
+            fk(0xF000F000F, 0x0000000)
+        with self.assertRaises(ValueError):
+            fk(0x00000000, 0xF000F000F)
