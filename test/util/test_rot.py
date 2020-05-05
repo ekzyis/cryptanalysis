@@ -15,8 +15,16 @@ class TestRot(unittest.TestCase):
         # max_bit higher than highest bit with wrap-around
         self.assertEqual(rot_left(0b001101, 4, 6), 0b010011)
 
+    def test_rot_left_raises_value_error_when_max_bit_too_small(self):
+        with self.assertRaises(ValueError):
+            rot_left(0b1111, 2, 2)
+
     def test_rot_right_adds_right_shifted_bits_to_left_side(self):
         # max_bit equal to highest bit with regular wrap-around
         self.assertEqual(rot_right(0b1110, 2, 4), 0b1011)
         # max_bit higher than highest bit which leads to unregular wrap-around
         self.assertEqual(rot_right(0b1101, 2, 8), 0b01000011)
+
+    def test_rot_right_raises_value_error_when_max_bit_too_small(self):
+        with self.assertRaises(ValueError):
+            rot_right(0b1111, 2, 2)
