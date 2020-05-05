@@ -51,7 +51,7 @@ def fk(a, b):
     Used during key schedule to generate the subkeys for each iteration.
     See section 5.2 and figure 4 in
     https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf"""
-    if a >= 2 ** 32 or b > 2 ** 32:
+    if a >= 2 ** 32 or b >= 2 ** 32:
         raise ValueError("Input keys must be 32-bit")
     a = split(n=4, size=8, bits=a)
     b = split(n=4, size=8, bits=b)
