@@ -30,6 +30,7 @@ from docopt import docopt
 
 def main():
     args = docopt(__doc__)
+    print(args)
 
 
 if __name__ == "__main__":
