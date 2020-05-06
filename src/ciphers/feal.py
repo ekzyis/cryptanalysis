@@ -38,7 +38,33 @@ def key_schedule(key, n=32):
     Creates the N+8 subkeys which are needed during en-/decryption.
     Key must be 128-bit.
     """
-    pass
+    kl, kr = split(2, 64, key)
+    # processing of right key kr
+    kr1, kr2 = split(2, 32, kr)
+    # insert "filler" element such that the the first added element is at index 1
+    #   since in the specification, indices for q start with 1
+    q = [0x0]
+    for r in range(1, (int(n / 2) + 5)):
+        if r % 3 == 1:
+            q.append(kr1 ^ kr2)
+        elif r % 3 == 2:
+            q.append(kr1)
+        elif r % 3 == 0:
+            q.append(kr2)
+    # processing of left key
+    a0, b0 = split(2, 32, kl)
+    a = [a0]
+    b = [b0]
+    d = [0x0]
+    k = []
+    for r in range(1, int(n / 2) + 5):
+        d.append(a[r-1])
+        a.append(b[r-1])
+        b.append(fk(a[r-1], b[r-1] ^ d[r-1] ^ q[r]))
+        br0, br1, br2, br3 = split(4, 8, b[r])
+        k.append(br0 << 8 | br1)
+        k.append(br2 << 8 | br3)
+    return k
 
 
 def s0(a, b):
