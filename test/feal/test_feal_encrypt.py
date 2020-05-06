@@ -15,6 +15,14 @@ class TestFEALCipherEncrypt(unittest.TestCase):
         except ValueError:
             self.fail("encrypt raised unexpected ValueError")
 
+    def test_encrypt_raises_error_when_key_larger_than_128_bit(self):
+        with self.assertRaises(ValueError):
+            encrypt(0, 2 ** 128)
+        try:
+            encrypt(0, 2 ** 128 - 1)
+        except ValueError:
+            self.fail("encrypt raised unexpected ValueError")
+
     def test_encrypt_returns_expected_output_as_specified_in_reference(self):
         k = 0x123456789ABCDEF0123456789ABCDEF
         p = 0x0
