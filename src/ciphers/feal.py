@@ -36,7 +36,7 @@ from util.split import split
 
 def key_schedule(key, n=32):
     """The key scheduler of FEAL-NX.
-    Creates the N+8 subkeys which are needed during en-/decryption.
+    Creates the N+8 16-bit subkeys which are needed during en-/decryption.
     Key must be 128-bit.
     """
     kl, kr = split(2, 64, key)
