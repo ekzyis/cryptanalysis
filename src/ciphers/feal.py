@@ -120,7 +120,7 @@ def fk(a, b):
 
 
 def encrypt(text, key):
-    """Encrpyts the given 64-bit text with the given key and returns the 64-bit ciphertext.
+    """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
     if text >= 2 ** 64:
         raise ValueError("Plaintext must be 64-bit")
