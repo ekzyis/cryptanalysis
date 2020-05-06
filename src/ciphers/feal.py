@@ -119,8 +119,8 @@ def fk(a, b):
     return fk0 << 24 | fk1 << 16 | fk2 << 8 | fk3
 
 
-def encrypt(text):
-    """Encrpyts the given 64-bit text and returns the 64-bit ciphertext.
+def encrypt(text, key):
+    """Encrpyts the given 64-bit text with the given key and returns the 64-bit ciphertext.
     Raises error if text is longer than 64-bit."""
     if text >= 2 ** 64:
         raise ValueError("Plaintext must be 64-bit")
