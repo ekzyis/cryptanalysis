@@ -120,13 +120,30 @@ def fk(a, b):
     return concat_bits(fk0, fk1, fk2, fk3, n=8)
 
 
-def encrypt(text, key):
+def encrypt_preprocessing(text, subkeys):
+    p = text ^ concat_bits(*subkeys, n=16)
+    l0, r0 = split(2, 32, p)
+    p ^= l0
+    return p
+
+
+def encrypt(text, key, n=32):
     """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
     if text >= 2 ** 64:
         raise ValueError("Plaintext must be 64-bit")
     if key >= 2 ** 128:
         raise ValueError("Key must be 128-bit")
+    sk = key_schedule(key, n)
+    l0, r0 = split(2, 32, encrypt_preprocessing(text, sk[n:n + 4]))
+    l, r = [l0], [r0]
+    for i in range(1, n + 1):
+        r.append(l[i - 1] ^ f(r[i - 1], sk[i - 1]))
+        l.append(r[i - 1])
+    ln, rn = l[n], r[n]
+    c = concat_bits(rn, ln, n=32) ^ rn
+    c ^= concat_bits(sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7], n=16)
+    return c
 
 
 def main():

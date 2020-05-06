@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import encrypt
+from ciphers.feal import encrypt, encrypt_preprocessing
 
 
 class TestFEALCipherEncrypt(unittest.TestCase):
@@ -28,3 +28,9 @@ class TestFEALCipherEncrypt(unittest.TestCase):
         p = 0x0
         c = encrypt(p, k)
         self.assertEqual(c, 0x9C9B54973DF685F8)
+
+    def test_encrypt_preprocessing_returns_expected_output_as_specified_in_reference(self):
+        k32, k33, k34, k35 = 0x196A, 0x9AB1, 0xE015, 0x8190
+        p = 0x0
+        out = encrypt_preprocessing(p, [k32, k33, k34, k35])
+        self.assertEqual(out, 0x196A9AB1F97F1B21)
