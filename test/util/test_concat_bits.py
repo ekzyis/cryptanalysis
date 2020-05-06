@@ -26,3 +26,7 @@ class TestCombine(unittest.TestCase):
         k7 = 0x5
         out = concat_bits(k0, k1, k2, k3, k4, k5, k6, k7, n=4)
         self.assertEqual(out, 0xAE918AB5)
+
+    def test_concat_bits_raises_value_error_when_subkey_is_too_large(self):
+        with self.assertRaises(ValueError):
+            concat_bits(0b101, 0b10, n=2)
