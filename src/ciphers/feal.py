@@ -33,6 +33,14 @@ from util.rot import rot_left
 from util.split import split
 
 
+def key_schedule(key, n=32):
+    """The key scheduler of FEAL-NX.
+    Creates the N+8 subkeys which are needed during en-/decryption.
+    Key must be 128-bit.
+    """
+    pass
+
+
 def s0(a, b):
     return _s(a, b, 0)
 
