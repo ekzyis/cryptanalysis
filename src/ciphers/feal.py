@@ -29,6 +29,7 @@ Usage:
 
 from docopt import docopt
 
+from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
 
@@ -62,8 +63,8 @@ def key_schedule(key, n=32):
         a.append(b[r - 1])
         b.append(fk(a[r - 1], b[r - 1] ^ d[r - 1] ^ q[r]))
         br0, br1, br2, br3 = split(4, 8, b[r])
-        k.append(br0 << 8 | br1)
-        k.append(br2 << 8 | br3)
+        k.append(concat_bits(br0, br1, n=8))
+        k.append(concat_bits(br2, br3, n=8))
     return k
 
 
@@ -97,7 +98,7 @@ def f(a, b):
     f2 = s0(f2, f1)
     f0 = s0(a[0], f1)
     f3 = s1(a[3], f2)
-    return f0 << 24 | f1 << 16 | f2 << 8 | f3
+    return concat_bits(f0, f1, f2, f3, n=8)
 
 
 def fk(a, b):
@@ -116,7 +117,7 @@ def fk(a, b):
     fk2 = s0(fk2, fk1 ^ b[1])
     fk0 = s0(a[0], fk1 ^ b[2])
     fk3 = s1(a[3], fk2 ^ b[3])
-    return fk0 << 24 | fk1 << 16 | fk2 << 8 | fk3
+    return concat_bits(fk0, fk1, fk2, fk3, n=8)
 
 
 def encrypt(text, key):
