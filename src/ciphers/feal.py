@@ -58,9 +58,9 @@ def key_schedule(key, n=32):
     d = [0x0]
     k = []
     for r in range(1, int(n / 2) + 5):
-        d.append(a[r-1])
-        a.append(b[r-1])
-        b.append(fk(a[r-1], b[r-1] ^ d[r-1] ^ q[r]))
+        d.append(a[r - 1])
+        a.append(b[r - 1])
+        b.append(fk(a[r - 1], b[r - 1] ^ d[r - 1] ^ q[r]))
         br0, br1, br2, br3 = split(4, 8, b[r])
         k.append(br0 << 8 | br1)
         k.append(br2 << 8 | br3)
