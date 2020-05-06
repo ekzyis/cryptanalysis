@@ -16,7 +16,7 @@ class TestFEALCipherEncrypt(unittest.TestCase):
             self.fail("encrypt raised unexpected ValueError")
 
     def test_encrypt_returns_expected_output_as_specified_in_reference(self):
-        k = 0x12345689ABCDEF0123456789ABCDEF
+        k = 0x123456789ABCDEF0123456789ABCDEF
         p = 0x0
         c = encrypt(p, k)
         self.assertEqual(c, 0x9C9B54973DF685F8)
