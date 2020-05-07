@@ -205,10 +205,10 @@ def main():
         o = encrypt(text, k, n)
     elif args['decrypt']:
         o = decrypt(text, k, n)
-    switcher = {'bin': bin, 'oct': oct, 'dec': int, 'hex': hex}
+    _format = {'bin': bin, 'oct': oct, 'dec': int, 'hex': hex}
     try:
         # format output
-        f_o = switcher[args['-o']](o)
+        f_o = _format[args['-o']](o)
         print(f_o)
     except KeyError:
         print("Output format must be bin, oct, dec or hex.")
