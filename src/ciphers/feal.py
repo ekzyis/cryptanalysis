@@ -26,6 +26,7 @@ Usage:
     feal decrypt [options] KEY CIPHERTEXT
 
     -n=N, --round-number=N  Number of rounds [default: 32]
+    -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
 
     KEY                     The key which should be used for en-/decryption.
     PLAINTEXT               The text to encrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
@@ -199,11 +200,17 @@ def main():
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
     if args['encrypt']:
-        c = encrypt(text, k, n)
-        print(hex(c))
+        o = encrypt(text, k, n)
     elif args['decrypt']:
-        p = decrypt(text, k, n)
-        print(hex(p))
+        o = decrypt(text, k, n)
+    switcher = {'bin': bin, 'oct': oct, 'dec': int, 'hex': hex}
+    try:
+        # format output
+        f_o = switcher[args['-o']](o)
+        print(f_o)
+    except KeyError:
+        print("Output format must be bin, oct, dec or hex.")
+        exit(1)
 
 
 if __name__ == "__main__":
