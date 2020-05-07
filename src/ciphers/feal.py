@@ -93,7 +93,7 @@ def _s(a, b, i):
 
 def f(a, b):
     """f-function of FEAL-NX.
-    a must be 32-bit and b must be 16-bit long
+    a must be 32-bit and b must be 16-bit long.
     Used during en-/decryption.
     See section 5.1 and figure 3 in
     https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf"""
