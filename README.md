@@ -19,15 +19,15 @@ Therefore, I have chosen to implement the following ciphers:
 
 `python -m venv venv`
 
-2. Activate virtual environment
+2. Activate virtual environment:
 
 `source venv/bin/activate`
 
-3. Install dependencies
+3. Install dependencies:
 
 `pip install -r requirements.txt`
 
-4. Run tests (optional)
+4. Run tests (optional):
 
 `python -m unittest`
 
