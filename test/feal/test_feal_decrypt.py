@@ -17,3 +17,19 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         k = 0x123456789ABCDEF0123456789ABCDEF
         p = decrypt(c, k)
         self.assertEqual(p, 0x0)
+
+    def test_decrypt_raises_value_error_if_text_larger_than_64_bit(self):
+        with self.assertRaises(ValueError):
+            decrypt(2 ** 64, 0x0)
+        try:
+            decrypt(2 ** 64 - 1, 0x0)
+        except ValueError:
+            self.fail("decrypt raised unexpected ValueError")
+
+    def test_decrypt_raises_value_error_if_key_larger_than_128_bit(self):
+        with self.assertRaises(ValueError):
+            decrypt(0x0, 2 ** 128)
+        try:
+            decrypt(0x0, 2 ** 128 - 1)
+        except ValueError:
+            self.fail("decrypt raised unexpected ValueError")
