@@ -127,6 +127,14 @@ def encrypt_preprocessing(text, subkeys):
     return p
 
 
+def encrypt_iterative_calculation(l0, r0, sk, n=32):
+    l, r = [l0], [r0]
+    for i in range(1, n + 1):
+        r.append(l[i - 1] ^ f(r[i - 1], sk[i - 1]))
+        l.append(r[i - 1])
+    return l, r
+
+
 def encrypt(text, key, n=32):
     """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
@@ -136,10 +144,7 @@ def encrypt(text, key, n=32):
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
     l0, r0 = split(2, 32, encrypt_preprocessing(text, sk[n:n + 4]))
-    l, r = [l0], [r0]
-    for i in range(1, n + 1):
-        r.append(l[i - 1] ^ f(r[i - 1], sk[i - 1]))
-        l.append(r[i - 1])
+    l, r = encrypt_iterative_calculation(l0, r0, sk, n)
     ln, rn = l[n], r[n]
     c = concat_bits(rn, ln, n=32) ^ rn
     c ^= concat_bits(sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7], n=16)
