@@ -8,6 +8,8 @@ from ciphers.feal import key_schedule
 class TestFEALCipherKeySchedule(unittest.TestCase):
 
     def test_key_schedule_matches_specification_in_paper(self):
+        # i/o values taken from p.10, section 6.3.1 of
+        #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         key = 0x0123456789ABCDEF0123456789ABCDEF
         out = key_schedule(key, n=32)
         self.assertEqual(len(out), 40)

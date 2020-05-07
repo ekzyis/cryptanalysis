@@ -24,18 +24,25 @@ class TestFEALCipherEncrypt(unittest.TestCase):
             self.fail("encrypt raised unexpected ValueError")
 
     def test_encrypt_matches_specification_in_paper(self):
+        # input key taken from p.8, section 6.2 and
+        #   ciphertext taken from p.16, section 6.4.3 of
+        #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         k = 0x123456789ABCDEF0123456789ABCDEF
         p = 0x0
         c = encrypt(p, k)
         self.assertEqual(c, 0x9C9B54973DF685F8)
 
     def test_encrypt_preprocessing_matches_specification_in_paper(self):
+        # i/o values taken from p.10, section 6.2.1 of
+        #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         k32, k33, k34, k35 = 0x196A, 0x9AB1, 0xE015, 0x8190
         p = 0x0
         out = encrypt_preprocessing(p, [k32, k33, k34, k35])
         self.assertEqual(out, 0x196A9AB1F97F1B21)
 
     def test_encrypt_iterative_calculation_matches_specification_in_paper(self):
+        # i/o values taken from p.14-15, section 6.4.2.3 of
+        #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         l0, r0 = 0x196A9AB1, 0xF97F1B21
         sk = [
             0x7519, 0x71F9, 0x84E9, 0x4886, 0x88E5, 0x523B, 0x4EA4, 0x7ADE, 0xFE40, 0x5E76,

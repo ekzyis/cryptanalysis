@@ -8,9 +8,8 @@ from ciphers.feal import f
 class TestFEALCipherF(unittest.TestCase):
 
     def test_f_matches_specification_in_paper(self):
-        """In section 5.1 of https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf,
-        there are example inputs with the expected output.
-        """
+        # i/o values taken from p.7, section 5.1 of
+        #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         _f = f(0x00FFFF00, 0xFFFF)
         self.assertEqual(_f, 0x10041044)
 
