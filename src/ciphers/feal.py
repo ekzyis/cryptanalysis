@@ -154,7 +154,21 @@ def encrypt(text, key, n=32):
 def decrypt(text, key, n=32):
     """Decrypts the given 64-bit ciphertext with the given key and returns the 64-bit plaintext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
-    pass
+    if text >= 2 ** 64:
+        raise ValueError("Ciphertext must be 64-bit")
+    if key >= 2 ** 128:
+        raise ValueError("Key must be 128-bit")
+    sk = key_schedule(key, n)
+    rn, ln = split(2, 32, text ^ concat_bits(sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7], n=16))
+    rn, ln = split(2, 32, concat_bits(rn, ln, n=32) ^ rn)
+    l, r = [None] * n + [ln], [None] * n + [rn]
+    for i in reversed(range(1, n + 1)):
+        l[i - 1] = r[i] ^ f(l[i], sk[i - 1])
+        r[i - 1] = l[i]
+    l0, r0 = l[0], r[0]
+    p = concat_bits(l0, r0, n=32) ^ l0
+    p ^= concat_bits(sk[n], sk[n + 1], sk[n + 2], sk[n + 3], n=16)
+    return p
 
 
 def main():
