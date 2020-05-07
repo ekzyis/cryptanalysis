@@ -64,7 +64,7 @@ def key_schedule(key, n=32):
             q.append(kr1)
         elif r % 3 == 0:
             q.append(kr2)
-    # processing of left key
+    # processing of left key kl
     a0, b0 = split(2, 32, kl)
     a = [a0]
     b = [b0]
