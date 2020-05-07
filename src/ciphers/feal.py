@@ -195,7 +195,15 @@ def decrypt(text, key, n=32):
 
 def main():
     args = docopt(__doc__)
-    print(args)
+    text = int(args['PLAINTEXT'] or args['CIPHERTEXT'])
+    n = int(args['--round-number'])
+    k = int(args['KEY'])
+    if args['encrypt']:
+        c = encrypt(text, k, n)
+        print(hex(c))
+    elif args['decrypt']:
+        p = decrypt(text, k, n)
+        print(hex(p))
 
 
 if __name__ == "__main__":
