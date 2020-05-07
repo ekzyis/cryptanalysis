@@ -7,7 +7,7 @@ from ciphers.feal import encrypt, encrypt_preprocessing, encrypt_iterative_calcu
 
 class TestFEALCipherEncrypt(unittest.TestCase):
 
-    def test_encrypt_raises_error_when_text_larger_than_64_bit(self):
+    def test_encrypt_raises_value_error_if_text_larger_than_64_bit(self):
         with self.assertRaises(ValueError):
             encrypt(2 ** 64, 0x0)
         try:
@@ -15,7 +15,7 @@ class TestFEALCipherEncrypt(unittest.TestCase):
         except ValueError:
             self.fail("encrypt raised unexpected ValueError")
 
-    def test_encrypt_raises_error_when_key_larger_than_128_bit(self):
+    def test_encrypt_raises_value_error_if_key_larger_than_128_bit(self):
         with self.assertRaises(ValueError):
             encrypt(0, 2 ** 128)
         try:

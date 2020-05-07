@@ -34,7 +34,7 @@ class TestSplit(unittest.TestCase):
         self.assertEqual(out[1], 0b0101)
         self.assertEqual(out[2], 0b0011)
 
-    def test_split_raises_error_when_input_is_larger_than_concatenation_of_bitstrings(self):
+    def test_split_raises_value_error_when_input_is_larger_than_concatenation_of_bitstrings(self):
         with self.assertRaises(ValueError):
             split(2, 2, 2 ** 4)
         with self.assertRaises(ValueError):
@@ -46,7 +46,7 @@ class TestSplit(unittest.TestCase):
         except ValueError:
             self.fail("ValueError raised by split when not expected")
 
-    def test_split_raises_error_when_n_is_less_than_or_equal_to_1(self):
+    def test_split_raises_value_error_when_n_is_less_than_or_equal_to_1(self):
         with self.assertRaises(ValueError):
             split(0, 2, 1)
         with self.assertRaises(ValueError):
