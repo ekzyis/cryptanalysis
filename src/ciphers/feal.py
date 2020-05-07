@@ -142,6 +142,14 @@ def encrypt_iterative_calculation(l0, r0, sk, n=32):
     return l, r
 
 
+def decrypt_iterative_calculation(ln, rn, sk, n=32):
+    l, r = [None] * n + [ln], [None] * n + [rn]
+    for i in reversed(range(1, n + 1)):
+        l[i - 1] = r[i] ^ f(l[i], sk[i - 1])
+        r[i - 1] = l[i]
+    return l, r
+
+
 def encrypt(text, key, n=32):
     """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
@@ -167,10 +175,7 @@ def decrypt(text, key, n=32):
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
     rn, ln = split(2, 32, decrypt_preprocessing(text, sk[n+4:n+8]))
-    l, r = [None] * n + [ln], [None] * n + [rn]
-    for i in reversed(range(1, n + 1)):
-        l[i - 1] = r[i] ^ f(l[i], sk[i - 1])
-        r[i - 1] = l[i]
+    l, r = decrypt_iterative_calculation(ln, rn, sk, n)
     l0, r0 = l[0], r[0]
     p = concat_bits(l0, r0, n=32) ^ l0
     p ^= concat_bits(sk[n], sk[n + 1], sk[n + 2], sk[n + 3], n=16)
