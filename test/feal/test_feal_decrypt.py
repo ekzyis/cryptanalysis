@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import decrypt
+from ciphers.feal import decrypt, decrypt_preprocessing
 
 
 class TestFEALCipherDecrypt(unittest.TestCase):
@@ -33,3 +33,12 @@ class TestFEALCipherDecrypt(unittest.TestCase):
             decrypt(0x0, 2 ** 128 - 1)
         except ValueError:
             self.fail("decrypt raised unexpected ValueError")
+
+    def test_decrypt_preprocessing_matches_specification_in_paper(self):
+        # i/o values taken from test for encrypt.
+        #   As specified in the paper, the concatenation of the keys r_n, l_n which were calculated
+        #   during encryption should be returned when using the output of said encryption as input.
+        k34, k35, k36, k37 = 0x9F72, 0x6643, 0xAD32, 0x683A
+        c = 0x9C9B54973DF685F8
+        out = decrypt_preprocessing(c, [k34, k35, k36, k37])
+        self.assertEqual(out, 0x03E932D4932DDF16)

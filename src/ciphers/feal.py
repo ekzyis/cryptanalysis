@@ -127,6 +127,13 @@ def encrypt_preprocessing(text, subkeys):
     return p
 
 
+def decrypt_preprocessing(text, subkeys):
+    p = text ^ concat_bits(*subkeys, n=16)
+    rn, ln = split(2, 32, p)
+    p = concat_bits(rn, ln, n=32) ^ rn
+    return p
+
+
 def encrypt_iterative_calculation(l0, r0, sk, n=32):
     l, r = [l0], [r0]
     for i in range(1, n + 1):
@@ -159,8 +166,7 @@ def decrypt(text, key, n=32):
     if key >= 2 ** 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    rn, ln = split(2, 32, text ^ concat_bits(sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7], n=16))
-    rn, ln = split(2, 32, concat_bits(rn, ln, n=32) ^ rn)
+    rn, ln = split(2, 32, decrypt_preprocessing(text, sk[n+4:n+8]))
     l, r = [None] * n + [ln], [None] * n + [rn]
     for i in reversed(range(1, n + 1)):
         l[i - 1] = r[i] ^ f(l[i], sk[i - 1])
