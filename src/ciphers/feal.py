@@ -151,6 +151,12 @@ def encrypt(text, key, n=32):
     return c
 
 
+def decrypt(text, key, n=32):
+    """Decrypts the given 64-bit ciphertext with the given key and returns the 64-bit plaintext.
+    Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    pass
+
+
 def main():
     args = docopt(__doc__)
     print(args)
