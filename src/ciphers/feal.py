@@ -174,7 +174,7 @@ def decrypt(text, key, n=32):
     if key >= 2 ** 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    rn, ln = split(2, 32, decrypt_preprocessing(text, sk[n+4:n+8]))
+    rn, ln = split(2, 32, decrypt_preprocessing(text, sk[n + 4:n + 8]))
     l, r = decrypt_iterative_calculation(ln, rn, sk, n)
     l0, r0 = l[0], r[0]
     p = concat_bits(l0, r0, n=32) ^ l0
