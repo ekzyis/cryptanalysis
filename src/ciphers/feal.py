@@ -27,7 +27,13 @@ Usage:
     -n=N, --round-number=N    Number of rounds [default: 32]
 """
 
+import sys
+from pathlib import Path
+
 from docopt import docopt
+
+# make sure that following imports can be resolved when executing this script from cmdline
+sys.path.insert(0, str(Path(__file__).parent / '..'))
 
 from util.concat_bits import concat_bits
 from util.rot import rot_left
