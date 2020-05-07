@@ -98,8 +98,10 @@ def f(a, b):
     Used during en-/decryption.
     See section 5.1 and figure 3 in
     https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf"""
-    if a >= 2 ** 32 or b >= 2 ** 16:
-        raise ValueError("Input keys must be 32-bit")
+    if a >= 2 ** 32:
+        raise ValueError("a key must be 32-bit")
+    if b >= 2 ** 16:
+        raise ValueError("b key must be 16-bit")
     a = split(n=4, size=8, bits=a)
     b = split(n=2, size=8, bits=b)
     f1 = a[1] ^ b[0]
