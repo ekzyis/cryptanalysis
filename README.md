@@ -7,7 +7,8 @@
 
 For my bachelor thesis about Linear Cryptanalysis, I have chosen to implement some ciphers such that I can experiment with them and gain in-depth knowledge about their inner workings.
 
-As an additional benefit while implementing, I get a good basic understanding of block ciphers such as how with different modes of operation, one can (safely) encrypt messages larger than the block size.
+As an additional benefit while implementing, I get a good basic understanding of block ciphers.
+For example, I always wondered how one can encrypt messages larger than the block size (see [modes of operation](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)) or use padding to increase the message length for security purposes while still being able to obtain the real message afterwards.
 
 Therefore, I have chosen to implement the following ciphers:
 - FEAL-NX
