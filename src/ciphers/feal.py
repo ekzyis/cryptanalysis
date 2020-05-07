@@ -26,6 +26,10 @@ Usage:
     feal decrypt [options] KEY CIPHERTEXT
 
     -n=N, --round-number=N    Number of rounds [default: 32]
+
+    KEY                     The key which should be used for en-/decryption.
+    PLAINTEXT               The text to encrypt. Must be a number.
+    CIPHERTEXT              The text to decrypt. Must be a number.
 """
 
 import sys
