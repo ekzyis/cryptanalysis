@@ -6,6 +6,7 @@ from ciphers.feal import decrypt
 
 
 class TestFEALCipherDecrypt(unittest.TestCase):
+
     def test_decrypt_matches_specification_in_paper(self):
         """Checks that the FEAL decryption decrypts the given ciphertext."""
         # i/o values taken from test for encrypt.
