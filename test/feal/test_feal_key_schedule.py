@@ -7,7 +7,7 @@ from ciphers.feal import key_schedule
 
 class TestFEALCipherKeySchedule(unittest.TestCase):
 
-    def test_key_schedule_returns_expected_output_as_specified_in_reference(self):
+    def test_key_schedule_matches_specification_in_paper(self):
         key = 0x0123456789ABCDEF0123456789ABCDEF
         out = key_schedule(key, n=32)
         self.assertEqual(len(out), 40)

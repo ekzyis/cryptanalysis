@@ -7,7 +7,7 @@ from ciphers.feal import fk
 
 class TestFEALCipherFk(unittest.TestCase):
 
-    def test_fk_returns_expected_output_as_specified_in_reference(self):
+    def test_fk_matches_specification_in_paper(self):
         """In section 5.2 of https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf,
         there are example inputs with the expected output.
         """

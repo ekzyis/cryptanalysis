@@ -23,19 +23,19 @@ class TestFEALCipherEncrypt(unittest.TestCase):
         except ValueError:
             self.fail("encrypt raised unexpected ValueError")
 
-    def test_encrypt_returns_expected_output_as_specified_in_reference(self):
+    def test_encrypt_matches_specification_in_paper(self):
         k = 0x123456789ABCDEF0123456789ABCDEF
         p = 0x0
         c = encrypt(p, k)
         self.assertEqual(c, 0x9C9B54973DF685F8)
 
-    def test_encrypt_preprocessing_returns_expected_output_as_specified_in_reference(self):
+    def test_encrypt_preprocessing_matches_specification_in_paper(self):
         k32, k33, k34, k35 = 0x196A, 0x9AB1, 0xE015, 0x8190
         p = 0x0
         out = encrypt_preprocessing(p, [k32, k33, k34, k35])
         self.assertEqual(out, 0x196A9AB1F97F1B21)
 
-    def test_encrypt_iterative_calculation_returns_expected_output_as_specified_in_reference(self):
+    def test_encrypt_iterative_calculation_matches_specification_in_paper(self):
         l0, r0 = 0x196A9AB1, 0xF97F1B21
         sk = [
             0x7519, 0x71F9, 0x84E9, 0x4886, 0x88E5, 0x523B, 0x4EA4, 0x7ADE, 0xFE40, 0x5E76,
