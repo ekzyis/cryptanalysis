@@ -44,6 +44,7 @@ class TestFEALCipherEncrypt(unittest.TestCase):
             0x6B81, 0xB560, 0x196A, 0x9AB1, 0xE015, 0x8190, 0x9F72, 0x6643, 0xAD32, 0x683A
         ]
         l, r = encrypt_iterative_calculation(l0, r0, sk)
+        # TODO assert r keys
         self.assertEqual(l[0], 0x196A9AB1)
         self.assertEqual(l[1], 0xF97F1B21)
         self.assertEqual(l[2], 0x4C3667CD)
