@@ -9,17 +9,17 @@ class TestFEALCipherEncrypt(unittest.TestCase):
 
     def test_encrypt_raises_value_error_if_text_larger_than_64_bit(self):
         with self.assertRaises(ValueError):
-            encrypt(2 ** 64, 0x0)
+            encrypt(0x0, 2 ** 64)
         try:
-            encrypt(2 ** 64 - 1, 0x0)
+            encrypt(0x0, 2 ** 64 - 1)
         except ValueError:
             self.fail("encrypt raised unexpected ValueError")
 
     def test_encrypt_raises_value_error_if_key_larger_than_128_bit(self):
         with self.assertRaises(ValueError):
-            encrypt(0, 2 ** 128)
+            encrypt(2 ** 128, 0)
         try:
-            encrypt(0, 2 ** 128 - 1)
+            encrypt(2 ** 128 - 1, 0)
         except ValueError:
             self.fail("encrypt raised unexpected ValueError")
 
@@ -29,7 +29,7 @@ class TestFEALCipherEncrypt(unittest.TestCase):
         #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         k = 0x123456789ABCDEF0123456789ABCDEF
         p = 0x0
-        c = encrypt(p, k)
+        c = encrypt(k, p)
         self.assertEqual(c, 0x9C9B54973DF685F8)
 
     def test_encrypt_preprocessing_matches_specification_in_paper(self):
@@ -37,7 +37,7 @@ class TestFEALCipherEncrypt(unittest.TestCase):
         #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         k32, k33, k34, k35 = 0x196A, 0x9AB1, 0xE015, 0x8190
         p = 0x0
-        out = encrypt_preprocessing(p, [k32, k33, k34, k35])
+        out = encrypt_preprocessing([k32, k33, k34, k35], p)
         self.assertEqual(out, 0x196A9AB1F97F1B21)
 
     def test_encrypt_iterative_calculation_matches_specification_in_paper(self):
