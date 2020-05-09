@@ -5,10 +5,8 @@ Test cases assert that I come to the same conclusions.
 
 Thesis available under: https://www.cryptool.org/images/ctp/documents/MA_Bender.pdf
 """
-import sys
 import unittest
 from collections import defaultdict
-from pathlib import Path
 
 # noinspection PyUnresolvedReferences
 import test.context
