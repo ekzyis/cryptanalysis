@@ -165,9 +165,10 @@ def decrypt_iterative_calculation(ln, rn, sk, n=32):
     return l, r
 
 
-def encrypt(key, text, n=32):
+def encrypt(key, text, **kwargs):
     """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    n = kwargs.setdefault('n', 32)
     if text >= 2 ** 64:
         raise ValueError("Plaintext must be 64-bit")
     if key >= 2 ** 128:
@@ -181,9 +182,10 @@ def encrypt(key, text, n=32):
     return c
 
 
-def decrypt(key, text, n=32):
+def decrypt(key, text, **kwargs):
     """Decrypts the given 64-bit ciphertext with the given key and returns the 64-bit plaintext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    n = kwargs.setdefault('n', 32)
     if text >= 2 ** 64:
         raise ValueError("Ciphertext must be 64-bit")
     if key >= 2 ** 128:
@@ -206,9 +208,9 @@ def feal():
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
     if args['encrypt']:
-        o = encrypt(k, text, n)
+        o = encrypt(k, text, n=n)
     elif args['decrypt']:
-        o = decrypt(k, text, n)
+        o = decrypt(k, text, n=n)
     _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
     try:
         # format output
