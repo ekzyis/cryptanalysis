@@ -1,6 +1,7 @@
 from math import ceil
-from util.split import split
+
 from util.concat_bits import concat_bits
+from util.split import split
 
 
 def ecb(blocksize):
