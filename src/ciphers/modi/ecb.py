@@ -9,6 +9,8 @@ def ecb(blocksize):
     as arguments.
     Works by splitting the argument into the needed blocks, passing those blocks to the
     cipher function and then return the concatenation of the results.
+
+    :param blocksize        Block size of cipher in bits on which we want to use ECB mode
     """
 
     def _ecb(cipher_fn, arg, arg_bits):
