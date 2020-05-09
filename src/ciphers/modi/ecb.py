@@ -14,10 +14,10 @@ def ecb(blocksize):
     :param blocksize        Block size of cipher in bits on which we want to use ECB mode
     """
 
-    def _ecb(cipher_fn, arg, arg_bits):
+    def _ecb(cipher_fn, key, text, arg_bits):
         n = ceil(arg_bits / blocksize)
-        in_blocks = split(n, blocksize, arg)
-        out_blocks = [cipher_fn(b) for b in in_blocks]
+        in_blocks = split(n, blocksize, text)
+        out_blocks = [cipher_fn(key, b) for b in in_blocks]
         return concat_bits(*out_blocks, n=blocksize)
 
     return _ecb
