@@ -11,3 +11,8 @@ class TestFeal(unittest.TestCase):
     def test_integration_feal_encrypt(self):
         c = feal()
         self.assertEqual(int(c), 0x9C9B54973DF685F8)
+
+    @mock.patch('sys.argv', ['feal', 'decrypt', '0x123456789ABCDEF0123456789ABCDEF', '0x9C9B54973DF685F8'])
+    def test_integration_feal_decrypt(self):
+        p = feal()
+        self.assertEqual(int(p), 0x0)
