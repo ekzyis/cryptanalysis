@@ -13,8 +13,8 @@ def patch_sysv_wrapper(*default_args, **default_kwargs):
 
         def test_wrapper(fn):  # wraps the test function
             @mock.patch('sys.argv', args)
-            def wrapper(*_args):  # needed to pass the `self` argument from `unittest` to the test function
-                return fn(*_args)
+            def wrapper(*unittest_args):  # needed to pass the `self` argument from `unittest` to the test function
+                return fn(*unittest_args)
 
             return wrapper
 
