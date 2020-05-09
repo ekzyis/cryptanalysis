@@ -23,7 +23,7 @@ def patch_sysv_wrapper(*default_args, **default_kwargs):
     return additional_args_wrapper
 
 
-default_encrypt_args = patch_sysv_wrapper('feal', 'encrypt', key='0x123456789ABCDEF0123456789ABCDEF', text='0')
+default_encrypt_args = patch_sysv_wrapper('feal', 'encrypt', key='0x123456789ABCDEF0123456789ABCDEF', text='0x0')
 
 default_decrypt_args = patch_sysv_wrapper('feal', 'decrypt', key='0x123456789ABCDEF0123456789ABCDEF',
                                           text='0x9C9B54973DF685F8')
