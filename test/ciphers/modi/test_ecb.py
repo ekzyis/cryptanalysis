@@ -15,7 +15,7 @@ class TestECB(unittest.TestCase):
             return m >> 4
 
         cipher_fn = mock.Mock(wraps=encrypt)
-        c = ecb(blocksize=16)(cipher_fn, m)
+        c = ecb(blocksize=16)(cipher_fn, m, 3 * 16)
         self.assertEqual(cipher_fn.call_count, 3)
         cipher_fn.assert_has_calls(call(0x1234), call(0xABCD), call(0x5678))
         self.assertEqual(c, 0x01230ABC0567)
