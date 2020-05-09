@@ -196,7 +196,7 @@ def decrypt(key, text, n=32):
     return p
 
 
-def main():
+def feal():
     args = docopt(__doc__)
     text = int(args['PLAINTEXT'] or args['CIPHERTEXT'], 0)
     n = int(args['--round-number'])
@@ -215,4 +215,4 @@ def main():
 
 
 if __name__ == "__main__":
-    print(main())
+    print(feal())
