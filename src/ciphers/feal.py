@@ -197,6 +197,9 @@ def decrypt(key, text, n=32):
 
 
 def feal():
+    """Main entry point for FEAL cipher execution.
+    Gets arguments from docopt which parses sys.argv.
+    See http://docopt.org/ if you are not familiar with docopt argument parsing."""
     args = docopt(__doc__)
     text = int(args['PLAINTEXT'] or args['CIPHERTEXT'], 0)
     n = int(args['--round-number'])
