@@ -19,3 +19,11 @@ class TestECB(unittest.TestCase):
         self.assertEqual(cipher_fn.call_count, 3)
         cipher_fn.assert_has_calls([call(0x1234), call(0xABCD), call(0x5678)])
         self.assertEqual(c, 0x01230ABC0567)
+
+    def test_ecb_returns_concatentation_of_cipher_fn_results_with_message_which_has_leading_zero_bits(self):
+        m = 0x00123456
+        cipher_fn = mock.Mock(wraps=self.cipher_fn)
+        c = ecb(blocksize=16)(cipher_fn, m, 2 * 16)
+        self.assertEqual(cipher_fn.call_count, 2)
+        cipher_fn.assert_has_calls([call(0x0012), call(0x3456)])
+        self.assertEqual(c, 0x00010345)
