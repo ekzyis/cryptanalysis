@@ -36,7 +36,7 @@ class TestFeal(unittest.TestCase):
         p = feal()
         self.assertEqual(int(p), 0x0)
 
-    def test_integration_feal_output_format_bin(self):
+    def test_integration_feal_option_output_format_bin(self):
         @default_encrypt_args('-o', 'bin')
         def test_format_bin_with_encrypt():
             c = feal()
@@ -51,7 +51,7 @@ class TestFeal(unittest.TestCase):
 
         test_format_bin_with_decrypt()
 
-    def test_integration_feal_output_format_oct(self):
+    def test_integration_feal_option_output_format_oct(self):
         @default_encrypt_args('-o', 'oct')
         def test_format_oct_with_encrypt():
             c = feal()
@@ -66,7 +66,7 @@ class TestFeal(unittest.TestCase):
 
         test_format_oct_with_decrypt()
 
-    def test_integration_feal_output_format_dec(self):
+    def test_integration_feal_option_output_format_dec(self):
         @default_encrypt_args('-o', 'dec')
         def test_format_dec_with_encrypt():
             c = feal()
@@ -81,7 +81,7 @@ class TestFeal(unittest.TestCase):
 
         test_format_dec_with_decrypt()
 
-    def test_integration_feal_output_format_hex(self):
+    def test_integration_feal_option_output_format_hex(self):
         @default_encrypt_args('-o', 'hex')
         def test_format_hex_with_encrypt():
             c = feal()
