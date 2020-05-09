@@ -38,5 +38,5 @@ class TestFeal(unittest.TestCase):
 
     @default_decrypt_args('-o', 'bin')
     def test_integration_feal_output_format_bin(self):
-        c = feal()
-        self.assertEqual(c, bin(0x0))
+        p = feal()
+        self.assertEqual(p, bin(0x0))
