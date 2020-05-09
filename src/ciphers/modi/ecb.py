@@ -1,0 +1,2 @@
+def ecb(blocksize):
+    pass
