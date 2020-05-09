@@ -29,7 +29,7 @@ class TestDCA(unittest.TestCase):
             for pairs in xor_with_pairs.values():
                 self.assertTrue(len(pairs), 2 ** n)
 
-    def test_that_trivial_input_xor_of_0_leads_to_output_xor_of_0(self):
+    def test_that_trivial_input_xor_of_0_leads_to_trivial_xor_output_of_0_after_substitution(self):
         """
         Assert following sentence from page 46, section 3.2.1 "Ein-Runden-Charakteristik".
         "Die triviale Ein-Runden-Charakteristik hat eine Eingabedifferenz von 0,
