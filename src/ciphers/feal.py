@@ -208,7 +208,7 @@ def feal():
         o = encrypt(k, text, n)
     elif args['decrypt']:
         o = decrypt(k, text, n)
-    _format = {'bin': bin, 'oct': oct, 'dec': int, 'hex': hex}
+    _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
     try:
         # format output
         return _format[args['-o']](o)

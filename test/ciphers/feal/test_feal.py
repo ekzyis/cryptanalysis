@@ -39,4 +39,19 @@ class TestFeal(unittest.TestCase):
     @default_decrypt_args('-o', 'bin')
     def test_integration_feal_output_format_bin(self):
         p = feal()
-        self.assertEqual(p, bin(0x0))
+        self.assertEqual(p, '0b0')
+
+    @default_decrypt_args('-o', 'oct')
+    def test_integration_feal_output_format_oct(self):
+        p = feal()
+        self.assertEqual(p, '0o0')
+
+    @default_decrypt_args('-o', 'dec')
+    def test_integration_feal_output_format_dec(self):
+        p = feal()
+        self.assertEqual(p, '0')
+
+    @default_decrypt_args('-o', 'hex')
+    def test_integration_feal_output_format_hex(self):
+        p = feal()
+        self.assertEqual(p, '0x0')
