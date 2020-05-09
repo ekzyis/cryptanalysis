@@ -208,12 +208,11 @@ def main():
     _format = {'bin': bin, 'oct': oct, 'dec': int, 'hex': hex}
     try:
         # format output
-        f_o = _format[args['-o']](o)
-        print(f_o)
+        return _format[args['-o']](o)
     except KeyError:
         print("Output format must be bin, oct, dec or hex.")
         exit(1)
 
 
 if __name__ == "__main__":
-    main()
+    print(main())
