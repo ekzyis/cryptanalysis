@@ -134,14 +134,14 @@ def fk(a, b):
     return concat_bits(fk0, fk1, fk2, fk3, n=8)
 
 
-def encrypt_preprocessing(text, subkeys):
+def encrypt_preprocessing(subkeys, text):
     p = text ^ concat_bits(*subkeys, n=16)
     l0, r0 = split(2, 32, p)
     p ^= l0
     return p
 
 
-def decrypt_preprocessing(text, subkeys):
+def decrypt_preprocessing(subkeys, text):
     p = text ^ concat_bits(*subkeys, n=16)
     rn, ln = split(2, 32, p)
     p = concat_bits(rn, ln, n=32) ^ rn
@@ -164,7 +164,7 @@ def decrypt_iterative_calculation(ln, rn, sk, n=32):
     return l, r
 
 
-def encrypt(text, key, n=32):
+def encrypt(key, text, n=32):
     """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
     if text >= 2 ** 64:
@@ -172,7 +172,7 @@ def encrypt(text, key, n=32):
     if key >= 2 ** 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    l0, r0 = split(2, 32, encrypt_preprocessing(text, sk[n:n + 4]))
+    l0, r0 = split(2, 32, encrypt_preprocessing(sk[n:n + 4], text))
     l, r = encrypt_iterative_calculation(l0, r0, sk, n)
     ln, rn = l[n], r[n]
     c = concat_bits(rn, ln, n=32) ^ rn
@@ -180,7 +180,7 @@ def encrypt(text, key, n=32):
     return c
 
 
-def decrypt(text, key, n=32):
+def decrypt(key, text, n=32):
     """Decrypts the given 64-bit ciphertext with the given key and returns the 64-bit plaintext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
     if text >= 2 ** 64:
@@ -188,7 +188,7 @@ def decrypt(text, key, n=32):
     if key >= 2 ** 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    rn, ln = split(2, 32, decrypt_preprocessing(text, sk[n + 4:n + 8]))
+    rn, ln = split(2, 32, decrypt_preprocessing(sk[n + 4:n + 8], text))
     l, r = decrypt_iterative_calculation(ln, rn, sk, n)
     l0, r0 = l[0], r[0]
     p = concat_bits(l0, r0, n=32) ^ l0
@@ -196,24 +196,26 @@ def decrypt(text, key, n=32):
     return p
 
 
-def main():
+def feal():
+    """Main entry point for FEAL cipher execution.
+    Gets arguments from docopt which parses sys.argv.
+    See http://docopt.org/ if you are not familiar with docopt argument parsing."""
     args = docopt(__doc__)
     text = int(args['PLAINTEXT'] or args['CIPHERTEXT'], 0)
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
     if args['encrypt']:
-        o = encrypt(text, k, n)
+        o = encrypt(k, text, n)
     elif args['decrypt']:
-        o = decrypt(text, k, n)
-    _format = {'bin': bin, 'oct': oct, 'dec': int, 'hex': hex}
+        o = decrypt(k, text, n)
+    _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
     try:
         # format output
-        f_o = _format[args['-o']](o)
-        print(f_o)
+        return _format[args['-o']](o)
     except KeyError:
         print("Output format must be bin, oct, dec or hex.")
         exit(1)
 
 
 if __name__ == "__main__":
-    main()
+    print(feal())
