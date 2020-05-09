@@ -1,7 +1,7 @@
 from unittest import mock
 
 
-def patch_sysv_wrapper(*default_args, **default_kwargs):
+def sysv_patcher(*default_args, **default_kwargs):
     def additional_args_wrapper(*add_args, **add_kwargs):
         kwargs = dict(default_kwargs, **add_kwargs)
         args = list(default_args + add_args) + [kwargs['key'], kwargs['text']]
