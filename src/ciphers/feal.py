@@ -25,7 +25,7 @@ Usage:
     feal encrypt [options] KEY PLAINTEXT
     feal decrypt [options] KEY CIPHERTEXT
 
-    -n=N, --round-number=N  Number of rounds [default: 32]
+    -n=N, --round-number=N  Number of rounds. Must be even. [default: 32]
     -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
     -m=[ecb,none]           Specifies the mode of operation [default: none]
 
