@@ -236,6 +236,7 @@ def feal():
     w_encrypt, w_decrypt = encrypt, decrypt  # default is no wrap
     if args['-m'] == 'ecb':
         w_encrypt, w_decrypt = feal_ecb(encrypt), feal_ecb(decrypt)
+
     # Execute encryption/decryption
     if args['encrypt']:
         o = w_encrypt(k, text, n=n)
