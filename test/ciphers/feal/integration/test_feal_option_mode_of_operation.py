@@ -42,3 +42,18 @@ class TestFeal(unittest.TestCase):
             self.assertEqual(hex(int(p, 0)).lower(), '0xfffafffafffafffafffafffa')
 
         test_mode_of_operation_ecb_with_decrypt_remainder()
+
+    def test_integration_feal_option_mode_of_operation_raises_error_on_invalid_mode_input(self):
+        @default_encrypt_args('-m', 'invalid')
+        def test_mode_of_operation_invalid_with_encrypt():
+            with self.assertRaises(KeyError):
+                feal()
+
+        test_mode_of_operation_invalid_with_encrypt()
+
+        @default_decrypt_args('-m', 'invalid')
+        def test_mode_of_operation_invalid_with_decrypt():
+            with self.assertRaises(KeyError):
+                feal()
+
+        test_mode_of_operation_invalid_with_decrypt()

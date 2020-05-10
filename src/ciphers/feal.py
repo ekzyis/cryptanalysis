@@ -221,11 +221,14 @@ def feal():
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
 
+    # Check if enum arguments are correct
+    if args['-m'] not in ['ecb', 'none']:
+        raise KeyError("Mode must be ecb or none.")
+
     # Wrap encrypt and decrypt with specified mode of operation
     w_encrypt, w_decrypt = encrypt, decrypt
     if args['-m'] == 'ecb':
         w_encrypt, w_decrypt = ecb_encrypt, ecb_decrypt
-
     # Execute encryption/decryption
     if args['encrypt']:
         o = w_encrypt(k, text, n=n)
