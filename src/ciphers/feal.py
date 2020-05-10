@@ -224,6 +224,8 @@ def feal():
     # Check if enum arguments are valid
     if args['-m'] not in ['ecb', 'none']:
         raise KeyError("Mode must be ecb or none.")
+    if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
+        raise KeyError("Output format must be bin, oct, dec or hex.")
 
     # Wrap encrypt and decrypt with specified mode of operation
     w_encrypt, w_decrypt = encrypt, decrypt
@@ -237,12 +239,8 @@ def feal():
 
     # Print result in specified format
     _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
-    try:
-        # format output
-        return _format[args['-o']](o)
-    except KeyError:
-        print("Output format must be bin, oct, dec or hex.")
-        exit(1)
+    # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
+    return _format[args['-o']](o)
 
 
 if __name__ == "__main__":
