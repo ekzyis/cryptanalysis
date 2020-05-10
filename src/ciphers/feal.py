@@ -25,7 +25,7 @@ Usage:
     feal encrypt [options] KEY PLAINTEXT
     feal decrypt [options] KEY CIPHERTEXT
 
-    -n=N, --round-number=N  Number of rounds [default: 32]
+    -n=N, --round-number=N  Number of rounds. Must be even. [default: 32]
     -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
     -m=[ecb,none]           Specifies the mode of operation [default: none]
 
@@ -234,6 +234,8 @@ def feal():
         raise FEALArgumentException("Mode must be ecb or none.")
     if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
         raise FEALArgumentException("Output format must be bin, oct, dec or hex.")
+    if n % 2 == 1:
+        raise FEALArgumentException("Round number must be even.")
 
     # Wrap encrypt and decrypt with specified mode of operation
     w_encrypt, w_decrypt = encrypt, decrypt
