@@ -46,6 +46,7 @@ sys.path.insert(0, str(Path(__file__).parent / '..'))
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
+from util.encode import encode, decode
 from ciphers.modi.ecb import ecb
 
 
@@ -218,6 +219,27 @@ def feal_ecb(cipher_fn):
     return wrapper
 
 
+def feal_text_int_wrap(cipher_fn):
+    def cipher_fn_wrapper(key, text, *args, **kwargs):
+        return cipher_fn(key, int(text, 0), *args, **kwargs)
+
+    return cipher_fn_wrapper
+
+
+def feal_encode(cipher_fn):
+    def cipher_fn_wrapper(key, text, *args, **kwargs):
+        return cipher_fn(key, encode(text), *args, **kwargs)
+
+    return cipher_fn_wrapper
+
+
+def feal_decode(cipher_fn):
+    def cipher_fn_wrapper(key, text, *args, **kwargs):
+        return decode(feal_text_int_wrap(cipher_fn)(key, text, *args, **kwargs))
+
+    return cipher_fn_wrapper
+
+
 def feal():
     """Main entry point for FEAL cipher execution.
     Gets arguments from docopt which parses sys.argv.
@@ -225,11 +247,12 @@ def feal():
     args = docopt(__doc__)
 
     # Type-casting of arguments
-    text = int(args['PLAINTEXT'] or args['CIPHERTEXT'], 0)
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
 
     # Check if enum arguments are valid
+    if args['-x'] not in ['utf8', 'none']:
+        raise FEALArgumentException("Encoding must be utf8 or none.")
     if args['-m'] not in ['ecb', 'none']:
         raise FEALArgumentException("Mode must be ecb or none.")
     if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
@@ -237,16 +260,23 @@ def feal():
     if n % 2 == 1:
         raise FEALArgumentException("Round number must be even.")
 
+    _encrypt, _decrypt = encrypt, decrypt  # the unwrapped cipher functions
+    # Wrap encrypt and decrypt with specified encoding
+    if args['-x'] == 'utf8':
+        _encrypt, _decrypt = feal_encode(_encrypt), feal_decode(_decrypt)
+    elif args['-x'] == 'none':
+        _encrypt, _decrypt = feal_text_int_wrap(_encrypt), feal_text_int_wrap(_decrypt)
+
     # Wrap encrypt and decrypt with specified mode of operation
-    w_encrypt, w_decrypt = encrypt, decrypt  # default is no wrap
     if args['-m'] == 'ecb':
-        w_encrypt, w_decrypt = feal_ecb(encrypt), feal_ecb(decrypt)
+        _encrypt, _decrypt = feal_ecb(_encrypt), feal_ecb(_decrypt)
 
     # Execute encryption/decryption
+    text = args['PLAINTEXT'] or args['CIPHERTEXT']
     if args['encrypt']:
-        o = w_encrypt(k, text, n=n)
+        o = _encrypt(k, text, n=n)
     elif args['decrypt']:
-        o = w_decrypt(k, text, n=n)
+        o = _decrypt(k, text, n=n)
 
     # Print result in specified format
     _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
