@@ -48,6 +48,14 @@ from util.split import split
 from ciphers.modi.ecb import ecb
 
 
+class FEALArgumentException(Exception):
+    def __init__(self, message):
+        self.message = message
+
+    def __str__(self):
+        return self.message
+
+
 def key_schedule(key, n=32):
     """The key scheduler of FEAL-NX.
     Creates the N+8 16-bit subkeys which are needed during en-/decryption.
@@ -223,9 +231,9 @@ def feal():
 
     # Check if enum arguments are valid
     if args['-m'] not in ['ecb', 'none']:
-        raise KeyError("Mode must be ecb or none.")
+        raise FEALArgumentException("Mode must be ecb or none.")
     if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
-        raise KeyError("Output format must be bin, oct, dec or hex.")
+        raise FEALArgumentException("Output format must be bin, oct, dec or hex.")
 
     # Wrap encrypt and decrypt with specified mode of operation
     w_encrypt, w_decrypt = encrypt, decrypt
@@ -244,4 +252,9 @@ def feal():
 
 
 if __name__ == "__main__":
-    print(feal())
+    try:
+        f = feal()
+        print(f)
+    except FEALArgumentException as e:
+        print(e)
+        exit(1)
