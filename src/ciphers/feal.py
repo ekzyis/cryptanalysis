@@ -215,16 +215,24 @@ def feal():
     Gets arguments from docopt which parses sys.argv.
     See http://docopt.org/ if you are not familiar with docopt argument parsing."""
     args = docopt(__doc__)
+
+    # Type-casting of arguments
     text = int(args['PLAINTEXT'] or args['CIPHERTEXT'], 0)
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
+
+    # Wrap encrypt and decrypt with specified mode of operation
     w_encrypt, w_decrypt = encrypt, decrypt
     if args['-m'] == 'ecb':
         w_encrypt, w_decrypt = ecb_encrypt, ecb_decrypt()
+
+    # Execute encryption/decryption
     if args['encrypt']:
         o = w_encrypt(k, text, n=n)
     elif args['decrypt']:
         o = w_decrypt(k, text, n=n)
+
+    # Print result in specified format
     _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
     try:
         # format output
