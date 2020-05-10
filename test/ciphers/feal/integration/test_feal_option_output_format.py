@@ -46,3 +46,13 @@ class TestFealOptionOutputFormat(unittest.TestCase):
     def test_integration_feal_decrypt_output_format_hex(self):
         p = feal()
         self.assertEqual(p, '0x0')
+
+    @default_encrypt_args('-o', 'invalid')
+    def test_integration_feal_encrypt_output_format_invalid_raises_error(self):
+        with self.assertRaises(KeyError):
+            feal()
+
+    @default_decrypt_args('-o', 'invalid')
+    def test_integration_feal_decrypt_output_format_invalid_raises_error(self):
+        with self.assertRaises(KeyError):
+            feal()
