@@ -12,7 +12,7 @@ class TestECB(unittest.TestCase):
     def setUp(self):
         self.cipher_fn = lambda k, m: m >> 4
 
-    def test_ecb_returns_concatenation_of_cipher_fn_results(self):
+    def test_ecb_blocksize_16_with_no_remainder_in_blocks(self):
         m = 0x1234ABCD5678
         k = None
         cipher_fn = mock.Mock(wraps=self.cipher_fn)
@@ -21,7 +21,7 @@ class TestECB(unittest.TestCase):
         cipher_fn.assert_has_calls([call(k, 0x1234), call(k, 0xABCD), call(k, 0x5678)])
         self.assertEqual(c, 0x01230ABC0567)
 
-    def test_ecb_returns_concatentation_of_cipher_fn_results_with_message_which_has_leading_zero_bits(self):
+    def test_ecb_blocksize_16_with_message_which_has_leading_zeroes(self):
         m = 0x00123456
         k = None
         cipher_fn = mock.Mock(wraps=self.cipher_fn)
