@@ -1,6 +1,7 @@
-from math import log2, ceil
+from math import ceil
 
 from util.concat_bits import concat_bits
+from util.min_bits import min_bits
 from util.split import split
 
 
@@ -16,8 +17,7 @@ def ecb(blocksize):
 
     def _ecb(cipher_fn, key, text, *args, **kwargs):
         # calculate amount of blocks
-        min_text_bits = ceil(log2(text + 1))
-        n = ceil(min_text_bits / blocksize)
+        n = ceil(min_bits(text) / blocksize)
         in_blocks = split(n, blocksize, text)
         out_blocks = [cipher_fn(key, b, *args, **kwargs) for b in in_blocks]
         return concat_bits(*out_blocks, n=blocksize)
