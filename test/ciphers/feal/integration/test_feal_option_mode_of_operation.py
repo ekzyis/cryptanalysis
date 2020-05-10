@@ -12,8 +12,8 @@ class TestFeal(unittest.TestCase):
         @default_encrypt_args('-m', 'ecb', key='0xffff', text='0xfffafffafffafffafffafffafffafffa')
         def test_mode_of_operation_ecb_with_encrypt():
             c = feal()
-            #              KEY    TEXT                 OUTPUT IN HEX
-            # feal encrypt 0xffff 0xfffafffafffafffa   0xa281baaa4303e813
+            #              KEY    TEXT                  OUTPUT IN HEX
+            # feal encrypt 0xffff 0xfffafffafffafffa    0xa281baaa4303e813
             self.assertEqual(hex(int(c, 0)).lower(), '0xa281baaa4303e813a281baaa4303e813')
 
         test_mode_of_operation_ecb_with_encrypt()
