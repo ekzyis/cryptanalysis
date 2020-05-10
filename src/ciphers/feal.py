@@ -210,7 +210,11 @@ def decrypt(key, text, **kwargs):
 
 def feal_ecb(cipher_fn):
     """FEAL cipher functions wrapped with ECB."""
-    return ecb(cipher_fn, blocksize=64)
+
+    def wrapper(key, text, *args, **kwargs):
+        return ecb(cipher_fn, blocksize=64)(key, text, *args, **kwargs)
+
+    return wrapper
 
 
 def feal():
