@@ -6,7 +6,7 @@ from ciphers.feal import feal
 from test.ciphers.feal.integration.wrappers import default_decrypt_args, default_encrypt_args
 
 
-class TestFeal(unittest.TestCase):
+class TestFealOptionModeOfOperation(unittest.TestCase):
 
     def test_integration_feal_option_mode_of_operation_ecb_with_no_remainder(self):
         @default_encrypt_args('-m', 'ecb', key='0xffff', text='0xfffafffafffafffafffafffafffafffa')
