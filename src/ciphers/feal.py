@@ -221,7 +221,7 @@ def feal():
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
 
-    # Check if enum arguments are correct
+    # Check if enum arguments are valid
     if args['-m'] not in ['ecb', 'none']:
         raise KeyError("Mode must be ecb or none.")
 
