@@ -29,9 +29,9 @@ class TestECB(unittest.TestCase):
         self.assertEqual(c, 0x00010345)
 
     def test_ecb_blocksize_16_with_message_which_has_remainder(self):
-        m, k = 0x1234AB, None
+        m, k = 0x12ABCD, None
         cipher_fn = self.cipher_fn
         c = ecb(cipher_fn, blocksize=16)(k, m)
         self.assertEqual(cipher_fn.call_count, 2)
-        cipher_fn.assert_has_calls([call(k, 0x1234), call(k, 0xAB)])
-        self.assertEqual(c, 0x0123000A)
+        cipher_fn.assert_has_calls([call(k, 0x12), call(k, 0xABCD)])
+        self.assertEqual(c, 0x010ABC)
