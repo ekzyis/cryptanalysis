@@ -13,8 +13,7 @@ class TestECB(unittest.TestCase):
         self.cipher_fn = mock.Mock(wraps=lambda k, m: m >> 4)
 
     def test_ecb_blocksize_16_with_no_remainder_in_blocks(self):
-        m = 0x1234ABCD5678
-        k = None
+        m, k = 0x1234ABCD5678, None
         cipher_fn = self.cipher_fn
         c = ecb(cipher_fn, blocksize=16)(k, m)
         self.assertEqual(cipher_fn.call_count, 3)
@@ -22,8 +21,7 @@ class TestECB(unittest.TestCase):
         self.assertEqual(c, 0x01230ABC0567)
 
     def test_ecb_blocksize_16_with_message_which_has_leading_zeroes(self):
-        m = 0x00123456
-        k = None
+        m, k = 0x00123456, None
         cipher_fn = self.cipher_fn
         c = ecb(cipher_fn, blocksize=16)(k, m)
         self.assertEqual(cipher_fn.call_count, 2)
