@@ -5,17 +5,18 @@ from util.min_bits import min_bits
 from util.split import split
 
 
-def ecb(blocksize):
+def ecb(cipher_fn, blocksize):
     """Implements the Electronic Code Book Mode (ECB) for ciphers.
     Returns a function which needs the cipher function and the argument for it
     as arguments.
     Works by splitting the argument into the needed blocks, passing those blocks to the
     cipher function and then return the concatenation of the results.
 
+    :param cipher_fn        The cipher function which we want to wrap with ECB mode
     :param blocksize        Block size of cipher in bits on which we want to use ECB mode
     """
 
-    def _ecb(cipher_fn, key, text, *args, **kwargs):
+    def _ecb(key, text, *args, **kwargs):
         # calculate amount of blocks
         n = ceil(min_bits(text) / blocksize)
         in_blocks = split(n, blocksize, text)
