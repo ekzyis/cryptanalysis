@@ -234,6 +234,8 @@ def feal():
         raise FEALArgumentException("Mode must be ecb or none.")
     if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
         raise FEALArgumentException("Output format must be bin, oct, dec or hex.")
+    if n % 2 == 1:
+        raise FEALArgumentException("Round number must be even.")
 
     # Wrap encrypt and decrypt with specified mode of operation
     w_encrypt, w_decrypt = encrypt, decrypt
