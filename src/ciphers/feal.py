@@ -233,7 +233,7 @@ def feal():
         raise FEALArgumentException("Round number must be even.")
 
     # Wrap encrypt and decrypt with specified mode of operation
-    w_encrypt, w_decrypt = encrypt, decrypt
+    w_encrypt, w_decrypt = encrypt, decrypt  # default is no wrap
     if args['-m'] == 'ecb':
         w_encrypt, w_decrypt = feal_ecb(encrypt), feal_ecb(decrypt)
     # Execute encryption/decryption
