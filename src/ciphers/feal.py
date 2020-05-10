@@ -208,14 +208,9 @@ def decrypt(key, text, **kwargs):
     return p
 
 
-def ecb_encrypt(*args, **kwargs):
-    """FEAL encryption wrapped with ECB."""
-    return ecb(encrypt, blocksize=64)(*args, **kwargs)
-
-
-def ecb_decrypt(*args, **kwargs):
-    """FEAL decryption wrapped with ECB."""
-    return ecb(decrypt, blocksize=64)(*args, **kwargs)
+def feal_ecb(cipher_fn):
+    """FEAL cipher functions wrapped with ECB."""
+    return ecb(cipher_fn, blocksize=64)
 
 
 def feal():
@@ -240,7 +235,7 @@ def feal():
     # Wrap encrypt and decrypt with specified mode of operation
     w_encrypt, w_decrypt = encrypt, decrypt
     if args['-m'] == 'ecb':
-        w_encrypt, w_decrypt = ecb_encrypt, ecb_decrypt
+        w_encrypt, w_decrypt = feal_ecb(encrypt), feal_ecb(decrypt)
     # Execute encryption/decryption
     if args['encrypt']:
         o = w_encrypt(k, text, n=n)
