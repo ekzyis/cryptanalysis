@@ -34,6 +34,19 @@ class TestSplit(unittest.TestCase):
         self.assertEqual(out[1], 0b0101)
         self.assertEqual(out[2], 0b0011)
 
+    def test_split_splits_starting_from_right(self):
+        out = split(2, 16, 0x12ABCD)
+        self.assertEqual(len(out), 2)
+        self.assertEqual(out[0], 0x12)
+        self.assertEqual(out[1], 0xABCD)
+
+    def test_split_handles_zero_bits_well(self):
+        out = split(3, 16, 0x12ABCD)
+        self.assertEqual(len(out), 3)
+        self.assertEqual(out[0], 0x0)
+        self.assertEqual(out[1], 0x12)
+        self.assertEqual(out[2], 0xABCD)
+
     def test_split_raises_value_error_when_input_is_larger_than_concatenation_of_bitstrings(self):
         with self.assertRaises(ValueError):
             split(2, 2, 2 ** 4)
