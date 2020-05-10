@@ -244,4 +244,9 @@ def feal():
 
 
 if __name__ == "__main__":
-    print(feal())
+    try:
+        f = feal()
+        print(f)
+    except KeyError as e:
+        print(e)
+        exit(1)
