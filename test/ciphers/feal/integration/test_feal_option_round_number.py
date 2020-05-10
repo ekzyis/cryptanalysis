@@ -6,7 +6,7 @@ from ciphers.feal import feal, FEALArgumentException
 from test.ciphers.feal.integration.wrappers import default_decrypt_args, default_encrypt_args
 
 
-class TestFealOptionRoundNumber(unittest.TestCase):
+class TestFEALOptionRoundNumber(unittest.TestCase):
     @default_encrypt_args('-n', '16')
     def test_integration_feal_encrypt_round_number(self):
         c = feal()

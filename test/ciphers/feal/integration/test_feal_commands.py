@@ -6,7 +6,7 @@ from ciphers.feal import feal
 from test.ciphers.feal.integration.wrappers import default_decrypt_args, default_encrypt_args
 
 
-class TestFealCommands(unittest.TestCase):
+class TestFEALCommands(unittest.TestCase):
     @default_encrypt_args()
     def test_integration_feal_encrypt(self):
         c = feal()

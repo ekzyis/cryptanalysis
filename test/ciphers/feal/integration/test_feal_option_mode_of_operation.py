@@ -6,7 +6,7 @@ from ciphers.feal import feal, FEALArgumentException
 from test.ciphers.feal.integration.wrappers import default_decrypt_args, default_encrypt_args
 
 
-class TestFealOptionModeOfOperation(unittest.TestCase):
+class TestFEALOptionModeOfOperation(unittest.TestCase):
 
     @default_encrypt_args('-m', 'ecb', key='0xffff', text='0xfffafffafffafffafffafffafffafffa')
     def test_integration_feal_encrypt_mode_of_operation_ecb_no_remainder(self):
