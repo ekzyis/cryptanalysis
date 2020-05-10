@@ -27,6 +27,7 @@ Usage:
 
     -n=N, --round-number=N  Number of rounds [default: 32]
     -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
+    -m=[ecb,none]           Specifies the mode of operation [default: none]
 
     KEY                     The key which should be used for en-/decryption.
     PLAINTEXT               The text to encrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
@@ -44,6 +45,7 @@ sys.path.insert(0, str(Path(__file__).parent / '..'))
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
+from ciphers.modi.ecb import ecb
 
 
 def key_schedule(key, n=32):
@@ -164,9 +166,10 @@ def decrypt_iterative_calculation(ln, rn, sk, n=32):
     return l, r
 
 
-def encrypt(key, text, n=32):
+def encrypt(key, text, **kwargs):
     """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    n = kwargs.setdefault('n', 32)
     if text >= 2 ** 64:
         raise ValueError("Plaintext must be 64-bit")
     if key >= 2 ** 128:
@@ -180,9 +183,10 @@ def encrypt(key, text, n=32):
     return c
 
 
-def decrypt(key, text, n=32):
+def decrypt(key, text, **kwargs):
     """Decrypts the given 64-bit ciphertext with the given key and returns the 64-bit plaintext.
     Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    n = kwargs.setdefault('n', 32)
     if text >= 2 ** 64:
         raise ValueError("Ciphertext must be 64-bit")
     if key >= 2 ** 128:
@@ -196,18 +200,42 @@ def decrypt(key, text, n=32):
     return p
 
 
+def ecb_encrypt(*args, **kwargs):
+    """FEAL encryption wrapped with ECB."""
+    return ecb(encrypt, blocksize=64)(*args, **kwargs)
+
+
+def ecb_decrypt(*args, **kwargs):
+    """FEAL decryption wrapped with ECB."""
+    return ecb(decrypt, blocksize=64)(*args, **kwargs)
+
+
 def feal():
     """Main entry point for FEAL cipher execution.
     Gets arguments from docopt which parses sys.argv.
     See http://docopt.org/ if you are not familiar with docopt argument parsing."""
     args = docopt(__doc__)
+
+    # Type-casting of arguments
     text = int(args['PLAINTEXT'] or args['CIPHERTEXT'], 0)
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
+
+    # Check if enum arguments are correct
+    if args['-m'] not in ['ecb', 'none']:
+        raise KeyError("Mode must be ecb or none.")
+
+    # Wrap encrypt and decrypt with specified mode of operation
+    w_encrypt, w_decrypt = encrypt, decrypt
+    if args['-m'] == 'ecb':
+        w_encrypt, w_decrypt = ecb_encrypt, ecb_decrypt
+    # Execute encryption/decryption
     if args['encrypt']:
-        o = encrypt(k, text, n)
+        o = w_encrypt(k, text, n=n)
     elif args['decrypt']:
-        o = decrypt(k, text, n)
+        o = w_decrypt(k, text, n=n)
+
+    # Print result in specified format
     _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
     try:
         # format output
