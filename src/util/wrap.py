@@ -1,5 +1,5 @@
 from ciphers.modi.ecb import ecb
-from util.encode import encode, decode
+from util.encode import encode_wrapper, decode_wrapper
 
 
 def get_wrapped_cipher_functions(encrypt, decrypt, args):
@@ -76,14 +76,14 @@ def get_wrapped_cipher_functions(encrypt, decrypt, args):
     blocksize = args['blocksize']
     w_encrypt, w_decrypt = encrypt, decrypt
     if ecb_mode and utf8_mode:
-        w_encrypt = encode(ecb(encrypt, blocksize))
-        w_decrypt = ecb(decode(decrypt), blocksize)
+        w_encrypt = encode_wrapper(ecb(encrypt, blocksize))
+        w_decrypt = ecb(decode_wrapper(decrypt), blocksize)
     if ecb_mode and not utf8_mode:
         w_encrypt = ecb(encrypt, blocksize)
         w_decrypt = ecb(decrypt, blocksize)
     if not ecb_mode and utf8_mode:
-        w_encrypt = encode(encrypt)
-        w_decrypt = decode(decrypt)
+        w_encrypt = encode_wrapper(encrypt)
+        w_decrypt = decode_wrapper(decrypt)
     if not ecb_mode and not utf8_mode:
         w_encrypt = text_int_wrapper(encrypt)
         w_decrypt = text_int_wrapper(decrypt)
