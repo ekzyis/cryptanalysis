@@ -248,7 +248,7 @@ def feal():
     if args['encrypt']:
         o = _encrypt(k, text, n=n)
     elif args['decrypt']:
-        o = _decrypt(k, int(text, 0), n=n)
+        o = _decrypt(k, text, n=n)
 
     # Print result in specified format
     _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
