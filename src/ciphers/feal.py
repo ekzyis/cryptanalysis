@@ -41,10 +41,10 @@ from pathlib import Path
 from docopt import docopt
 
 # make sure that following imports can be resolved when executing this script from cmdline
-from util.wrap import get_wrapped_cipher_functions
 
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
+from util.wrap import get_wrapped_cipher_functions
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
