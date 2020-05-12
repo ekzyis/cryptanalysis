@@ -231,6 +231,73 @@ def feal():
         raise FEALArgumentException("Round number must be even.")
 
     _encrypt, _decrypt = encrypt, decrypt  # the unwrapped cipher functions
+    """When parsing arguments, the following execution order has to be ensured:
+    ===========================================================================
+    `feal -x utf8 -m ecb encrypt k m`
+     |
+     | (k: int, m: str)
+     |
+     -> [ENCODE]: ENCODE MESSAGE
+            |
+            | (k: int, encoded_m: int)
+            |
+            -> [ECB]: SPLIT MESSAGE
+                 |
+                 | (k: int, m_blocks: [int])
+                 |
+                 -------------------------------
+                 |        |    ...    |        |
+                 |        |           |        | (k: int, m_block: int)
+                 v        v           v        v
+             [ENCRYPT][ENCRYPT]   [ENCRYPT][ENCRYPT]
+                 |        |           |        |
+                 |        |           |        | (k: int, encrypted_m_block: int)
+                 v        v           v        v
+                 -------------------------------
+                                |
+                                | (encrypted_m_blocks: [int])
+                                v
+                        [ECB]: CONCAT ENCRYPTED BLOCKS
+                                |
+     ----------------------------
+     |
+     | (encrypted_message: int)
+     v
+     OUTPUT
+    ===========================================================================
+     `feal -x utf8 -m ecb ecb decrypt k m`
+     |
+     | (k: int, m: int)
+     |
+     --------> [ECB]: SPLIT MESSAGE
+                 |
+                 | (k: int, m_blocks: [int]
+                 |
+                 -------------------------------
+                 |        |    ...    |        |
+                 |        |           |        | (k: int, m_block: int)
+                 v        v           v        v
+             [DECRYPT][DECRYPT]   [DECRYPT][DECRYPT]
+                 |         |           |       |
+                 |         |           |       |
+                 v         v           v       v
+                 -------------------------------
+                           |
+                           | (decrypted_m_blocks: [int]
+                           v
+                   [ECB]: CONCAT DECRYPTED BLOCKS
+                           |
+        --------------------
+        |
+        | (decrypted_message: int)
+     [DECODE]
+        |
+     ----
+     |
+     v
+     OUTPUT
+    ===========================================================================
+    """
     # Wrap encrypt and decrypt with specified encoding
     if args['-x'] == 'utf8':
         _encrypt, _decrypt = encode_wrapper(_encrypt), decode_wrapper(text_int_wrapper(_decrypt))
