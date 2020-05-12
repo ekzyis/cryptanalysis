@@ -46,7 +46,7 @@ sys.path.insert(0, str(Path(__file__).parent / '..'))
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
-from util.encode import feal_text_int_wrap, feal_encode, feal_decode
+from util.encode import text_int_wrapper, encode_wrapper, decode_wrapper
 from ciphers.modi.ecb import feal_ecb
 
 
@@ -233,9 +233,9 @@ def feal():
     _encrypt, _decrypt = encrypt, decrypt  # the unwrapped cipher functions
     # Wrap encrypt and decrypt with specified encoding
     if args['-x'] == 'utf8':
-        _encrypt, _decrypt = feal_encode(_encrypt), feal_decode(_decrypt)
+        _encrypt, _decrypt = encode_wrapper(_encrypt), decode_wrapper(_decrypt)
     elif args['-x'] == 'none':
-        _encrypt, _decrypt = feal_text_int_wrap(_encrypt), feal_text_int_wrap(_decrypt)
+        _encrypt, _decrypt = text_int_wrapper(_encrypt), text_int_wrapper(_decrypt)
 
     # Wrap encrypt and decrypt with specified mode of operation
     if args['-m'] == 'ecb':

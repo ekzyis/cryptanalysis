@@ -8,22 +8,22 @@ def decode(number, encoding='utf8'):
     return bytes.fromhex(hex(number)[2:]).decode(encoding)
 
 
-def feal_text_int_wrap(cipher_fn):
+def text_int_wrapper(cipher_fn):
     def cipher_fn_wrapper(key, text, *args, **kwargs):
         return cipher_fn(key, int(text, 0), *args, **kwargs)
 
     return cipher_fn_wrapper
 
 
-def feal_encode(cipher_fn):
+def encode_wrapper(cipher_fn):
     def cipher_fn_wrapper(key, text, *args, **kwargs):
         return cipher_fn(key, encode(text), *args, **kwargs)
 
     return cipher_fn_wrapper
 
 
-def feal_decode(cipher_fn):
+def decode_wrapper(cipher_fn):
     def cipher_fn_wrapper(key, text, *args, **kwargs):
-        return decode(feal_text_int_wrap(cipher_fn)(key, text, *args, **kwargs))
+        return decode(text_int_wrapper(cipher_fn)(key, text, *args, **kwargs))
 
     return cipher_fn_wrapper
