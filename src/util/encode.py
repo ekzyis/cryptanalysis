@@ -9,6 +9,7 @@ def decode(number, encoding='utf8'):
 
 
 def text_int_wrapper(cipher_fn):
+    """Wrapper for cipher functions to cast the text input to int before passing it to the cipher function."""
     def cipher_fn_wrapper(key, text, *args, **kwargs):
         return cipher_fn(key, int(text, 0), *args, **kwargs)
 
@@ -16,6 +17,7 @@ def text_int_wrapper(cipher_fn):
 
 
 def encode_wrapper(cipher_fn):
+    """Wrapper for cipher functions to encode the text input before passing it to the cipher function."""
     def cipher_fn_wrapper(key, text, *args, **kwargs):
         return cipher_fn(key, encode(text), *args, **kwargs)
 
@@ -23,6 +25,8 @@ def encode_wrapper(cipher_fn):
 
 
 def decode_wrapper(cipher_fn):
+    """Wrapper for cipher functions to decode the output of the cipher function.
+    Also casts the text input to int before cipher function execution."""
     def cipher_fn_wrapper(key, text, *args, **kwargs):
         return decode(text_int_wrapper(cipher_fn)(key, text, *args, **kwargs))
 
