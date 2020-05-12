@@ -41,13 +41,13 @@ from pathlib import Path
 from docopt import docopt
 
 # make sure that following imports can be resolved when executing this script from cmdline
+from util.wrap import get_wrapped_cipher_functions
+
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
-from util.encode import encode_wrapper, decode_wrapper
-from ciphers.modi.ecb import feal_ecb
 
 
 class FEALArgumentException(Exception):
@@ -240,95 +240,14 @@ def feal():
     if n % 2 == 1:
         raise FEALArgumentException("Round number must be even.")
 
-    """When parsing arguments, the following execution order has to be ensured:
-    ===========================================================================
-    `feal -x utf8 -m ecb encrypt k m`
-     |
-     | (k: int, m: str)
-     |
-     -> [ENCODE]: ENCODE MESSAGE
-            |
-            | (k: int, encoded_m: int)
-            |
-            -> [ECB]: SPLIT MESSAGE
-                 |
-                 | (k: int, m_blocks: [int])
-                 |
-                 -------------------------------
-                 |        |    ...    |        |
-                 |        |           |        | (k: int, m_block: int)
-                 v        v           v        v
-             [ENCRYPT][ENCRYPT]   [ENCRYPT][ENCRYPT]
-                 |        |           |        |
-                 |        |           |        | (k: int, encrypted_m_block: int)
-                 v        v           v        v
-                 -------------------------------
-                                |
-                                | (encrypted_m_blocks: [int])
-                                v
-                        [ECB]: CONCAT ENCRYPTED BLOCKS
-                                |
-     ----------------------------
-     |
-     | (encrypted_message: int)
-     v
-     OUTPUT
-    ===========================================================================
-     `feal -x utf8 -m ecb ecb decrypt k m`
-     |
-     | (k: int, m: int)
-     |
-     --------> [ECB]: SPLIT MESSAGE
-                 |
-                 | (k: int, m_blocks: [int]
-                 |
-                 -------------------------------
-                 |        |    ...    |        |
-                 |        |           |        | (k: int, m_block: int)
-                 v        v           v        v
-             [DECRYPT][DECRYPT]   [DECRYPT][DECRYPT]
-                 |         |           |       |
-                 |         |           |       |
-                 v         v           v       v
-                 -------------------------------
-                           |
-                           | (decrypted_m_blocks: [int]
-                           v
-                   [ECB]: CONCAT DECRYPTED BLOCKS
-                           |
-        --------------------
-        |
-        | (decrypted_message: int)
-     [DECODE]
-        |
-     ----
-     |
-     v
-     OUTPUT
-    ===========================================================================
-    """
+    # Wrap encrypt and decrypt functions depending on arguments given on cmdline
+    args['blocksize'] = 64
+    _encrypt, _decrypt = get_wrapped_cipher_functions(encrypt, decrypt, args)
 
-    _encrypt, _decrypt = encrypt, decrypt  # the unwrapped cipher functions
-
-    # Execute encryption/decryption
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     if args['encrypt']:
-        # add desired wrappers in correct order for encryption
-        if args['-m'] == 'ecb':
-            _encrypt = feal_ecb(_encrypt)
-        if args['-x'] == 'utf8':
-            _encrypt = encode_wrapper(_encrypt)
-        # wrappers added last are executed first!
-        # => encode -> ecb -> encrypt
         o = _encrypt(k, text, n=n)
     elif args['decrypt']:
-        # add desired wrappers in correct order for decryption
-        if args['-x'] == 'utf8':
-            _decrypt = decode_wrapper(_decrypt)
-        if args['-m'] == 'ecb':
-            _decrypt = feal_ecb(_decrypt)
-        # wrappers added last are executed first!
-        # ecb -> decrypt -> decode
         o = _decrypt(k, int(text, 0), n=n)
 
     # Print result in specified format
