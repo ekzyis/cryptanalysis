@@ -233,7 +233,7 @@ def feal():
     _encrypt, _decrypt = encrypt, decrypt  # the unwrapped cipher functions
     # Wrap encrypt and decrypt with specified encoding
     if args['-x'] == 'utf8':
-        _encrypt, _decrypt = encode_wrapper(_encrypt), decode_wrapper(_decrypt)
+        _encrypt, _decrypt = encode_wrapper(_encrypt), decode_wrapper(text_int_wrapper(_decrypt))
     elif args['-x'] == 'none':
         _encrypt, _decrypt = text_int_wrapper(_encrypt), text_int_wrapper(_decrypt)
 
