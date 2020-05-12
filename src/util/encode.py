@@ -25,9 +25,8 @@ def encode_wrapper(cipher_fn):
 
 
 def decode_wrapper(cipher_fn):
-    """Wrapper for cipher functions to decode the output of the cipher function.
-    Also casts the text input to int before cipher function execution."""
+    """Wrapper for cipher functions to decode the output of the cipher function."""
     def cipher_fn_wrapper(key, text, *args, **kwargs):
-        return decode(text_int_wrapper(cipher_fn)(key, text, *args, **kwargs))
+        return decode(cipher_fn(key, text, *args, **kwargs))
 
     return cipher_fn_wrapper
