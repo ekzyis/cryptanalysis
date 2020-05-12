@@ -8,7 +8,7 @@ from util.encode import encode, encode_wrapper
 
 class TestOptionsWrapping(unittest.TestCase):
     def test_ecb_with_encode_wrapper(self):
-        encrypt = mock.Mock()
+        encrypt = mock.Mock(wraps=lambda _k, _m: _m)
         ecb_wrap = mock.Mock(wraps=ecb(encrypt, 8))
         k, m = 0xffff, "test"
         encode_wrapper(ecb_wrap)(k, m)
