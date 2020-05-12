@@ -83,7 +83,7 @@ def get_wrapped_cipher_functions(encrypt, decrypt, args):
         w_decrypt = ecb(decrypt, blocksize)
     if not ecb_mode and utf8_mode:
         w_encrypt = encode_wrapper(encrypt)
-        w_decrypt = decode_wrapper(decrypt)
+        w_decrypt = decode_wrapper(text_int_wrapper(decrypt))
     if not ecb_mode and not utf8_mode:
         w_encrypt = text_int_wrapper(encrypt)
         w_decrypt = text_int_wrapper(decrypt)
