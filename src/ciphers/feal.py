@@ -46,8 +46,8 @@ sys.path.insert(0, str(Path(__file__).parent / '..'))
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
-from util.encode import encode, decode
-from ciphers.modi.ecb import ecb
+from util.encode import feal_text_int_wrap, feal_encode, feal_decode
+from ciphers.modi.ecb import feal_ecb
 
 
 class FEALArgumentException(Exception):
@@ -208,36 +208,6 @@ def decrypt(key, text, **kwargs):
     p = concat_bits(l0, r0, n=32) ^ l0
     p ^= concat_bits(sk[n], sk[n + 1], sk[n + 2], sk[n + 3], n=16)
     return p
-
-
-def feal_ecb(cipher_fn):
-    """FEAL cipher functions wrapped with ECB."""
-
-    def wrapper(key, text, *args, **kwargs):
-        return ecb(cipher_fn, blocksize=64)(key, text, *args, **kwargs)
-
-    return wrapper
-
-
-def feal_text_int_wrap(cipher_fn):
-    def cipher_fn_wrapper(key, text, *args, **kwargs):
-        return cipher_fn(key, int(text, 0), *args, **kwargs)
-
-    return cipher_fn_wrapper
-
-
-def feal_encode(cipher_fn):
-    def cipher_fn_wrapper(key, text, *args, **kwargs):
-        return cipher_fn(key, encode(text), *args, **kwargs)
-
-    return cipher_fn_wrapper
-
-
-def feal_decode(cipher_fn):
-    def cipher_fn_wrapper(key, text, *args, **kwargs):
-        return decode(feal_text_int_wrap(cipher_fn)(key, text, *args, **kwargs))
-
-    return cipher_fn_wrapper
 
 
 def feal():

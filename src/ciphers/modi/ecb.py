@@ -24,3 +24,12 @@ def ecb(cipher_fn, blocksize):
         return concat_bits(*out_blocks, n=blocksize)
 
     return _ecb
+
+
+def feal_ecb(cipher_fn):
+    """FEAL cipher functions wrapped with ECB."""
+
+    def wrapper(key, text, *args, **kwargs):
+        return ecb(cipher_fn, blocksize=64)(key, text, *args, **kwargs)
+
+    return wrapper
