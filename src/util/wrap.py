@@ -84,4 +84,16 @@ def get_wrapped_cipher_functions(encrypt, decrypt, args):
     if not ecb_mode and utf8_mode:
         w_encrypt = encode(encrypt)
         w_decrypt = decode(decrypt)
+    if not ecb_mode and not utf8_mode:
+        w_encrypt = text_int_wrapper(encrypt)
+        w_decrypt = text_int_wrapper(decrypt)
     return w_encrypt, w_decrypt
+
+
+def text_int_wrapper(cipher_fn):
+    """Wrapper for cipher functions to cast the text input to int before passing it to the cipher function."""
+
+    def cipher_fn_wrapper(key, text, *args, **kwargs):
+        return cipher_fn(key, int(text, 0), *args, **kwargs)
+
+    return cipher_fn_wrapper
