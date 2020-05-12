@@ -178,8 +178,13 @@ def decrypt_iterative_calculation(ln, rn, sk, n=32):
 
 def encrypt(key, text, **kwargs):
     """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
-    Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    Raises error if text is longer than 64-bit or key is longer than 128-bit.
+    Raises error if text or key is not a number."""
     n = kwargs.setdefault('n', 32)
+    if type(text) is not int:
+        raise ValueError("Plaintext must be a number")
+    if type(key) is not int:
+        raise ValueError("Key must be a number")
     if text >= 2 ** 64:
         raise ValueError("Plaintext must be 64-bit")
     if key >= 2 ** 128:
@@ -195,8 +200,13 @@ def encrypt(key, text, **kwargs):
 
 def decrypt(key, text, **kwargs):
     """Decrypts the given 64-bit ciphertext with the given key and returns the 64-bit plaintext.
-    Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    Raises error if text is longer than 64-bit or key is longer than 128-bit.
+    Raises error if text or key is not a number."""
     n = kwargs.setdefault('n', 32)
+    if type(text) is not int:
+        raise ValueError("Ciphertext must be a number")
+    if type(key) is not int:
+        raise ValueError("Key must be a number")
     if text >= 2 ** 64:
         raise ValueError("Ciphertext must be 64-bit")
     if key >= 2 ** 128:

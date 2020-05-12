@@ -23,6 +23,22 @@ class TestFEALCipherEncrypt(unittest.TestCase):
         except ValueError:
             self.fail("encrypt raised unexpected ValueError")
 
+    def test_encrypt_raises_value_error_if_text_not_number(self):
+        with self.assertRaises(ValueError):
+            encrypt(0x0, "test")
+        try:
+            encrypt(0x0, 0x0)
+        except ValueError:
+            self.fail("encrypt raised unexpected ValueError")
+
+    def test_encrypt_raises_value_error_if_key_not_number(self):
+        with self.assertRaises(ValueError):
+            encrypt("key", 0x0)
+        try:
+            encrypt(0x0, 0x0)
+        except ValueError:
+            self.fail("encrypt raised unexpected ValueError")
+
     def test_encrypt_matches_specification_in_paper(self):
         # input key taken from p.8, section 6.2 and
         #   ciphertext taken from p.16, section 6.4.3 of

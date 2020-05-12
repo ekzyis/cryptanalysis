@@ -23,6 +23,22 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         except ValueError:
             self.fail("decrypt raised unexpected ValueError")
 
+    def test_encrypt_raises_value_error_if_text_not_number(self):
+        with self.assertRaises(ValueError):
+            decrypt(0x0, "test")
+        try:
+            decrypt(0x0, 0x0)
+        except ValueError:
+            self.fail("encrypt raised unexpected ValueError")
+
+    def test_encrypt_raises_value_error_if_key_not_number(self):
+        with self.assertRaises(ValueError):
+            decrypt("key", 0x0)
+        try:
+            decrypt(0x0, 0x0)
+        except ValueError:
+            self.fail("encrypt raised unexpected ValueError")
+
     def test_decrypt_matches_specification_in_paper(self):
         """Checks that the FEAL decryption decrypts the given ciphertext."""
         # i/o values taken from test for encrypt.
