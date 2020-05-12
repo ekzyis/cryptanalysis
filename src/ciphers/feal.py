@@ -46,7 +46,7 @@ sys.path.insert(0, str(Path(__file__).parent / '..'))
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
-from util.encode import text_int_wrapper, encode_wrapper, decode_wrapper
+from util.encode import encode_wrapper, decode_wrapper
 from ciphers.modi.ecb import feal_ecb
 
 
@@ -230,7 +230,6 @@ def feal():
     if n % 2 == 1:
         raise FEALArgumentException("Round number must be even.")
 
-    _encrypt, _decrypt = encrypt, decrypt  # the unwrapped cipher functions
     """When parsing arguments, the following execution order has to be ensured:
     ===========================================================================
     `feal -x utf8 -m ecb encrypt k m`
@@ -298,22 +297,29 @@ def feal():
      OUTPUT
     ===========================================================================
     """
-    # Wrap encrypt and decrypt with specified encoding
-    if args['-x'] == 'utf8':
-        _encrypt, _decrypt = encode_wrapper(_encrypt), decode_wrapper(text_int_wrapper(_decrypt))
-    elif args['-x'] == 'none':
-        _encrypt, _decrypt = text_int_wrapper(_encrypt), text_int_wrapper(_decrypt)
 
-    # Wrap encrypt and decrypt with specified mode of operation
-    if args['-m'] == 'ecb':
-        _encrypt, _decrypt = feal_ecb(_encrypt), feal_ecb(_decrypt)
+    _encrypt, _decrypt = encrypt, decrypt  # the unwrapped cipher functions
 
     # Execute encryption/decryption
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     if args['encrypt']:
+        # add desired wrappers in correct order for encryption
+        if args['-m'] == 'ecb':
+            _encrypt = feal_ecb(_encrypt)
+        if args['-x'] == 'utf8':
+            _encrypt = encode_wrapper(_encrypt)
+        # wrappers added last are executed first!
+        # => encode -> ecb -> encrypt
         o = _encrypt(k, text, n=n)
     elif args['decrypt']:
-        o = _decrypt(k, text, n=n)
+        # add desired wrappers in correct order for decryption
+        if args['-x'] == 'utf8':
+            _decrypt = decode_wrapper(_decrypt)
+        if args['-m'] == 'ecb':
+            _decrypt = feal_ecb(_decrypt)
+        # wrappers added last are executed first!
+        # ecb -> decrypt -> decode
+        o = _decrypt(k, int(text, 0), n=n)
 
     # Print result in specified format
     _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
