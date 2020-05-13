@@ -50,14 +50,6 @@ from util.rot import rot_left
 from util.split import split
 
 
-class FEALArgumentException(Exception):
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
-
-
 def key_schedule(key, n=32):
     """The key scheduler of FEAL-NX.
     Creates the N+8 16-bit subkeys which are needed during en-/decryption.
@@ -226,25 +218,13 @@ def feal():
     See http://docopt.org/ if you are not familiar with docopt argument parsing."""
     args = docopt(__doc__)
 
-    # Type-casting of arguments
-    n = int(args['--round-number'])
-    k = int(args['KEY'], 0)
-
-    # Check if enum arguments are valid
-    if args['-x'] not in ['utf8', 'none']:
-        raise FEALArgumentException("Encoding must be utf8 or none.")
-    if args['-m'] not in ['ecb', 'none']:
-        raise FEALArgumentException("Mode must be ecb or none.")
-    if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
-        raise FEALArgumentException("Output format must be bin, oct, dec or hex.")
-    if n % 2 == 1:
-        raise FEALArgumentException("Round number must be even.")
-
     # Wrap encrypt and decrypt functions depending on arguments given on cmdline
     args['blocksize'] = 64
     _encrypt, _decrypt = get_wrapped_cipher_functions(encrypt, decrypt, args)
 
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
+    n = int(args['--round-number'])
+    k = int(args['KEY'], 0)
     if args['encrypt']:
         return _encrypt(k, text, n=n)
     elif args['decrypt']:

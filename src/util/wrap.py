@@ -71,9 +71,22 @@ def get_wrapped_cipher_functions(encrypt, decrypt, args):
          OUTPUT
         ===========================================================================
         """
+
+    n = int(args['--round-number'])
     ecb_mode = args['-m'] == 'ecb'
     utf8_mode = args['-x'] == 'utf8'
     blocksize = args['blocksize']
+
+    # Check if enum arguments are valid
+    if args['-x'] not in ['utf8', 'none']:
+        raise ValueError("Encoding must be utf8 or none.")
+    if args['-m'] not in ['ecb', 'none']:
+        raise ValueError("Mode must be ecb or none.")
+    if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
+        raise ValueError("Output format must be bin, oct, dec or hex.")
+    if n % 2 == 1:
+        raise ValueError("Round number must be even.")
+
     w_encrypt, w_decrypt = encrypt, decrypt
     if ecb_mode and utf8_mode:
         w_encrypt = encode_wrapper(ecb(encrypt, blocksize))

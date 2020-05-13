@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import feal, FEALArgumentException
+from ciphers.feal import feal
 from test.ciphers.feal.integration.patchers import default_decrypt_args, default_encrypt_args
 
 
@@ -19,5 +19,5 @@ class TestFEALOptionRoundNumber(unittest.TestCase):
 
     @default_encrypt_args('-n', '1')
     def test_integration_feal_encrypt_raises_error_on_uneven_round_number(self):
-        with self.assertRaises(FEALArgumentException):
+        with self.assertRaises(ValueError):
             feal()

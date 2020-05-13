@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import feal, FEALArgumentException
+from ciphers.feal import feal
 from test.ciphers.feal.integration.patchers import default_decrypt_args, default_encrypt_args
 
 
@@ -49,10 +49,10 @@ class TestFEALOptionOutputFormat(unittest.TestCase):
 
     @default_encrypt_args('-o', 'invalid')
     def test_integration_feal_encrypt_output_format_invalid_raises_error(self):
-        with self.assertRaises(FEALArgumentException):
+        with self.assertRaises(ValueError):
             feal()
 
     @default_decrypt_args('-o', 'invalid')
     def test_integration_feal_decrypt_output_format_invalid_raises_error(self):
-        with self.assertRaises(FEALArgumentException):
+        with self.assertRaises(ValueError):
             feal()
