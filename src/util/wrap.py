@@ -77,7 +77,7 @@ def get_wrapped_cipher_functions(encrypt, decrypt, args):
     w_encrypt, w_decrypt = encrypt, decrypt
     if ecb_mode and utf8_mode:
         w_encrypt = encode_wrapper(ecb(encrypt, blocksize))
-        w_decrypt = ecb(decode_wrapper(decrypt), blocksize)
+        w_decrypt = text_int_wrapper(decode_wrapper(ecb(decrypt, blocksize)))
     if ecb_mode and not utf8_mode:
         w_encrypt = text_int_wrapper(ecb(encrypt, blocksize))
         w_decrypt = text_int_wrapper(ecb(decrypt, blocksize))
@@ -87,7 +87,26 @@ def get_wrapped_cipher_functions(encrypt, decrypt, args):
     if not ecb_mode and not utf8_mode:
         w_encrypt = text_int_wrapper(encrypt)
         w_decrypt = text_int_wrapper(decrypt)
+
+    # Only format the output if we are not decrypting and using encoding since encoding would format the output
+    #   itself already
+    _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
+    # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
+    formatter = _format[args['-o']]
+    w_encrypt = format_wrapper(w_encrypt, formatter)
+    if not utf8_mode:
+        w_decrypt = format_wrapper(w_decrypt, formatter)
+
     return w_encrypt, w_decrypt
+
+
+def format_wrapper(cipher_fn, formatter):
+    """Wrapper for cipher functions to cast the output into the specified format"""
+
+    def cipher_fn_wrapper(key, text, *args, **kwargs):
+        return formatter(cipher_fn(key, text, *args, **kwargs))
+
+    return cipher_fn_wrapper
 
 
 def text_int_wrapper(cipher_fn):

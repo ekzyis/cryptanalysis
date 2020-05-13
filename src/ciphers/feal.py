@@ -246,14 +246,9 @@ def feal():
 
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     if args['encrypt']:
-        o = _encrypt(k, text, n=n)
+        return _encrypt(k, text, n=n)
     elif args['decrypt']:
-        o = _decrypt(k, text, n=n)
-
-    # Print result in specified format
-    _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
-    # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
-    return _format[args['-o']](o)
+        return _decrypt(k, text, n=n)
 
 
 if __name__ == "__main__":
