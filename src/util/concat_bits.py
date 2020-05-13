@@ -8,5 +8,5 @@ def concat_bits(*args, n):
     for i, arg in enumerate(args):
         if arg > 2 ** n:
             raise ValueError("subkey is larger than slot given by n")
-        r |= arg << (i*n)
+        r |= arg << (i * n)
     return r
