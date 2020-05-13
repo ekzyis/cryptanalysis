@@ -5,7 +5,7 @@
 "In cryptography, linear cryptanalysis is a general form of cryptanalysis based on finding affine approximations to the action of a cipher. Attacks have been developed for block ciphers and stream ciphers. Linear cryptanalysis is one of the two most widely used attacks on block ciphers; the other being differential cryptanalysis."
 - Wikipedia, https://en.wikipedia.org/wiki/Linear_cryptanalysis
 
-For my bachelor thesis about Linear Cryptanalysis, I have chosen to implement some ciphers such that I can experiment with them and gain in-depth knowledge about their inner workings.
+~~For my bachelor thesis about Linear Cryptanalysis,~~ I have chosen to implement some ciphers such that I can experiment with them and gain in-depth knowledge about their inner workings.
 
 As an additional benefit while implementing, I get a good basic understanding of block ciphers.
 For example, I always wondered how one can encrypt messages larger than the block size (see [modes of operation](https://en.wikipedia.org/wiki/Block_cipher_mode_of_operation)) or use padding to increase the message length for security purposes while still being able to obtain the real message afterwards.
