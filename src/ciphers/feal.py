@@ -28,6 +28,7 @@ Usage:
     -n=N, --round-number=N  Number of rounds. Must be even. [default: 32]
     -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
     -m=[ecb,none]           Specifies the mode of operation [default: none]
+    -x=[utf8,none]          Specifies the encoding of the cipher-/plaintext. [default: none]
 
     KEY                     The key which should be used for en-/decryption.
     PLAINTEXT               The text to encrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
@@ -40,20 +41,13 @@ from pathlib import Path
 from docopt import docopt
 
 # make sure that following imports can be resolved when executing this script from cmdline
+
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
+from util.wrap import get_wrapped_cipher_functions
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
-from ciphers.modi.ecb import ecb
-
-
-class FEALArgumentException(Exception):
-    def __init__(self, message):
-        self.message = message
-
-    def __str__(self):
-        return self.message
 
 
 def key_schedule(key, n=32):
@@ -176,8 +170,13 @@ def decrypt_iterative_calculation(ln, rn, sk, n=32):
 
 def encrypt(key, text, **kwargs):
     """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
-    Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    Raises error if text is longer than 64-bit or key is longer than 128-bit.
+    Raises error if text or key is not a number."""
     n = kwargs.setdefault('n', 32)
+    if type(text) is not int:
+        raise ValueError("Plaintext must be a number")
+    if type(key) is not int:
+        raise ValueError("Key must be a number")
     if text >= 2 ** 64:
         raise ValueError("Plaintext must be 64-bit")
     if key >= 2 ** 128:
@@ -193,8 +192,13 @@ def encrypt(key, text, **kwargs):
 
 def decrypt(key, text, **kwargs):
     """Decrypts the given 64-bit ciphertext with the given key and returns the 64-bit plaintext.
-    Raises error if text is longer than 64-bit or key is longer than 128-bit."""
+    Raises error if text is longer than 64-bit or key is longer than 128-bit.
+    Raises error if text or key is not a number."""
     n = kwargs.setdefault('n', 32)
+    if type(text) is not int:
+        raise ValueError("Ciphertext must be a number")
+    if type(key) is not int:
+        raise ValueError("Key must be a number")
     if text >= 2 ** 64:
         raise ValueError("Ciphertext must be 64-bit")
     if key >= 2 ** 128:
@@ -208,44 +212,23 @@ def decrypt(key, text, **kwargs):
     return p
 
 
-def feal_ecb(cipher_fn):
-    """FEAL cipher functions wrapped with ECB."""
-    return ecb(cipher_fn, blocksize=64)
-
-
 def feal():
     """Main entry point for FEAL cipher execution.
     Gets arguments from docopt which parses sys.argv.
     See http://docopt.org/ if you are not familiar with docopt argument parsing."""
     args = docopt(__doc__)
 
-    # Type-casting of arguments
-    text = int(args['PLAINTEXT'] or args['CIPHERTEXT'], 0)
+    # Wrap encrypt and decrypt functions depending on arguments given on cmdline
+    args['blocksize'] = 64
+    _encrypt, _decrypt = get_wrapped_cipher_functions(encrypt, decrypt, args)
+
+    text = args['PLAINTEXT'] or args['CIPHERTEXT']
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
-
-    # Check if enum arguments are valid
-    if args['-m'] not in ['ecb', 'none']:
-        raise FEALArgumentException("Mode must be ecb or none.")
-    if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
-        raise FEALArgumentException("Output format must be bin, oct, dec or hex.")
-    if n % 2 == 1:
-        raise FEALArgumentException("Round number must be even.")
-
-    # Wrap encrypt and decrypt with specified mode of operation
-    w_encrypt, w_decrypt = encrypt, decrypt
-    if args['-m'] == 'ecb':
-        w_encrypt, w_decrypt = feal_ecb(encrypt), feal_ecb(decrypt)
-    # Execute encryption/decryption
     if args['encrypt']:
-        o = w_encrypt(k, text, n=n)
+        return _encrypt(k, text, n=n)
     elif args['decrypt']:
-        o = w_decrypt(k, text, n=n)
-
-    # Print result in specified format
-    _format = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
-    # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
-    return _format[args['-o']](o)
+        return _decrypt(k, text, n=n)
 
 
 if __name__ == "__main__":

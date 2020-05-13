@@ -7,8 +7,6 @@ from util.split import split
 
 def ecb(cipher_fn, blocksize):
     """Implements the Electronic Code Book Mode (ECB) for ciphers.
-    Returns a function which needs the cipher function and the argument for it
-    as arguments.
     Works by splitting the argument into the needed blocks, passing those blocks to the
     cipher function and then return the concatenation of the results.
 
@@ -24,3 +22,8 @@ def ecb(cipher_fn, blocksize):
         return concat_bits(*out_blocks, n=blocksize)
 
     return _ecb
+
+
+def feal_ecb(cipher_fn):
+    """FEAL cipher functions wrapped with ECB."""
+    return ecb(cipher_fn, blocksize=64)

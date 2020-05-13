@@ -2,8 +2,8 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import feal, FEALArgumentException
-from test.ciphers.feal.integration.wrappers import default_decrypt_args, default_encrypt_args
+from ciphers.feal import feal
+from test.ciphers.feal.integration.patchers import default_decrypt_args, default_encrypt_args
 
 
 class TestFEALOptionModeOfOperation(unittest.TestCase):
@@ -35,10 +35,10 @@ class TestFEALOptionModeOfOperation(unittest.TestCase):
 
     @default_encrypt_args('-m', 'invalid')
     def test_integration_feal_encrypt_mode_of_operation_raises_error_on_invalid_mode_input(self):
-        with self.assertRaises(FEALArgumentException):
+        with self.assertRaises(ValueError):
             feal()
 
     @default_decrypt_args('-m', 'invalid')
     def test_integration_feal_decrypt_mode_of_operation_raises_error_on_invalid_mode_input(self):
-        with self.assertRaises(FEALArgumentException):
+        with self.assertRaises(ValueError):
             feal()
