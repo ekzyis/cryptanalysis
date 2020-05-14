@@ -12,7 +12,7 @@ from collections import defaultdict
 import test.context
 
 
-class TestDCA(unittest.TestCase):
+class TestDCAMasterThesisClaims(unittest.TestCase):
 
     def test_that_there_are_2_to_the_power_of_n_amount_of_pairs_for_each_xor_value(self):
         """
