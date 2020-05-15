@@ -235,6 +235,6 @@ if __name__ == "__main__":
     try:
         f = feal()
         print(f)
-    except FEALArgumentException as e:
+    except ValueError as e:
         print(e)
         exit(1)
