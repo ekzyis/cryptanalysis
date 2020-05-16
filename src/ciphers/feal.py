@@ -104,10 +104,12 @@ def _s(a, b, i):
 
 def f(a, b):
     """f-function of FEAL-NX.
+
     a must be 32-bit and b must be 16-bit long.
     Used during en-/decryption.
     See section 5.1 and figure 3 in
-    https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf"""
+    https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
+    """
     if a >= 2 ** 32:
         raise ValueError("a key must be 32-bit")
     if b >= 2 ** 16:
@@ -127,10 +129,12 @@ def f(a, b):
 
 def fk(a, b):
     """f_k-function of FEAL-NX.
+
     Input keys must be 32-bit.
     Used during key schedule to generate the subkeys for each iteration.
     See section 5.2 and figure 4 in
-    https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf"""
+    https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
+    """
     if a >= 2 ** 32 or b >= 2 ** 32:
         raise ValueError("Input keys must be 32-bit")
     a = split(n=4, size=8, bits=a)
