@@ -88,14 +88,17 @@ def key_schedule(key, n=32):
 
 
 def s0(a, b):
+    """Return substitution value of S-Box 0."""
     return _s(a, b, 0)
 
 
 def s1(a, b):
+    """Return substitution value of S-Box 1."""
     return _s(a, b, 1)
 
 
 def _s(a, b, i):
+    """General substitution box implementation for FEAL-NX."""
     return rot_left((a + b + i) % 256, 2, 8)
 
 
