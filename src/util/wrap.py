@@ -1,9 +1,23 @@
+"""Implements wrapping for en- and decryption.
+
+Wrappers are for example functions which implement ECB or encoding.
+The wrappers are implemented to be general purpose. One can pass cipher functions to them
+and a function which has the same interface as the unwrapped cipher function is returned.
+This hides the implementation of the wrapper; making them easier to use with many different ciphers.
+
+For example, ecb(encrypt) would return a function which can be interacted with the same as if
+the function would not be wrapped with `ecb`.
+The only difference is that that now one can use larger strings since `ecb` will split them
+and pass them individually to `encrypt` and then return the concatentation of the encrypted blocks
+- which is exactly what ECB mode does.
+"""
+
 from ciphers.modi.ecb import ecb
 from util.encode import encode_wrapper, decode_wrapper
 
 
 def get_wrapped_cipher_functions(encrypt, decrypt, args):
-    """Returns the correctly wrapped encryption and decryption functions."""
+    """Return the correctly wrapped encryption and decryption functions."""
     """When parsing arguments, the following execution order has to be ensured:
         ===========================================================================
         `feal -x utf8 -m ecb encrypt k m`
@@ -114,7 +128,7 @@ def get_wrapped_cipher_functions(encrypt, decrypt, args):
 
 
 def format_wrapper(cipher_fn, formatter):
-    """Wrapper for cipher functions to cast the output into the specified format"""
+    """Return wrapper for cipher functions to cast the output into the specified format."""
 
     def cipher_fn_wrapper(key, text, *args, **kwargs):
         return formatter(cipher_fn(key, text, *args, **kwargs))
@@ -123,7 +137,7 @@ def format_wrapper(cipher_fn, formatter):
 
 
 def text_int_wrapper(cipher_fn):
-    """Wrapper for cipher functions to cast the text input to int before passing it to the cipher function."""
+    """Return wrapper for cipher functions to cast the text input to int before passing it to the cipher function."""
 
     def cipher_fn_wrapper(key, text, *args, **kwargs):
         return cipher_fn(key, int(text, 0), *args, **kwargs)
