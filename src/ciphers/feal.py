@@ -37,6 +37,7 @@ Usage:
 
 import sys
 from pathlib import Path
+from typing import Sequence, Tuple, Any, Optional
 
 from docopt import docopt  # type: ignore
 
@@ -50,7 +51,7 @@ from util.rot import rot_left
 from util.split import split
 
 
-def key_schedule(key, n=32):
+def key_schedule(key: int, n: int = 32) -> Sequence[int]:
     """Return the subkeys created by the key scheduler of FEAL-NX.
 
     Creates the N+8 16-bit subkeys which are needed during en-/decryption.
@@ -87,22 +88,22 @@ def key_schedule(key, n=32):
     return k
 
 
-def s0(a, b):
+def s0(a: int, b: int) -> int:
     """Return substitution value of S-Box 0."""
     return _s(a, b, 0)
 
 
-def s1(a, b):
+def s1(a: int, b: int) -> int:
     """Return substitution value of S-Box 1."""
     return _s(a, b, 1)
 
 
-def _s(a, b, i):
+def _s(a: int, b: int, i: int) -> int:
     """General substitution box implementation for FEAL-NX."""
     return rot_left((a + b + i) % 256, 2, 8)
 
 
-def f(a, b):
+def f(a: int, b: int) -> int:
     """f-function of FEAL-NX.
 
     a must be 32-bit and b must be 16-bit long.
@@ -114,20 +115,20 @@ def f(a, b):
         raise ValueError("a key must be 32-bit")
     if b >= 2 ** 16:
         raise ValueError("b key must be 16-bit")
-    a = split(n=4, size=8, bits=a)
-    b = split(n=2, size=8, bits=b)
-    f1 = a[1] ^ b[0]
-    f2 = a[2] ^ b[1]
-    f1 ^= a[0]
-    f2 ^= a[3]
+    a_k = split(n=4, size=8, bits=a)
+    b_k = split(n=2, size=8, bits=b)
+    f1 = a_k[1] ^ b_k[0]
+    f2 = a_k[2] ^ b_k[1]
+    f1 ^= a_k[0]
+    f2 ^= a_k[3]
     f1 = s1(f1, f2)
     f2 = s0(f2, f1)
-    f0 = s0(a[0], f1)
-    f3 = s1(a[3], f2)
+    f0 = s0(a_k[0], f1)
+    f3 = s1(a_k[3], f2)
     return concat_bits(f0, f1, f2, f3, n=8)
 
 
-def fk(a, b):
+def fk(a: int, b: int) -> int:
     """f_k-function of FEAL-NX.
 
     Input keys must be 32-bit.
@@ -137,32 +138,33 @@ def fk(a, b):
     """
     if a >= 2 ** 32 or b >= 2 ** 32:
         raise ValueError("Input keys must be 32-bit")
-    a = split(n=4, size=8, bits=a)
-    b = split(n=4, size=8, bits=b)
-    fk1 = a[1] ^ a[0]
-    fk2 = a[2] ^ a[3]
-    fk1 = s1(fk1, fk2 ^ b[0])
-    fk2 = s0(fk2, fk1 ^ b[1])
-    fk0 = s0(a[0], fk1 ^ b[2])
-    fk3 = s1(a[3], fk2 ^ b[3])
+    a_k = split(n=4, size=8, bits=a)
+    b_k = split(n=4, size=8, bits=b)
+    fk1 = a_k[1] ^ a_k[0]
+    fk2 = a_k[2] ^ a_k[3]
+    fk1 = s1(fk1, fk2 ^ b_k[0])
+    fk2 = s0(fk2, fk1 ^ b_k[1])
+    fk0 = s0(a_k[0], fk1 ^ b_k[2])
+    fk3 = s1(a_k[3], fk2 ^ b_k[3])
     return concat_bits(fk0, fk1, fk2, fk3, n=8)
 
 
-def _encrypt_preprocessing(subkeys, text):
+def _encrypt_preprocessing(subkeys: Sequence[int], text: int) -> int:
     p = text ^ concat_bits(*subkeys, n=16)
     l0, r0 = split(2, 32, p)
     p ^= l0
     return p
 
 
-def _decrypt_preprocessing(subkeys, text):
+def _decrypt_preprocessing(subkeys: Sequence[int], text: int) -> int:
     p = text ^ concat_bits(*subkeys, n=16)
     rn, ln = split(2, 32, p)
     p = concat_bits(rn, ln, n=32) ^ rn
     return p
 
 
-def _encrypt_iterative_calculation(l0, r0, sk, n=32):
+def _encrypt_iterative_calculation(l0: int, r0: int, sk: Sequence[int], n: int = 32) \
+        -> Tuple[Sequence[int], Sequence[int]]:
     l, r = [l0], [r0]
     for i in range(1, n + 1):
         r.append(l[i - 1] ^ f(r[i - 1], sk[i - 1]))
@@ -170,15 +172,16 @@ def _encrypt_iterative_calculation(l0, r0, sk, n=32):
     return l, r
 
 
-def _decrypt_iterative_calculation(ln, rn, sk, n=32):
-    l, r = [None] * n + [ln], [None] * n + [rn]
+def _decrypt_iterative_calculation(ln: int, rn: int, sk: Sequence[int], n: int = 32) \
+        -> Tuple[Sequence[int], Sequence[int]]:
+    l, r = [0] * n + [ln], [0] * n + [rn]
     for i in reversed(range(1, n + 1)):
         l[i - 1] = r[i] ^ f(l[i], sk[i - 1])
         r[i - 1] = l[i]
     return l, r
 
 
-def encrypt(key, text, **kwargs):
+def encrypt(key: int, text: int, *args: Any, **kwargs: Any) -> int:
     """Encrypt the text with the given key using FEAL-NX encryption.
 
     Raises error if text is longer than 64-bit or key is longer than 128-bit.
@@ -202,7 +205,7 @@ def encrypt(key, text, **kwargs):
     return c
 
 
-def decrypt(key, text, **kwargs):
+def decrypt(key: int, text: int, *args: Any, **kwargs: Any) -> int:
     """Decrypt the ciphertext with the given key using FEAL-NX decryption.
 
     Raises error if text is longer than 64-bit or key is longer than 128-bit.
@@ -226,7 +229,7 @@ def decrypt(key, text, **kwargs):
     return p
 
 
-def feal():
+def feal() -> Optional[int]:
     """Execute FEAL-NX cipher with arguments given on comand line.
 
     Gets arguments from docopt which parses sys.argv.
@@ -245,12 +248,12 @@ def feal():
         return _encrypt(k, text, n=n)
     elif args['decrypt']:
         return _decrypt(k, text, n=n)
+    return None
 
 
 if __name__ == "__main__":
     try:
-        f = feal()
-        print(f)
+        print(feal())
     except ValueError as e:
         print(e)
         exit(1)
