@@ -1,7 +1,8 @@
 """Exports function which splits numbers into an array of bitstrings."""
+from typing import List
 
 
-def split(n, size, bits):
+def split(n: int, size: int, bits: int) -> List[int]:
     """Split a number into an array of bitstrings.
 
     Split the input bits into n bitstrings with given size. The most significant bits are returned first.
