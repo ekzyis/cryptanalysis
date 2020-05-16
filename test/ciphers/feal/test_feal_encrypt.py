@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import encrypt, encrypt_preprocessing, encrypt_iterative_calculation
+from ciphers.feal import encrypt, _encrypt_preprocessing, _encrypt_iterative_calculation
 
 
 class TestFEALCipherEncrypt(unittest.TestCase):
@@ -53,7 +53,7 @@ class TestFEALCipherEncrypt(unittest.TestCase):
         #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         k32, k33, k34, k35 = 0x196A, 0x9AB1, 0xE015, 0x8190
         p = 0x0
-        out = encrypt_preprocessing([k32, k33, k34, k35], p)
+        out = _encrypt_preprocessing([k32, k33, k34, k35], p)
         self.assertEqual(out, 0x196A9AB1F97F1B21)
 
     def test_encrypt_iterative_calculation_matches_specification_in_paper(self):
@@ -66,7 +66,7 @@ class TestFEALCipherEncrypt(unittest.TestCase):
             0x778B, 0x771D, 0xD324, 0x8410, 0x1CA8, 0xBC64, 0xA0DB, 0xBDD2, 0x1F5F, 0x8F1C,
             0x6B81, 0xB560, 0x196A, 0x9AB1, 0xE015, 0x8190, 0x9F72, 0x6643, 0xAD32, 0x683A
         ]
-        l, r = encrypt_iterative_calculation(l0, r0, sk)
+        l, r = _encrypt_iterative_calculation(l0, r0, sk)
         self.assertEqual(l[0], 0x196A9AB1)
         self.assertEqual(l[1], 0xF97F1B21)
         self.assertEqual(l[2], 0x4C3667CD)

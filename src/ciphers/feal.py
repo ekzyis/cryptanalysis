@@ -148,21 +148,21 @@ def fk(a, b):
     return concat_bits(fk0, fk1, fk2, fk3, n=8)
 
 
-def encrypt_preprocessing(subkeys, text):
+def _encrypt_preprocessing(subkeys, text):
     p = text ^ concat_bits(*subkeys, n=16)
     l0, r0 = split(2, 32, p)
     p ^= l0
     return p
 
 
-def decrypt_preprocessing(subkeys, text):
+def _decrypt_preprocessing(subkeys, text):
     p = text ^ concat_bits(*subkeys, n=16)
     rn, ln = split(2, 32, p)
     p = concat_bits(rn, ln, n=32) ^ rn
     return p
 
 
-def encrypt_iterative_calculation(l0, r0, sk, n=32):
+def _encrypt_iterative_calculation(l0, r0, sk, n=32):
     l, r = [l0], [r0]
     for i in range(1, n + 1):
         r.append(l[i - 1] ^ f(r[i - 1], sk[i - 1]))
@@ -170,7 +170,7 @@ def encrypt_iterative_calculation(l0, r0, sk, n=32):
     return l, r
 
 
-def decrypt_iterative_calculation(ln, rn, sk, n=32):
+def _decrypt_iterative_calculation(ln, rn, sk, n=32):
     l, r = [None] * n + [ln], [None] * n + [rn]
     for i in reversed(range(1, n + 1)):
         l[i - 1] = r[i] ^ f(l[i], sk[i - 1])
@@ -192,8 +192,8 @@ def encrypt(key, text, **kwargs):
     if key >= 2 ** 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    l0, r0 = split(2, 32, encrypt_preprocessing(sk[n:n + 4], text))
-    l, r = encrypt_iterative_calculation(l0, r0, sk, n)
+    l0, r0 = split(2, 32, _encrypt_preprocessing(sk[n:n + 4], text))
+    l, r = _encrypt_iterative_calculation(l0, r0, sk, n)
     ln, rn = l[n], r[n]
     c = concat_bits(rn, ln, n=32) ^ rn
     c ^= concat_bits(sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7], n=16)
@@ -214,8 +214,8 @@ def decrypt(key, text, **kwargs):
     if key >= 2 ** 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    rn, ln = split(2, 32, decrypt_preprocessing(sk[n + 4:n + 8], text))
-    l, r = decrypt_iterative_calculation(ln, rn, sk, n)
+    rn, ln = split(2, 32, _decrypt_preprocessing(sk[n + 4:n + 8], text))
+    l, r = _decrypt_iterative_calculation(ln, rn, sk, n)
     l0, r0 = l[0], r[0]
     p = concat_bits(l0, r0, n=32) ^ l0
     p ^= concat_bits(sk[n], sk[n + 1], sk[n + 2], sk[n + 3], n=16)
