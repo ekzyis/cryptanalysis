@@ -53,3 +53,11 @@ class TestFEALCipherKeySchedule(unittest.TestCase):
         self.assertEqual(out[37], 0x6643)
         self.assertEqual(out[38], 0xAD32)
         self.assertEqual(out[39], 0x683A)
+
+    def test_key_schedule_raises_value_error_if_key_is_larger_than_128_bit(self):
+        with self.assertRaises(ValueError):
+            key_schedule(2 ** 128)
+        try:
+            key_schedule(2 ** 128 - 1)
+        except ValueError:
+            self.fail("key_schedule raised unexpected ValueError")

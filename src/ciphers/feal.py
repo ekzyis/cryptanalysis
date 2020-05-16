@@ -54,8 +54,10 @@ def key_schedule(key, n=32):
     """Return the subkeys created by the key scheduler of FEAL-NX.
 
     Creates the N+8 16-bit subkeys which are needed during en-/decryption.
-    Key must be 128-bit.
+    Raises error if key is not 128-bit.
     """
+    if key >= 2 ** 128:
+        raise ValueError("Key for FEAL-NX key scheduler must be 128-bit")
     kl, kr = split(2, 64, key)
     # processing of right key kr
     kr1, kr2 = split(2, 32, kr)
