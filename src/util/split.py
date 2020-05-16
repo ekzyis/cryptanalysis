@@ -1,4 +1,4 @@
-"""Exports function `split` which splits numbers into an array of bitstrings."""
+"""Exports function which splits numbers into an array of bitstrings."""
 
 
 def split(n, size, bits):
