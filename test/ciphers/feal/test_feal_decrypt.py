@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import decrypt, decrypt_preprocessing, decrypt_iterative_calculation
+from ciphers.feal import decrypt, _decrypt_preprocessing, _decrypt_iterative_calculation
 
 
 class TestFEALCipherDecrypt(unittest.TestCase):
@@ -56,7 +56,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         #   during encryption should be returned when using the output of said encryption as input.
         k34, k35, k36, k37 = 0x9F72, 0x6643, 0xAD32, 0x683A
         c = 0x9C9B54973DF685F8
-        out = decrypt_preprocessing([k34, k35, k36, k37], c)
+        out = _decrypt_preprocessing([k34, k35, k36, k37], c)
         self.assertEqual(out, 0x03E932D4932DDF16)
 
     def test_decrypt_iterative_calculation_matches_specification_in_paper(self):
@@ -71,7 +71,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
             0x778B, 0x771D, 0xD324, 0x8410, 0x1CA8, 0xBC64, 0xA0DB, 0xBDD2, 0x1F5F, 0x8F1C,
             0x6B81, 0xB560, 0x196A, 0x9AB1, 0xE015, 0x8190, 0x9F72, 0x6643, 0xAD32, 0x683A
         ]
-        l, r = decrypt_iterative_calculation(ln, rn, sk)
+        l, r = _decrypt_iterative_calculation(ln, rn, sk)
         self.assertEqual(l[0], 0x196A9AB1)
         self.assertEqual(l[1], 0xF97F1B21)
         self.assertEqual(l[2], 0x4C3667CD)
