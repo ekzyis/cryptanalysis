@@ -227,9 +227,11 @@ def decrypt(key, text, **kwargs):
 
 
 def feal():
-    """Main entry point for FEAL cipher execution.
+    """Execute FEAL-NX cipher with arguments given on comand line.
+
     Gets arguments from docopt which parses sys.argv.
-    See http://docopt.org/ if you are not familiar with docopt argument parsing."""
+    See http://docopt.org/ if you are not familiar with docopt argument parsing.
+    """
     args = docopt(__doc__)
 
     # Wrap encrypt and decrypt functions depending on arguments given on cmdline
