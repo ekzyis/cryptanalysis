@@ -4,7 +4,7 @@
 def split(n, size, bits):
     """Split a number into an array of bitstrings.
 
-    Split the input bits into n bitstrings with given size. The most-significant bits are returned first.
+    Split the input bits into n bitstrings with given size. The most significant bits are returned first.
 
     Example:
         split(3, 2, 0b110110) -> [0b11, 0b01, 0b10]
