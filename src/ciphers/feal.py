@@ -38,7 +38,7 @@ Usage:
 import sys
 from pathlib import Path
 
-from docopt import docopt
+from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
 
