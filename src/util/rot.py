@@ -1,7 +1,7 @@
 """Exports functions which implement bit rotation."""
 
 
-def rot_left(bits, i, max_bit):
+def rot_left(bits: int, i: int, max_bit: int) -> int:
     """Bit rotation / Circular shift to the left.
 
     Shifts i bits to the left and adds the bits that fall of to the right side.
@@ -13,7 +13,7 @@ def rot_left(bits, i, max_bit):
     return ((bits % 2 ** (max_bit - i)) << i) | (bits >> (max_bit - i))
 
 
-def rot_right(bits, i, max_bit):
+def rot_right(bits: int, i: int, max_bit: int) -> int:
     """Bit rotation / Circular shift to the right.
 
     Shifts i bits to the right and adds the bits that fall of to the left side.

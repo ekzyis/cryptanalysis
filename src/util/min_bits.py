@@ -3,7 +3,7 @@
 from math import ceil, log2
 
 
-def min_bits(x):
+def min_bits(x: int) -> int:
     """Return the amount of bits needed to represent the given number.
 
     For example. to represent 8, 4 bits are needed: 0b1000.
