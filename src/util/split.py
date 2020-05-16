@@ -1,6 +1,16 @@
+"""Exports function `split` which splits numbers into an array of bitstrings."""
+
+
 def split(n, size, bits):
-    """Splits the input bits into n bitstrings with given size. The highest bits are returned first.
-    Raises error when n is equal to 0 or 1 or concatenation of bitstring is smaller than input bits."""
+    """Split a number into an array of bitstrings.
+
+    Split the input bits into n bitstrings with given size. The most-significant bits are returned first.
+
+    Example:
+        split(3, 2, 0b110110) -> [0b11, 0b01, 0b10]
+
+    Raises error when n is equal to 0 or 1 or concatenation of bitstring is smaller than input bits.
+    """
     if n == 0 or n == 1:
         raise ValueError("n can not be 0 or 1")
     if bits >= 2 ** (n * size):
