@@ -179,9 +179,11 @@ def _decrypt_iterative_calculation(ln, rn, sk, n=32):
 
 
 def encrypt(key, text, **kwargs):
-    """Encrypts the given 64-bit text with the given key and returns the 64-bit ciphertext.
+    """Encrypt the text with the given key using FEAL-NX encryption.
+
     Raises error if text is longer than 64-bit or key is longer than 128-bit.
-    Raises error if text or key is not a number."""
+    Raises error if text or key is not a number.
+    """
     n = kwargs.setdefault('n', 32)
     if type(text) is not int:
         raise ValueError("Plaintext must be a number")
@@ -201,9 +203,11 @@ def encrypt(key, text, **kwargs):
 
 
 def decrypt(key, text, **kwargs):
-    """Decrypts the given 64-bit ciphertext with the given key and returns the 64-bit plaintext.
+    """Decrypt the ciphertext with the given key using FEAL-NX decryption.
+
     Raises error if text is longer than 64-bit or key is longer than 128-bit.
-    Raises error if text or key is not a number."""
+    Raises error if text or key is not a number.
+    """
     n = kwargs.setdefault('n', 32)
     if type(text) is not int:
         raise ValueError("Ciphertext must be a number")
