@@ -8,7 +8,7 @@ from ciphers.feal import decrypt, _decrypt_preprocessing, _decrypt_iterative_cal
 
 class TestFEALCipherDecrypt(unittest.TestCase):
 
-    def test_decrypt_raises_value_error_if_text_larger_than_64_bit(self):
+    def test_feal_decrypt_raises_value_error_if_text_larger_than_64_bit(self):
         with self.assertRaises(ValueError):
             decrypt(0x0, 2 ** 64)
         try:
@@ -16,7 +16,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         except ValueError:
             self.fail("decrypt raised unexpected ValueError")
 
-    def test_decrypt_raises_value_error_if_key_larger_than_128_bit(self):
+    def test_feal_decrypt_raises_value_error_if_key_larger_than_128_bit(self):
         with self.assertRaises(ValueError):
             decrypt(2 ** 128, 0x0)
         try:
@@ -24,7 +24,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         except ValueError:
             self.fail("decrypt raised unexpected ValueError")
 
-    def test_encrypt_raises_value_error_if_text_not_number(self):
+    def test_feal_encrypt_raises_value_error_if_text_not_number(self):
         with self.assertRaises(ValueError):
             decrypt(0x0, "test")
         try:
@@ -32,7 +32,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         except ValueError:
             self.fail("encrypt raised unexpected ValueError")
 
-    def test_encrypt_raises_value_error_if_key_not_number(self):
+    def test_feal_encrypt_raises_value_error_if_key_not_number(self):
         with self.assertRaises(ValueError):
             decrypt("key", 0x0)
         try:
@@ -40,7 +40,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         except ValueError:
             self.fail("encrypt raised unexpected ValueError")
 
-    def test_decrypt_matches_specification_in_paper(self):
+    def test_feal_decrypt_matches_specification_in_paper(self):
         """Checks that the FEAL decryption decrypts the given ciphertext."""
         # i/o values taken from test for encrypt.
         #   Since decryption should reverse encryption, I assume I can
@@ -51,7 +51,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         p = decrypt(k, c)
         self.assertEqual(p, 0x0)
 
-    def test_decrypt_preprocessing_matches_specification_in_paper(self):
+    def test_feal_decrypt_preprocessing_matches_specification_in_paper(self):
         # i/o values taken from test for encrypt.
         #   As specified in the paper, the concatenation of the keys r_n, l_n which were calculated
         #   during encryption should be returned when using the output of said encryption as input.
@@ -60,7 +60,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         out = _decrypt_preprocessing([k34, k35, k36, k37], c)
         self.assertEqual(out, 0x03E932D4932DDF16)
 
-    def test_decrypt_iterative_calculation_matches_specification_in_paper(self):
+    def test_feal_decrypt_iterative_calculation_matches_specification_in_paper(self):
         # i/o values taken from test for encrypt.
         #   As specified in the paper, the same l and r keys should be created as during encryption
         #   when using the same key (here assured by using same subkeys) and the resulting ciphertext

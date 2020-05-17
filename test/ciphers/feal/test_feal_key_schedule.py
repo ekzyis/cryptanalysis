@@ -7,7 +7,7 @@ from ciphers.feal import key_schedule
 
 class TestFEALCipherKeySchedule(unittest.TestCase):
 
-    def test_key_schedule_matches_specification_in_paper(self):
+    def test_feal_key_schedule_matches_specification_in_paper(self):
         # i/o values taken from p.10, section 6.3.1 of
         #   https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
         key = 0x0123456789ABCDEF0123456789ABCDEF
@@ -54,7 +54,7 @@ class TestFEALCipherKeySchedule(unittest.TestCase):
         self.assertEqual(out[38], 0xAD32)
         self.assertEqual(out[39], 0x683A)
 
-    def test_key_schedule_raises_value_error_if_key_is_larger_than_128_bit(self):
+    def test_feal_key_schedule_raises_value_error_if_key_is_larger_than_128_bit(self):
         with self.assertRaises(ValueError):
             key_schedule(2 ** 128)
         try:
