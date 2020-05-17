@@ -2,6 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
+# noinspection PyProtectedMember
 from ciphers.feal import encrypt, _encrypt_preprocessing, _encrypt_iterative_calculation
 
 
