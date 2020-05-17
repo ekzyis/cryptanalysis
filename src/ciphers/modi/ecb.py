@@ -10,7 +10,6 @@ from math import ceil
 from typing import Any
 
 from util.concat_bits import concat_bits
-from util.min_bits import min_bits
 from util.split import split
 from util.types import CipherFunction
 
@@ -27,7 +26,7 @@ def ecb(cipher_fn: CipherFunction, blocksize: int) -> CipherFunction:
 
     def _ecb(key: int, text: int, *args: Any, **kwargs: Any) -> int:
         # calculate amount of blocks
-        n = ceil(min_bits(text) / blocksize)
+        n = ceil(text.bit_length() / blocksize)
         in_blocks = split(n, blocksize, text)
         out_blocks = [cipher_fn(key, b, *args, **kwargs) for b in in_blocks]
         return concat_bits(*out_blocks, n=blocksize)
