@@ -72,7 +72,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
             0x778B, 0x771D, 0xD324, 0x8410, 0x1CA8, 0xBC64, 0xA0DB, 0xBDD2, 0x1F5F, 0x8F1C,
             0x6B81, 0xB560, 0x196A, 0x9AB1, 0xE015, 0x8190, 0x9F72, 0x6643, 0xAD32, 0x683A
         ]
-        l, r = _decrypt_iterative_calculation(ln, rn, sk)
+        l, r = list(_decrypt_iterative_calculation(ln, rn, sk))
         self.assertEqual(l[0], 0x196A9AB1)
         self.assertEqual(l[1], 0xF97F1B21)
         self.assertEqual(l[2], 0x4C3667CD)
