@@ -1,6 +1,6 @@
 """Salsa20 implementation.
 
-The specification found at https://cr.yp.to/snuffle/salsafamily-20071225.pdf is used as a reference
+The specification found at https://cr.yp.to/snuffle/spec.pdf is used as a reference
 for this implementation.
 
 Usage:
