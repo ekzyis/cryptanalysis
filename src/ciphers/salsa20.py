@@ -79,3 +79,8 @@ def salsa20(x_: int) -> int:
     x = Word(*littleendian_words, bit=32)
     z = split(16, 32, reduce(lambda a, _: doubleround(a), range(10), x))
     return Word(*[littleendian((xi + zi) % 2 ** 32) for xi, zi in zip(x, z)])
+
+
+def expansion(k: int, n: int) -> int:
+    """The expansion function of Salsa20."""
+    pass
