@@ -25,3 +25,7 @@ class Word(int):
     def __iter__(self):
         """Returns an iterator to the blocks of bytes."""
         return self.blocks.__iter__()
+
+    def __getitem__(self, i):
+        """Return the i-th block."""
+        return self.blocks[i]
