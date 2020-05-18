@@ -61,6 +61,8 @@ def doubleround(x: int) -> int:
     return rowround(columnround(x))
 
 
-def littleendian(b: int) -> int:
+def littleendian(_b: int) -> int:
     """The littleendian function of Salsa20."""
-    pass
+    b = split(4, 8, _b)
+    b.reverse()
+    return Word(*b, bit=8)
