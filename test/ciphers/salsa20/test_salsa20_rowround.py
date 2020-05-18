@@ -6,7 +6,7 @@ from ciphers.salsa20 import rowround
 from util.word import Word
 
 
-class TestSalsa20CipherEncrypt(unittest.TestCase):
+class TestSalsa20CipherRowRound(unittest.TestCase):
     def test_salsa20_rowround(self):
         y1 = Word(
             (0x1, 0x0, 0x0, 0x0) * 4

@@ -6,7 +6,7 @@ from ciphers.salsa20 import quarterround
 from util.word import Word
 
 
-class TestSalsa20CipherEncrypt(unittest.TestCase):
+class TestSalsa20CipherQuarterround(unittest.TestCase):
     def test_salsa20_quarterround(self):
         self.assertEqual(quarterround(Word(0x00000000, 0x00000000, 0x00000000, 0x00000000)),
                          Word(0x00000000, 0x00000000, 0x00000000, 0x00000000))
