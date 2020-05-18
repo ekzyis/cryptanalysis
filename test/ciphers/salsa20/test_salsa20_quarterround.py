@@ -15,7 +15,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(quarterround(Word(0x00000000, 0x00000001, 0x00000000, 0x00000000)),
                          Word(0x88000100, 0x00000001, 0x00000200, 0x00402000))
         self.assertEqual(quarterround(Word(0x00000000, 0x00000000, 0x00000001, 0x00000000)),
-                         Word(0x88040000, 0x00000000, 0x00000001, 0x00002000))
+                         Word(0x80040000, 0x00000000, 0x00000001, 0x00002000))
         self.assertEqual(quarterround(Word(0x00000000, 0x00000000, 0x00000000, 0x00000001)),
                          Word(0x00048044, 0x00000080, 0x00010000, 0x20100001))
         self.assertEqual(quarterround(Word(0xe7e8c006, 0xc4f9417d, 0x6479b4b2, 0x68c67137)),
