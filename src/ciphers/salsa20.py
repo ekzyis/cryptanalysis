@@ -57,4 +57,5 @@ def columnround(_x: int) -> int:
 
 
 def doubleround(x: int) -> int:
+    """The doubleround function of Salsa20."""
     return rowround(columnround(x))
