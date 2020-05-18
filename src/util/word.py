@@ -10,4 +10,5 @@ class Word(int):
         """Creates an actual integer out of the word representation given with args and bit."""
         if isinstance(args[0], tuple):
             args = [a for a in chain(*args)]
+        # TODO mypy throws error: Too many arguments for "__new__" of "object"
         return int.__new__(cls, concat_bits(*args, n=bit))
