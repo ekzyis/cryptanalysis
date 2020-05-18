@@ -17,6 +17,8 @@ Usage:
     CIPHERTEXT              The text to decrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
 """
 
+from functools import reduce
+
 from util.rot import rot_left
 from util.split import split
 from util.word import Word
@@ -67,6 +69,13 @@ def littleendian(_b: int) -> int:
     return Word(*b, bit=8)
 
 
-def salsa20(x: int) -> int:
-    """The hash function of Salsa20."""
-    pass
+def salsa20(x_: int) -> int:
+    """The salsa20 function / hash function of Salsa20."""
+    x = split(64, 8, x_)
+    # [a, b, c, d, e, f, g, h] -> [ [a,b,c,d], [e,f,g,h] ]
+    zipped = [x[i:i + 4] for i in range(0, len(x), 4)]
+    word_zipped = [Word(*b, bit=8) for b in zipped]
+    littleendian_words = [littleendian(w) for w in word_zipped]
+    x = Word(*littleendian_words, bit=32)
+    z = split(16, 32, reduce(lambda a, _: doubleround(a), range(10), x))
+    return Word(*[littleendian((xi + zi) % 2 ** 32) for xi, zi in zip(x, z)])
