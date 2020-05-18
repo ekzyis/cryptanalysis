@@ -81,6 +81,25 @@ def salsa20(x_: int) -> int:
     return Word(*[littleendian((xi + zi) % 2 ** 32) for xi, zi in zip(x, z)], bit=32)
 
 
-def expansion(k: int, n: int) -> int:
+def expansion(k_: int, n_: int) -> int:
     """The expansion function of Salsa20."""
-    pass
+    if k_.bit_length() > 8 * 16:
+        if k_.bit_length() > 8 * 32:
+            raise ValueError("k must be smaller than 32 byte")
+        k0, k1 = split(2, 16 * 8, k_)
+        n = split(4, 4 * 8, n_)
+        sigma = [
+            Word(101, 120, 112, 97, bit=8), Word(110, 100, 32, 51, bit=8),
+            Word(50, 45, 98, 121, bit=8), Word(116, 101, 32, 107, bit=8)
+        ]
+        return salsa20(
+            Word(sigma[0], *split(4, 4 * 8, k0), sigma[1], *n, sigma[2], *split(4, 4 * 8, k1), sigma[3], bit=32))
+    else:
+        tau = [
+            Word(101, 120, 112, 97, bit=8), Word(110, 100, 32, 49, bit=8),
+            Word(54, 45, 98, 121, bit=8), Word(116, 101, 32, 107, bit=8)
+        ]
+        # split k and n into four slices of four bytes
+        k = split(4, 4 * 8, k_)
+        n = split(4, 4 * 8, n_)
+        return salsa20(Word(tau[0], *k, tau[1], *n, tau[2], *k, tau[3], bit=32))
