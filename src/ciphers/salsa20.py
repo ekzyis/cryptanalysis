@@ -16,3 +16,8 @@ Usage:
     PLAINTEXT               The text to encrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
     CIPHERTEXT              The text to decrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
 """
+
+
+def quarterround(y):
+    """The quarterround function of Salsa20."""
+    pass
