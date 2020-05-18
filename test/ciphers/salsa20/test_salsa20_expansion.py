@@ -30,6 +30,6 @@ class TestSalsa20CipherExpansion(unittest.TestCase):
         self.assertEqual(expansion(k, n), z)
 
     def test_salsa_20_expansion_raises_value_error_if_k_greater_than_32_byte(self):
-        k = Word(*[x for x in range(33)], bit=8)
+        k = 2 ** (8 * 32)
         with self.assertRaises(ValueError):
             expansion(k, 0x0)
