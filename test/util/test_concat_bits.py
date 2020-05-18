@@ -29,4 +29,6 @@ class TestCombine(unittest.TestCase):
 
     def test_concat_bits_raises_value_error_when_subkey_is_too_large(self):
         with self.assertRaises(ValueError):
-            concat_bits(0b101, 0b10, n=2)
+            concat_bits(0b101, n=2)
+        with self.assertRaises(ValueError):
+            concat_bits(0b100, n=2)
