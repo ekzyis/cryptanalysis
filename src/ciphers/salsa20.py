@@ -32,3 +32,8 @@ def quarterround(y: int) -> int:
     z3 = y3 ^ rot_left((z2 + z1) % (2 ** 32), 13, 32)
     z0 = y0 ^ rot_left((z3 + z2) % (2 ** 32), 18, 32)
     return Word(z0, z1, z2, z3, bit=32)
+
+
+def rowround(y: int) -> int:
+    """The rowround function of Salsa20."""
+    pass
