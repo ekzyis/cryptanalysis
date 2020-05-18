@@ -16,7 +16,6 @@ Usage:
     PLAINTEXT               The text to encrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
     CIPHERTEXT              The text to decrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
 """
-from typing import List
 
 from util.rot import rot_left
 from util.split import split
@@ -25,7 +24,7 @@ from util.word import Word
 
 def quarterround(y: int) -> int:
     """The quarterround function of Salsa20."""
-    y_: List[int] = split(4, 32, y)
+    y_ = split(4, 32, y)
     y0, y1, y2, y3 = y_
     z1 = y1 ^ rot_left((y0 + y3) % (2 ** 32), 7, 32)
     z2 = y2 ^ rot_left((z1 + y0) % (2 ** 32), 9, 32)
