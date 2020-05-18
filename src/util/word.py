@@ -4,7 +4,6 @@ from itertools import chain
 from typing import List, Any
 
 from util.concat_bits import concat_bits
-from util.split import split
 
 
 class Word(int):
@@ -25,4 +24,4 @@ class Word(int):
 
     def __iter__(self):
         """Returns an iterator to the blocks of bytes."""
-        return split(len(self.blocks), self.bit, self).__iter__()
+        return self.blocks.__iter__()
