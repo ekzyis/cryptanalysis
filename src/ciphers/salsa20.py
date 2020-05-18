@@ -39,22 +39,22 @@ def rowround(_y: int) -> int:
     """The rowround function of Salsa20."""
     y = split(16, 32, _y)
     z = [None] * 16
-    z[0], z[1], z[2], z[3] = quarterround(Word(y[0], y[1], y[2], y[3]))
-    z[5], z[6], z[7], z[4] = quarterround(Word(y[5], y[6], y[7], y[4]))
-    z[10], z[11], z[8], z[9] = quarterround(Word(y[10], y[11], y[8], y[9]))
-    z[15], z[12], z[13], z[14] = quarterround(Word(y[15], y[12], y[13], y[14]))
-    return Word(*z)
+    z[0], z[1], z[2], z[3] = quarterround(Word(y[0], y[1], y[2], y[3], bit=32))
+    z[5], z[6], z[7], z[4] = quarterround(Word(y[5], y[6], y[7], y[4], bit=32))
+    z[10], z[11], z[8], z[9] = quarterround(Word(y[10], y[11], y[8], y[9], bit=32))
+    z[15], z[12], z[13], z[14] = quarterround(Word(y[15], y[12], y[13], y[14], bit=32))
+    return Word(*z, bit=32)
 
 
 def columnround(_x: int) -> int:
     """The columnround function of Salsa20."""
     x = split(16, 32, _x)
     y = [None] * 16
-    y[0], y[4], y[8], y[12] = quarterround(Word(x[0], x[4], x[8], x[12]))
-    y[5], y[9], y[13], y[1] = quarterround(Word(x[5], x[9], x[13], x[1]))
-    y[10], y[14], y[2], y[6] = quarterround(Word(x[10], x[14], x[2], x[6]))
-    y[15], y[3], y[7], y[11] = quarterround(Word(x[15], x[3], x[7], x[11]))
-    return Word(*y)
+    y[0], y[4], y[8], y[12] = quarterround(Word(x[0], x[4], x[8], x[12], bit=32))
+    y[5], y[9], y[13], y[1] = quarterround(Word(x[5], x[9], x[13], x[1], bit=32))
+    y[10], y[14], y[2], y[6] = quarterround(Word(x[10], x[14], x[2], x[6], bit=32))
+    y[15], y[3], y[7], y[11] = quarterround(Word(x[15], x[3], x[7], x[11], bit=32))
+    return Word(*y, bit=32)
 
 
 def doubleround(x: int) -> int:
@@ -78,7 +78,7 @@ def salsa20(x_: int) -> int:
     littleendian_words = [littleendian(w) for w in word_zipped]
     x = Word(*littleendian_words, bit=32)
     z = split(16, 32, reduce(lambda a, _: doubleround(a), range(10), x))
-    return Word(*[littleendian((xi + zi) % 2 ** 32) for xi, zi in zip(x, z)])
+    return Word(*[littleendian((xi + zi) % 2 ** 32) for xi, zi in zip(x, z)], bit=32)
 
 
 def expansion(k: int, n: int) -> int:

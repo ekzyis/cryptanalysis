@@ -16,9 +16,6 @@ class TestWord(unittest.TestCase):
     def test_word_with_16_bit(self):
         self.assertEqual(Word(0x3a1c, 0x13bc, 0x84de, bit=16), 0x3a1c13bc84de)
 
-    def test_word_32_bit_is_default(self):
-        self.assertEqual(Word(0xf0f0f0f0, 0x1010), 0xf0f0f0f000001010)
-
     def test_word_tuple_syntax(self):
         w1 = Word((0xf, 0x0),
                   (0x0, 0xf), bit=4)
@@ -29,12 +26,12 @@ class TestWord(unittest.TestCase):
 
     def test_word_is_iterable(self):
         b = [0xf, 0xe, 0xd, 0xc]
-        for i, byte in enumerate(Word(*b)):
+        for i, byte in enumerate(Word(*b, bit=32)):
             self.assertEqual(byte, b[i])
 
     def test_word_is_subscriptable(self):
         b = [0xf, 0xe, 0xd, 0xc]
-        w = Word(*b)
+        w = Word(*b, bit=32)
         for i in range(len(b)):
             self.assertEqual(w[i], b[i])
 
