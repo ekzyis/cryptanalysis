@@ -13,6 +13,6 @@ def concat_bits(*args: int, n: int) -> int:
     r = 0
     for i, arg in enumerate(args_):
         if arg > 2 ** n:
-            raise ValueError("subkey is larger than slot given by n")
+            raise ValueError("bitstring is larger than slot given by n")
         r |= arg << (i * n)
     return r
