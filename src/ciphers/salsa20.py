@@ -43,3 +43,8 @@ def rowround(y: int) -> int:
     z[10], z[11], z[8], z[9] = quarterround(Word(_y[10], _y[11], _y[8], _y[9]))
     z[15], z[12], z[13], z[14] = quarterround(Word(_y[15], _y[12], _y[13], _y[14]))
     return Word(*z)
+
+
+def columnround(y: int) -> int:
+    """The columnround function of Salsa20."""
+    pass
