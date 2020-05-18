@@ -56,5 +56,5 @@ def columnround(_x: int) -> int:
     return Word(*y)
 
 
-def doubleround(_x: int) -> int:
-    pass
+def doubleround(x: int) -> int:
+    return rowround(columnround(x))
