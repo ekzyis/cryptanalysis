@@ -16,6 +16,9 @@ class TestWord(unittest.TestCase):
     def test_word_with_16_bit(self):
         self.assertEqual(Word(0x3a1c, 0x13bc, 0x84de, bit=16), 0x3a1c13bc84de)
 
+    def test_word_32_bit_is_default(self):
+        self.assertEqual(Word(0xf0f0f0f0, 0x1010), 0xf0f0f0f000001010)
+
     def test_word_raises_error_when_bit_too_small_for_representation(self):
         with self.assertRaises(ValueError):
             Word(0b10, bit=1)
