@@ -34,14 +34,14 @@ def quarterround(y: int) -> int:
     return Word(z0, z1, z2, z3, bit=32)
 
 
-def rowround(y: int) -> int:
+def rowround(_y: int) -> int:
     """The rowround function of Salsa20."""
-    _y = split(16, 32, y)
+    y = split(16, 32, _y)
     z = [None] * 16
-    z[0], z[1], z[2], z[3] = quarterround(Word(_y[0], _y[1], _y[2], _y[3]))
-    z[5], z[6], z[7], z[4] = quarterround(Word(_y[5], _y[6], _y[7], _y[4]))
-    z[10], z[11], z[8], z[9] = quarterround(Word(_y[10], _y[11], _y[8], _y[9]))
-    z[15], z[12], z[13], z[14] = quarterround(Word(_y[15], _y[12], _y[13], _y[14]))
+    z[0], z[1], z[2], z[3] = quarterround(Word(y[0], y[1], y[2], y[3]))
+    z[5], z[6], z[7], z[4] = quarterround(Word(y[5], y[6], y[7], y[4]))
+    z[10], z[11], z[8], z[9] = quarterround(Word(y[10], y[11], y[8], y[9]))
+    z[15], z[12], z[13], z[14] = quarterround(Word(y[15], y[12], y[13], y[14]))
     return Word(*z)
 
 
