@@ -18,6 +18,6 @@ Usage:
 """
 
 
-def quarterround(y):
+def quarterround(y: int) -> int:
     """The quarterround function of Salsa20."""
     pass
