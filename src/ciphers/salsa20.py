@@ -66,3 +66,8 @@ def littleendian(_b: int) -> int:
     b = split(4, 8, _b)
     b.reverse()
     return Word(*b, bit=8)
+
+
+def salsa20(x: int) -> int:
+    """The hash function of Salsa20."""
+    pass
