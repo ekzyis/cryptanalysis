@@ -27,6 +27,11 @@ class TestWord(unittest.TestCase):
                   (0xac, 0x12), bit=8)
         self.assertEqual(w2, 0xf00fac12)
 
+    def test_word_is_iterable(self):
+        b = [0xf, 0xe, 0xd, 0xc]
+        for i, byte in enumerate(Word(*b)):
+            self.assertEqual(byte, b[i])
+
     def test_word_raises_error_when_bit_too_small_for_representation(self):
         with self.assertRaises(ValueError):
             Word(0b10, bit=1)
