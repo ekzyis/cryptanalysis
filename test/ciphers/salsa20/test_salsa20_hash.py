@@ -7,7 +7,7 @@ from util.word import Word
 
 
 class TestSalsa20CipherSalsa20(unittest.TestCase):
-    def test_salsa20_hash(self):
+    def test_salsa20_salsa20(self):
         x1 = Word(0x0 * 16 * 4)
         z1 = 0x0
         self.assertEqual(salsa20(x1), z1)
