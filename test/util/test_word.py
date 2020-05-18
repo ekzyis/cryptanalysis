@@ -18,7 +18,7 @@ class TestWord(unittest.TestCase):
 
     def test_word_raises_error_when_bit_too_small_for_representation(self):
         with self.assertRaises(ValueError):
-            print(Word(0b10, bit=1))
+            Word(0b10, bit=1)
         with self.assertRaises(ValueError):
             Word(0x10, bit=2)
         with self.assertRaises(ValueError):
