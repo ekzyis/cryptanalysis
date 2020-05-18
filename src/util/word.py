@@ -6,7 +6,7 @@ from util.concat_bits import concat_bits
 
 
 class Word(int):
-    def __new__(cls, *args, bit=32):
+    def __new__(cls, *args: int, bit: int = 32) -> 'Word':
         """Creates an actual integer out of the word representation given with args and bit."""
         if isinstance(args[0], tuple):
             args = [a for a in chain(*args)]
