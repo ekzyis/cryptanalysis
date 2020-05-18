@@ -36,4 +36,10 @@ def quarterround(y: int) -> int:
 
 def rowround(y: int) -> int:
     """The rowround function of Salsa20."""
-    pass
+    _y = split(16, 32, y)
+    z = [None] * 16
+    z[0], z[1], z[2], z[3] = quarterround(Word(_y[0], _y[1], _y[2], _y[3]))
+    z[5], z[6], z[7], z[4] = quarterround(Word(_y[5], _y[6], _y[7], _y[4]))
+    z[10], z[11], z[8], z[9] = quarterround(Word(_y[10], _y[11], _y[8], _y[9]))
+    z[15], z[12], z[13], z[14] = quarterround(Word(_y[15], _y[12], _y[13], _y[14]))
+    return Word(*z)
