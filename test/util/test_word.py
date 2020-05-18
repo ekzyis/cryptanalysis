@@ -19,6 +19,14 @@ class TestWord(unittest.TestCase):
     def test_word_32_bit_is_default(self):
         self.assertEqual(Word(0xf0f0f0f0, 0x1010), 0xf0f0f0f000001010)
 
+    def test_word_tuple_syntax(self):
+        w1 = Word((0xf, 0x0),
+                  (0x0, 0xf), bit=4)
+        self.assertEqual(w1, 0xf00f)
+        w2 = Word((0xf0, 0x0f),
+                  (0xac, 0x12), bit=8)
+        self.assertEqual(w2, 0xf00fac12)
+
     def test_word_raises_error_when_bit_too_small_for_representation(self):
         with self.assertRaises(ValueError):
             Word(0b10, bit=1)
