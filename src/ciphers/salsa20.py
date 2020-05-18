@@ -54,3 +54,7 @@ def columnround(_x: int) -> int:
     y[10], y[14], y[2], y[6] = quarterround(Word(x[10], x[14], x[2], x[6]))
     y[15], y[3], y[7], y[11] = quarterround(Word(x[15], x[3], x[7], x[11]))
     return Word(*y)
+
+
+def doubleround(_x: int) -> int:
+    pass
