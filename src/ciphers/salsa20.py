@@ -62,7 +62,8 @@ def columnround(_x: int) -> Word:
     """Calculate the columnround value of the input as specified in the paper.
 
     Returns a 512-bit value.
-    Raises error if input is larger than 512-bit."""
+    Raises error if input is larger than 512-bit.
+    """
     if _x >= 2 ** 512:
         raise ValueError("Input must be 512-bit.")
     x = split(16, 32, _x)
@@ -78,7 +79,8 @@ def doubleround(x: int) -> Word:
     """Calculate the doubleround value of the input as specified in the paper.
 
     Returns a 512-bit value.
-    Raises error if input is larger than 512-bit."""
+    Raises error if input is larger than 512-bit.
+    """
     # argument checking is done by column- and rowround.
     return rowround(columnround(x))
 
@@ -87,7 +89,8 @@ def littleendian(_b: int) -> Word:
     """Calculate the value of the integer when its bytes are interpreted in reverse order.
 
     Returns a 32-bit value.
-    Raises error if input is larger than 32-bit."""
+    Raises error if input is larger than 32-bit.
+    """
     if _b >= 2 ** 32:
         raise ValueError("Input must be 32-bit.")
     b = split(4, 8, _b)
@@ -99,7 +102,8 @@ def salsa20(x_: int) -> Word:
     """Calculate the salsa20 hash of the value.
 
     Returns a 64-byte sequence.
-    Raises error if input is larger than 512-bit."""
+    Raises error if input is larger than 512-bit.
+    """
     if x_ >= 2 ** 512:
         raise ValueError("Input must be 512-bit.")
     x = split(64, 8, x_)
@@ -116,7 +120,8 @@ def expansion(k_: int, n_: int) -> Word:
     """Expand the key and the nonce into a 64-byte sequence.
 
     Returns a 64-byte sequence.
-    Raises error if key is larger than 256-bit or nonce is larger than 128-bit."""
+    Raises error if key is larger than 256-bit or nonce is larger than 128-bit.
+    """
     if k_.bit_length() > 8 * 16:
         if k_.bit_length() > 8 * 32:
             raise ValueError("k must be smaller than 32 byte")
