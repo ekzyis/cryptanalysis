@@ -24,7 +24,7 @@ from util.split import split
 from util.word import Word
 
 
-def quarterround(y: int) -> int:
+def quarterround(y: int) -> Word:
     """The quarterround function of Salsa20."""
     y_ = split(4, 32, y)
     y0, y1, y2, y3 = y_
@@ -35,7 +35,7 @@ def quarterround(y: int) -> int:
     return Word(z0, z1, z2, z3, bit=32)
 
 
-def rowround(_y: int) -> int:
+def rowround(_y: int) -> Word:
     """The rowround function of Salsa20."""
     y = split(16, 32, _y)
     z = [None] * 16
@@ -46,7 +46,7 @@ def rowround(_y: int) -> int:
     return Word(*z, bit=32)
 
 
-def columnround(_x: int) -> int:
+def columnround(_x: int) -> Word:
     """The columnround function of Salsa20."""
     x = split(16, 32, _x)
     y = [None] * 16
@@ -57,19 +57,19 @@ def columnround(_x: int) -> int:
     return Word(*y, bit=32)
 
 
-def doubleround(x: int) -> int:
+def doubleround(x: int) -> Word:
     """The doubleround function of Salsa20."""
     return rowround(columnround(x))
 
 
-def littleendian(_b: int) -> int:
+def littleendian(_b: int) -> Word:
     """The littleendian function of Salsa20."""
     b = split(4, 8, _b)
     b.reverse()
     return Word(*b, bit=8)
 
 
-def salsa20(x_: int) -> int:
+def salsa20(x_: int) -> Word:
     """The salsa20 function / hash function of Salsa20."""
     x = split(64, 8, x_)
     # [a, b, c, d, e, f, g, h] -> [ [a,b,c,d], [e,f,g,h] ]
@@ -81,7 +81,7 @@ def salsa20(x_: int) -> int:
     return Word(*[littleendian((xi + zi) % 2 ** 32) for xi, zi in zip(x, z)], bit=32)
 
 
-def expansion(k_: int, n_: int) -> int:
+def expansion(k_: int, n_: int) -> Word:
     """The expansion function of Salsa20."""
     if k_.bit_length() > 8 * 16:
         if k_.bit_length() > 8 * 32:
