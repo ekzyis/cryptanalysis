@@ -164,7 +164,7 @@ def encrypt(k: int, text: int) -> int:
     for text_block in yield_split(512, bits=text):
         nonce = concat_bits(unique_message_number, c, n=64)
         stream = expansion(k, nonce)
-        limited_stream = limit(stream, 512, text_block.bit_length())
+        limited_stream = limit(text_block.bit_length(), 512, stream)
         encrypted_text_block = text_block ^ limited_stream
         cipher = concat_bits(cipher, encrypted_text_block, n=512)
         c += 1
