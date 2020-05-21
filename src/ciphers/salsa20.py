@@ -27,6 +27,7 @@ from util.word import Word
 def quarterround(y: int) -> Word:
     """Calculate the quarterround value of the input as specified in the paper.
 
+    Returns a 128-bit value.
     Raises error if input is larger than 128-bit.
     """
     if y >= 2 ** 128:
