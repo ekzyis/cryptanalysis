@@ -59,7 +59,12 @@ def rowround(_y: int) -> Word:
 
 
 def columnround(_x: int) -> Word:
-    """Calculate the columnround value of the input as specified in the paper."""
+    """Calculate the columnround value of the input as specified in the paper.
+
+    Returns a 512-bit value.
+    Raises error if input is larger than 512-bit."""
+    if _x >= 2 ** 512:
+        raise ValueError("Input must be 512-bit.")
     x = split(16, 32, _x)
     y = [None] * 16
     y[0], y[4], y[8], y[12] = quarterround(Word(x[0], x[4], x[8], x[12], bit=32))

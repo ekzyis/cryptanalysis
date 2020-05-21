@@ -34,3 +34,11 @@ class TestSalsa20CipherColumnRound(unittest.TestCase):
             bit=32
         )
         self.assertEqual(columnround(x2), y2)
+
+    def test_salsa20_columnround_raises_value_error_if_input_larger_than_512_bit(self):
+        with self.assertRaises(ValueError):
+            columnround(2 ** 512)
+        try:
+            columnround(2 ** 512 - 1)
+        except ValueError:
+            self.fail("columnround raised unexpected ValueError")
