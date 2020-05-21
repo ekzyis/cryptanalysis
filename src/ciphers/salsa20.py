@@ -25,9 +25,10 @@ from util.word import Word
 
 
 def quarterround(y: int) -> Word:
-    """The quarterround function of Salsa20.
+    """Calculate the quarterround value of the input as specified in the paper.
 
-    Raises error if input is larger than 128-bit."""
+    Raises error if input is larger than 128-bit.
+    """
     if y >= 2 ** 128:
         raise ValueError("Input must be 128-bit.")
     y_ = split(4, 32, y)
@@ -40,7 +41,7 @@ def quarterround(y: int) -> Word:
 
 
 def rowround(_y: int) -> Word:
-    """The rowround function of Salsa20."""
+    """Calculate the rowround value of the input as specified in the paper."""
     y = split(16, 32, _y)
     z = [None] * 16
     z[0], z[1], z[2], z[3] = quarterround(Word(y[0], y[1], y[2], y[3], bit=32))
@@ -51,7 +52,7 @@ def rowround(_y: int) -> Word:
 
 
 def columnround(_x: int) -> Word:
-    """The columnround function of Salsa20."""
+    """Calculate the columnround value of the input as specified in the paper."""
     x = split(16, 32, _x)
     y = [None] * 16
     y[0], y[4], y[8], y[12] = quarterround(Word(x[0], x[4], x[8], x[12], bit=32))
@@ -62,19 +63,19 @@ def columnround(_x: int) -> Word:
 
 
 def doubleround(x: int) -> Word:
-    """The doubleround function of Salsa20."""
+    """Calculate the doubleround value of the input as specified in the paper."""
     return rowround(columnround(x))
 
 
 def littleendian(_b: int) -> Word:
-    """The littleendian function of Salsa20."""
+    """Calculate the value of the integer when its bytes are interpreted in reverse order."""
     b = split(4, 8, _b)
     b.reverse()
     return Word(*b, bit=8)
 
 
 def salsa20(x_: int) -> Word:
-    """The salsa20 function / hash function of Salsa20."""
+    """Calculate the salsa20 hash of the value."""
     x = split(64, 8, x_)
     # [a, b, c, d, e, f, g, h] -> [ [a,b,c,d], [e,f,g,h] ]
     zipped = [x[i:i + 4] for i in range(0, len(x), 4)]
@@ -86,7 +87,7 @@ def salsa20(x_: int) -> Word:
 
 
 def expansion(k_: int, n_: int) -> Word:
-    """The expansion function of Salsa20."""
+    """Expand the key and the nonce into a 64-byte sequence."""
     if k_.bit_length() > 8 * 16:
         if k_.bit_length() > 8 * 32:
             raise ValueError("k must be smaller than 32 byte")

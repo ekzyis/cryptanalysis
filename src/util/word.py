@@ -7,9 +7,16 @@ from util.concat_bits import concat_bits
 
 
 class Word(int):
+    """Words represent integers but can be created in way which is easier to read.
+
+    For example, the word 0xffffffffffffffff consists of four times 0xffff and thus
+    can be easier created using this syntax:
+        Word(0xffff, 0xffff, 0xffff, 0xffff, bit=16)
+    """
+
     # TODO args should actually be hinted with Union[int, Tuple[int, ...]]
     def __new__(cls, *args: Any, bit) -> 'Word':
-        """Creates an actual integer out of the word representation given with args and bit."""
+        """Create an actual integer out of the word representation given with args and bit."""
         _args: List[Any] = list(args)
         if isinstance(args[0], tuple):
             _args = [a for a in chain(*args)]
@@ -17,13 +24,13 @@ class Word(int):
         return int.__new__(cls, concat_bits(*_args, n=bit))
 
     def __init__(self, *args: Any, bit: int = 32) -> None:
-        """Constructor which saves the passed-in attributes for later usage."""
+        """Initialize the word by saving the passed-in attributes for later usage."""
         super().__init__()
         self.blocks = args
         self.bit = bit
 
     def __iter__(self):
-        """Returns an iterator to the blocks of bytes."""
+        """Return an iterator to the blocks of bytes."""
         return self.blocks.__iter__()
 
     def __getitem__(self, i):
