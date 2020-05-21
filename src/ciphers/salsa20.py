@@ -84,7 +84,12 @@ def doubleround(x: int) -> Word:
 
 
 def littleendian(_b: int) -> Word:
-    """Calculate the value of the integer when its bytes are interpreted in reverse order."""
+    """Calculate the value of the integer when its bytes are interpreted in reverse order.
+
+    Returns a 32-bit value.
+    Raises error if input is larger than 32-bit."""
+    if _b >= 2 ** 32:
+        raise ValueError("Input must be 32-bit.")
     b = split(4, 8, _b)
     b.reverse()
     return Word(*b, bit=8)
