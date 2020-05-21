@@ -35,3 +35,11 @@ class TestSalsa20CipherRowRound(unittest.TestCase):
             bit=32
         )
         self.assertEqual(rowround(y2), z2)
+
+    def test_salsa20_rowround_raises_value_error_if_input_larger_than_512_bit(self):
+        with self.assertRaises(ValueError):
+            rowround(2 ** 512)
+        try:
+            rowround(2 ** 128 - 1)
+        except ValueError:
+            self.fail("rowround raised unexpected ValueError")
