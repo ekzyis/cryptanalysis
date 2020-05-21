@@ -75,7 +75,11 @@ def columnround(_x: int) -> Word:
 
 
 def doubleround(x: int) -> Word:
-    """Calculate the doubleround value of the input as specified in the paper."""
+    """Calculate the doubleround value of the input as specified in the paper.
+
+    Returns a 512-bit value.
+    Raises error if input is larger than 512-bit."""
+    # argument checking is done by column- and rowround.
     return rowround(columnround(x))
 
 
