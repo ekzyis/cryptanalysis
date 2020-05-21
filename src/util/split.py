@@ -21,7 +21,7 @@ def split(n: int, size: int, bits: int) -> List[int]:
     return bitstrings
 
 
-def yield_split(n: int, x: int) -> Iterator[int]:
+def yield_split(n: int, x_bits: int, x: int) -> Iterator[int]:
     """Split a number into bitstrings of given size.
 
     Returns n-bitstrings by removing the n most significant bits from x."""
