@@ -96,7 +96,12 @@ def littleendian(_b: int) -> Word:
 
 
 def salsa20(x_: int) -> Word:
-    """Calculate the salsa20 hash of the value."""
+    """Calculate the salsa20 hash of the value.
+
+    Returns a 64-byte sequence.
+    Raises error if input is larger than 512-bit."""
+    if x_ >= 2 ** 512:
+        raise ValueError("Input must be 512-bit.")
     x = split(64, 8, x_)
     # [a, b, c, d, e, f, g, h] -> [ [a,b,c,d], [e,f,g,h] ]
     zipped = [x[i:i + 4] for i in range(0, len(x), 4)]

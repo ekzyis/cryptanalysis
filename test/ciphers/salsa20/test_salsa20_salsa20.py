@@ -41,3 +41,11 @@ class TestSalsa20CipherSalsa20(unittest.TestCase):
             bit=8
         )
         self.assertEqual(salsa20(x3), z3)
+
+    def test_salsa20_salsa20_raises_value_error_if_input_larger_than_512_bit(self):
+        with self.assertRaises(ValueError):
+            salsa20(2 ** 512)
+        try:
+            salsa20(2 ** 512 - 1)
+        except ValueError:
+            self.fail("salsa20 raised unexpected ValueError")
