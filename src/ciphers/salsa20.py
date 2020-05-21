@@ -24,7 +24,7 @@ from time import time
 from util.concat_bits import concat_bits
 from util.limit import limit
 from util.rot import rot_left
-from util.split import split
+from util.split import split, yield_split
 from util.word import Word
 
 
@@ -161,7 +161,7 @@ def encrypt(k: int, text: int) -> int:
     # last 64 bits of the nonce are the counter
     c = 0
     cipher = 0x0
-    for text_block in split(0, 512, bits=text):
+    for text_block in yield_split(512, bits=text):
         nonce = concat_bits(unique_message_number, c, n=64)
         stream = expansion(k, nonce)
         limited_stream = limit(stream, 512, text_block.bit_length())
