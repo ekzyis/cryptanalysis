@@ -29,7 +29,18 @@ class TestSalsa20CipherExpansion(unittest.TestCase):
         )
         self.assertEqual(expansion(k, n), z)
 
-    def test_salsa_20_expansion_raises_value_error_if_k_greater_than_32_byte(self):
-        k = 2 ** (8 * 32)
+    def test_salsa20_expansion_raises_value_error_if_key_larger_than_256_bit(self):
         with self.assertRaises(ValueError):
-            expansion(k, 0x0)
+            expansion(2 ** 256, 0x0)
+        try:
+            expansion(2 ** 256 - 1, 0x0)
+        except ValueError:
+            self.fail("expansion raised unexpected ValueError")
+
+    def test_salsa20_expansion_raises_value_error_if_nonce_larger_than_128_bit(self):
+        with self.assertRaises(ValueError):
+            expansion(0x0, 2 ** 128)
+        try:
+            expansion(0x0, 2 ** 128 - 1)
+        except ValueError:
+            self.fail("expansion raised unexpected ValueError")

@@ -113,7 +113,10 @@ def salsa20(x_: int) -> Word:
 
 
 def expansion(k_: int, n_: int) -> Word:
-    """Expand the key and the nonce into a 64-byte sequence."""
+    """Expand the key and the nonce into a 64-byte sequence.
+
+    Returns a 64-byte sequence.
+    Raises error if key is larger than 256-bit or nonce is larger than 128-bit."""
     if k_.bit_length() > 8 * 16:
         if k_.bit_length() > 8 * 32:
             raise ValueError("k must be smaller than 32 byte")
