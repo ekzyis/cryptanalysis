@@ -25,7 +25,11 @@ from util.word import Word
 
 
 def quarterround(y: int) -> Word:
-    """The quarterround function of Salsa20."""
+    """The quarterround function of Salsa20.
+
+    Raises error if input is larger than 128-bit."""
+    if y >= 2 ** 128:
+        raise ValueError("Input must be 128-bit.")
     y_ = split(4, 32, y)
     y0, y1, y2, y3 = y_
     z1 = y1 ^ rot_left((y0 + y3) % (2 ** 32), 7, 32)

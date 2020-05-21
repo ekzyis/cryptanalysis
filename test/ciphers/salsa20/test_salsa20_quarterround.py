@@ -22,3 +22,11 @@ class TestSalsa20CipherQuarterround(unittest.TestCase):
                          Word(0xe876d72b, 0x9361dfd5, 0xf1460244, 0x948541a3, bit=32))
         self.assertEqual(quarterround(Word(0xd3917c5b, 0x55f1c407, 0x52a58a7a, 0x8f887a3b, bit=32)),
                          Word(0x3e2f308c, 0xd90a8f36, 0x6ab2a923, 0x2883524c, bit=32))
+
+    def test_salsa20_quarterround_raises_value_error_if_input_larger_than_128_bit(self):
+        with self.assertRaises(ValueError):
+            quarterround(2 ** 128)
+        try:
+            quarterround(2 ** 128 - 1)
+        except ValueError:
+            self.fail("quarterround raised unexpected ValueError")
