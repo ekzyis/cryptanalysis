@@ -161,7 +161,7 @@ def encrypt(k: int, text: int) -> int:
     # last 64 bits of the nonce are the counter
     c = 0
     cipher = 0x0
-    for text_block in yield_split(512, bits=text):
+    for text_block in yield_split(512, text.bit_length(), text):
         nonce = concat_bits(unique_message_number, c, n=64)
         stream = expansion(k, nonce)
         limited_stream = limit(text_block.bit_length(), 512, stream)
