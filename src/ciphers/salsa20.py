@@ -126,6 +126,8 @@ def expansion(k_: int, n_: int) -> Word:
     Returns a 64-byte sequence.
     Raises error if key is larger than 256-bit or nonce is larger than 128-bit.
     """
+    if n_.bit_length() > 128:
+        raise ValueError("n must be 128-bit.")
     if k_.bit_length() > 128:
         if k_.bit_length() > 256:
             raise ValueError("k must be 256-bit.")
