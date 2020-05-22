@@ -3,7 +3,7 @@ from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.salsa20 import encrypt
+from ciphers.salsa20 import encrypt, expansion
 from util.word import Word
 
 
@@ -21,6 +21,38 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
         m = 0x0
+        stream0 = expansion(k, Word(0x0, 0x0, bit=64))
+        self.assertEqual(stream0, Word(
+            0xE3BE8FDD8BECA2E3EA8EF9475B29A6E7,
+            0x003951E1097A5C38D23B7A5FAD9F6844,
+            0xB22C97559E2723C7CBBD3FE4FC8D9A07,
+            0x44652A83E72A9C461876AF4D7EF1A117,
+            bit=128
+        ))
+        stream1 = expansion(k, Word(0x0, 0x1, bit=64))
+        self.assertEqual(stream1, Word(
+            0x57BE81F47B17D9AE7C4FF15429A73E10,
+            0xACF250ED3A90A93C711308A74C6216A9,
+            0xED84CD126DA7F28E8ABF8BB63517E1CA,
+            0x98E712F4FB2E1A6AED9FDC73291FAA17,
+            bit=128
+        ))
+        stream2 = expansion(k, Word(0x0, 0x2, bit=64))
+        self.assertEqual(stream2, Word(
+            0x958211C4BA2EBD5838C635EDB81F513A,
+            0x91A294E194F1C039AEEC657DCE40AA7E,
+            0x7C0AF57CACEFA40C9F14B71A4B3456A6,
+            0x3E162EC7D8D10B8FFB1810D71001B618,
+            bit=128
+        ))
+        stream3 = expansion(k, Word(0x0, 0x3, bit=64))
+        self.assertEqual(stream3, Word(
+            0x696AFCFD0CDDCC83C7E77F11A649D79A,
+            0xCDC3354E9635FF137E929933A0BD6F53,
+            0x77EFA105A3A4266B7C0D089D08F1E855,
+            0xCC32B15B93784A36E56A76CC64BC8477,
+            bit=128
+        ))
         c = encrypt(k, m)
         self.assertEqual(c, Word(
             (0x50EC2485, 0x637DB19C, 0x6E795E9C, 0x73938280),
