@@ -34,7 +34,7 @@ def quarterround(y: int) -> Word:
     Returns a 128-bit value.
     Raises error if input is larger than 128-bit.
     """
-    if y >= 2 ** 128:
+    if y.bit_length() > 128:
         raise ValueError("Input must be 128-bit.")
     y_ = split(4, 32, y)
     y0, y1, y2, y3 = y_
@@ -51,7 +51,7 @@ def rowround(_y: int) -> Word:
     Returns a 512-bit value.
     Raises error if input is larger than 512-bit.
     """
-    if _y >= 2 ** 512:
+    if _y.bit_length() > 512:
         raise ValueError("Input must be 512-bit.")
     y = split(16, 32, _y)
     z = [None] * 16
@@ -68,7 +68,7 @@ def columnround(_x: int) -> Word:
     Returns a 512-bit value.
     Raises error if input is larger than 512-bit.
     """
-    if _x >= 2 ** 512:
+    if _x.bit_length() > 512:
         raise ValueError("Input must be 512-bit.")
     x = split(16, 32, _x)
     y = [None] * 16
@@ -95,7 +95,7 @@ def littleendian(_b: int) -> Word:
     Returns a 32-bit value.
     Raises error if input is larger than 32-bit.
     """
-    if _b >= 2 ** 32:
+    if _b.bit_length() > 32:
         raise ValueError("Input must be 32-bit.")
     b = split(4, 8, _b)
     b.reverse()
@@ -108,7 +108,7 @@ def salsa20(x_: int) -> Word:
     Returns a 64-byte sequence.
     Raises error if input is larger than 512-bit.
     """
-    if x_ >= 2 ** 512:
+    if x_.bit_length() > 512:
         raise ValueError("Input must be 512-bit.")
     x = split(64, 8, x_)
     # [a, b, c, d, e, f, g, h] -> [ [a,b,c,d], [e,f,g,h] ]
