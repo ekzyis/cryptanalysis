@@ -126,8 +126,8 @@ def expansion(k_: int, n_: int) -> Word:
     Returns a 64-byte sequence.
     Raises error if key is larger than 256-bit or nonce is larger than 128-bit.
     """
-    if k_.bit_length() > 8 * 16:
-        if k_.bit_length() > 8 * 32:
+    if k_.bit_length() > 128:
+        if k_.bit_length() > 256:
             raise ValueError("k must be smaller than 32 byte")
         k0, k1 = split(2, 16 * 8, k_)
         n = split(4, 4 * 8, n_)
