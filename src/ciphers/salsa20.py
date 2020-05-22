@@ -128,7 +128,7 @@ def expansion(k_: int, n_: int) -> Word:
     """
     if k_.bit_length() > 128:
         if k_.bit_length() > 256:
-            raise ValueError("k must be smaller than 32 byte")
+            raise ValueError("k must be 256-bit.")
         k0, k1 = split(2, 16 * 8, k_)
         n = split(4, 4 * 8, n_)
         sigma = [
