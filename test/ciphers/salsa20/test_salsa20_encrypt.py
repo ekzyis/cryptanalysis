@@ -100,8 +100,8 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
 
     @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_3(self, iv):
-        """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 27."""
-        k = Word((0x00000010, 0x0, 0x0, 0x0),
+        """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 18."""
+        k = Word((0x00002000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
         stream = [
@@ -115,9 +115,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             expansion(k, Word(0x0, Word(0x7, bit=64).littleendian(), bit=64)),
         ]
         self.assertEqual(reduce(lambda a, b: a ^ b, stream), Word(
-            (0x00589828, 0x50C947A6, 0x37502384, 0x09A95FFF),
-            (0xCA5A5599, 0x90EF1A60, 0xF038ADAA, 0xF965DD6B),
-            (0x3931693C, 0x24AF075C, 0xC2766368, 0x3B7B15D1),
-            (0x0F7A4B6B, 0xD1AD61F3, 0x5D67A7E6, 0x32ADBF2D),
+            (0xC442D753, 0x8E8129F0, 0x48E38EA1, 0xA6FFA5F8),
+            (0x29F5B54D, 0x26A01DB1, 0xC0FA1B2E, 0x07418FB1),
+            (0x872C5D96, 0xCDC25074, 0x6C26BD80, 0x3903E28D),
+            (0x7DEC66DE, 0xD9AB7DE6, 0x797C502B, 0x3D1B246D),
             bit=32
         ))
