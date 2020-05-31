@@ -159,14 +159,14 @@ def encrypt(k: int, text: Text) -> Tuple[Text, int]:
     will never be used again with the same key.
     """
     random.seed(time())
-    # first 64 bits of the nonce is the unique message number
-    unique_message_number = random.randint(0, 2 ** 64)
+    # first 64 bits of the nonce is the unique message number / initialization vector
+    iv = random.randint(0, 2 ** 64)
 
     def create_nonce(cnt: int):
         # last 64 bits of the nonce are the counter in littleendian
-        return Word(unique_message_number, Word(cnt, bit=64).littleendian(), bit=64)
+        return Word(iv, Word(cnt, bit=64).littleendian(), bit=64)
 
     stream_blocks_needed = ceil(text.bit / 512)
     stream = Word(*[expansion(k, create_nonce(counter)) for counter in range(stream_blocks_needed)], bit=512)
     stream_bits = stream_blocks_needed * 512
-    return text ^ limit(text.bit, stream_bits, stream), unique_message_number
+    return text ^ limit(text.bit, stream_bits, stream), iv
