@@ -230,7 +230,7 @@ def decrypt(key: int, text: int, *args: Any, **kwargs: Any) -> int:
 
 
 def feal() -> Optional[int]:
-    """Execute FEAL-NX cipher with arguments given on comand line.
+    """Execute FEAL-NX cipher with arguments given on command line.
 
     Gets arguments from docopt which parses sys.argv.
     See http://docopt.org/ if you are not familiar with docopt argument parsing.
