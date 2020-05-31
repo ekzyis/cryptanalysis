@@ -74,7 +74,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         ))
 
     @mock.patch('random.randint', return_value=0x0)
-    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bit_plaintext(self, iv):
+    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bytes_plaintext(self, iv):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
