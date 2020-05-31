@@ -158,6 +158,16 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(c, m ^ stream)
 
     @mock.patch('random.randint', return_value=0x0)
+    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_8_bytes_plaintext(self, iv):
+        k = Word((0x80000000, 0x0, 0x0, 0x0),
+                 (0x00000000, 0x0, 0x0, 0x0),
+                 bit=32)
+        m = Text(0xdf31a36fbdd19f0d, bit=64)
+        c = encrypt(k, m)
+        stream = Word(0xe3be8fdd8beca2e3, bit=64)
+        self.assertEqual(c, m ^ stream)
+
+    @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_2(self, iv):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 9."""
         k = Word((0x00400000, 0x0, 0x0, 0x0),
