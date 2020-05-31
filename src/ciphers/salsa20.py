@@ -22,6 +22,7 @@ from functools import reduce
 from math import ceil
 from time import time
 
+from util.limit import limit
 from util.rot import rot_left
 from util.split import split
 from util.types import Text
@@ -166,4 +167,5 @@ def encrypt(k: int, text: Text) -> Text:
 
     stream_blocks_needed = ceil(text.bit / 512)
     stream = Word(*[expansion(k, create_nonce(counter)) for counter in range(stream_blocks_needed)], bit=512)
-    return text ^ stream
+    stream_bits = stream_blocks_needed * 512
+    return text ^ limit(text.bit, stream_bits, stream)
