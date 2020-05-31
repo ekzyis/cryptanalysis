@@ -113,8 +113,7 @@ def salsa20(x_: int) -> Word:
     x = split(64, 8, x_)
     # [a, b, c, d, e, f, g, h] -> [ [a,b,c,d], [e,f,g,h] ]
     zipped = [x[i:i + 4] for i in range(0, len(x), 4)]
-    word_zipped = [Word(*b, bit=8) for b in zipped]
-    littleendian_words = [littleendian(w) for w in word_zipped]
+    littleendian_words = [Word(*b, bit=8).littleendian() for b in zipped]
     w = Word(*littleendian_words, bit=32)
     z = split(16, 32, reduce(lambda a, _: doubleround(a), range(10), w))
     return Word(*[littleendian((xi + zi) % 2 ** 32) for xi, zi in zip(w, z)], bit=32)
