@@ -4,6 +4,7 @@ from itertools import chain
 from typing import List, Any
 
 from util.concat_bits import concat_bits
+from util.split import yield_split
 
 
 class Word(int):
@@ -36,3 +37,9 @@ class Word(int):
     def __getitem__(self, i):
         """Return the i-th block."""
         return self.blocks[i]
+
+    def littleendian(self):
+        """Return integer in little-endian format."""
+        b = [x for x in yield_split(8, len(self.blocks) * self.bit, self)]
+        b.reverse()
+        return Word(*b, bit=8)
