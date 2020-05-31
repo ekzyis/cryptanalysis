@@ -4,7 +4,7 @@ from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.salsa20 import expansion, encrypt
+from ciphers.salsa20 import expansion, encrypt, encrypt_and_add_iv
 from util.types import Text
 from util.word import Word
 
@@ -72,6 +72,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
+        c_with_iv = encrypt_and_add_iv(k, m)
+        iv_from_c_with_iv = c_with_iv >> 4096
+        self.assertEqual(iv_from_c_with_iv, 0x0)
+        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
+        self.assertEqual(c_from_c_with_iv, c)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bytes_plaintext(self, iv):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -123,6 +128,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=64
         )
         self.assertEqual(c, m ^ stream)
+        c_with_iv = encrypt_and_add_iv(k, m)
+        iv_from_c_with_iv = c_with_iv >> 4096
+        self.assertEqual(iv_from_c_with_iv, 0x0)
+        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
+        self.assertEqual(c_from_c_with_iv, c)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_256_bytes_plaintext(self, iv):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -154,6 +164,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=64
         )
         self.assertEqual(c, m ^ stream)
+        c_with_iv = encrypt_and_add_iv(k, m)
+        iv_from_c_with_iv = c_with_iv >> 2048
+        self.assertEqual(iv_from_c_with_iv, 0x0)
+        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 256, bit=8)
+        self.assertEqual(c_from_c_with_iv, c)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_8_bytes_plaintext(self, iv):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -163,6 +178,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         c, _ = encrypt(k, m)
         stream = Word(0xe3be8fdd8beca2e3, bit=64)
         self.assertEqual(c, m ^ stream)
+        c_with_iv = encrypt_and_add_iv(k, m)
+        iv_from_c_with_iv = c_with_iv >> 64
+        self.assertEqual(iv_from_c_with_iv, 0x0)
+        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 8, bit=8)
+        self.assertEqual(c_from_c_with_iv, c)
 
     def test_salsa20_encrypt_256_bit_key_2(self, iv):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 9."""
@@ -219,6 +239,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
+        c_with_iv = encrypt_and_add_iv(k, m)
+        iv_from_c_with_iv = c_with_iv >> 4096
+        self.assertEqual(iv_from_c_with_iv, 0x0)
+        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
+        self.assertEqual(c_from_c_with_iv, c)
 
     def test_salsa20_encrypt_256_bit_key_3(self, iv):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 18."""
@@ -275,3 +300,8 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
+        c_with_iv = encrypt_and_add_iv(k, m)
+        iv_from_c_with_iv = c_with_iv >> 4096
+        self.assertEqual(iv_from_c_with_iv, 0x0)
+        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
+        self.assertEqual(c_from_c_with_iv, c)

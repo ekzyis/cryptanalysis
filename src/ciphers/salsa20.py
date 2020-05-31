@@ -170,3 +170,8 @@ def encrypt(k: int, text: Text) -> Tuple[Text, int]:
     stream = Word(*[expansion(k, create_nonce(counter)) for counter in range(stream_blocks_needed)], bit=512)
     stream_bits = stream_blocks_needed * 512
     return text ^ limit(text.bit, stream_bits, stream), iv
+
+def encrypt_and_add_iv(k: int, text: Text) -> Text:
+    """Encrypt the message with the given key with Salsa20 and add the IV for decryption."""
+    c, iv = encrypt(k, text)
+    return iv << c.bit | c
