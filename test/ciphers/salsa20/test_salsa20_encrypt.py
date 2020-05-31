@@ -126,6 +126,38 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(c, m ^ stream)
 
     @mock.patch('random.randint', return_value=0x0)
+    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_256_bytes_plaintext(self, iv):
+        k = Word((0x80000000, 0x0, 0x0, 0x0),
+                 (0x00000000, 0x0, 0x0, 0x0),
+                 bit=32)
+        # 64 bit * 4 * 8 = 256 bit * 8 = 256 bytes
+        m = Text(
+            0xdf31a36fbdd19f0d, 0x57519a1a8a9e677b, 0xa7037dc1e72595cb, 0x86ae61b858605ccc,
+            0xc3045206b2437afc, 0xe21e6a5c66f631fe, 0xb43a64b51ea2c489, 0x860d212a7c9a72fd,
+            0x8ada021ed41e0c95, 0x1f9c8cc391aa8bbc, 0xf4b9d53d3ab1bc13, 0xd950c1ea2762614e,
+            0xb115e14e4fdb0c9d, 0x4a678418995c1a9a, 0x61ccda166f77c262, 0x667430d278b5c107,
+
+            0x722b2c668370a829, 0x6bcc754023701aa1, 0xd6358099024336b5, 0xa5db1cd4aac92019,
+            0x406278ada2dab814, 0x3bdee36b7885605d, 0x4f4abe76d7a8d507, 0x639c8dbbc15a0b03,
+            0xf8c38747894e9e38, 0x55caef1fd0fd04b7, 0xbeff18c08c633936, 0x69c9cc6d6d2741fb,
+            0x4fcdd255bdd31fa1, 0x1a4ece13df801d2f, 0x5835f331063f2477, 0x2ad5ae463c36ad36,
+            bit=64)
+        c = encrypt(k, m)
+        stream = Word(
+            0xe3be8fdd8beca2e3, 0xea8ef9475b29a6e7, 0x003951e1097a5c38, 0xd23b7a5fad9f6844,
+            0xb22c97559e2723c7, 0xcbbd3fe4fc8d9a07, 0x44652a83e72a9c46, 0x1876af4d7ef1a117,
+            0x8da2b74eef1b6283, 0xe7e20166abcae538, 0xe9716e4669e2816b, 0x6b20c5c356802001,
+            0xcc1403a9a117d12a, 0x2669f456366d6ebb, 0x0f1246f1265150f7, 0x93cdb4b253e348ae,
+
+            0x203d89bc025e802a, 0x7e0e00621d70aa36, 0xb7e07cb1e7d5b38d, 0x5e222b8b0e4b8407,
+            0x0142b1e29504767d, 0x76824850320b5368, 0x129fdd74e861b498, 0xe3be8d16f2d7d169,
+            0x57be81f47b17d9ae, 0x7c4ff15429a73e10, 0xacf250ed3a90a93c, 0x711308a74c6216a9,
+            0xed84cd126da7f28e, 0x8abf8bb63517e1ca, 0x98e712f4fb2e1a6a, 0xed9fdc73291faa17,
+            bit=64
+        )
+        self.assertEqual(c, m ^ stream)
+
+    @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_2(self, iv):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 9."""
         k = Word((0x00400000, 0x0, 0x0, 0x0),
