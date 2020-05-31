@@ -13,6 +13,8 @@ class Word(int):
     For example, the word 0xffffffffffffffff consists of four times 0xffff and thus
     can be created for easier reading using this syntax:
         Word(0xffff, 0xffff, 0xffff, 0xffff, bit=16)
+    or
+        Word((0xffff,) * 4, bit=16)
     """
 
     # TODO args should actually be hinted with Union[int, Tuple[int, ...]]
