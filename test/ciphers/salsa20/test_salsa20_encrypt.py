@@ -68,7 +68,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Text(0x0, bit=512 * 8)
-        c = encrypt(k, m)
+        c, _ = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
@@ -100,7 +100,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0x3e3c9d6a9a839202, 0xeed50cadff279074, 0x2fcb41ea235aedcc, 0xc73f0ce821ba342e,
             0xd8ba37249c59f87d, 0x2b3ddb44d2e392a5, 0xacb4a32cf7272f4e, 0xd1153624755c6a38,
             bit=64)
-        c = encrypt(k, m)
+        c, _ = encrypt(k, m)
         stream = Word(
             0xe3be8fdd8beca2e3, 0xea8ef9475b29a6e7, 0x003951e1097a5c38, 0xd23b7a5fad9f6844,
             0xb22c97559e2723c7, 0xcbbd3fe4fc8d9a07, 0x44652a83e72a9c46, 0x1876af4d7ef1a117,
@@ -142,7 +142,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0xf8c38747894e9e38, 0x55caef1fd0fd04b7, 0xbeff18c08c633936, 0x69c9cc6d6d2741fb,
             0x4fcdd255bdd31fa1, 0x1a4ece13df801d2f, 0x5835f331063f2477, 0x2ad5ae463c36ad36,
             bit=64)
-        c = encrypt(k, m)
+        c, _ = encrypt(k, m)
         stream = Word(
             0xe3be8fdd8beca2e3, 0xea8ef9475b29a6e7, 0x003951e1097a5c38, 0xd23b7a5fad9f6844,
             0xb22c97559e2723c7, 0xcbbd3fe4fc8d9a07, 0x44652a83e72a9c46, 0x1876af4d7ef1a117,
@@ -163,7 +163,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
         m = Text(0xdf31a36fbdd19f0d, bit=64)
-        c = encrypt(k, m)
+        c, _ = encrypt(k, m)
         stream = Word(0xe3be8fdd8beca2e3, bit=64)
         self.assertEqual(c, m ^ stream)
 
@@ -219,7 +219,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Text(0x0, bit=512 * 8)
-        c = encrypt(k, m)
+        c, _ = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
@@ -276,7 +276,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Text(0x0, bit=512 * 8)
-        c = encrypt(k, m)
+        c, _ = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
