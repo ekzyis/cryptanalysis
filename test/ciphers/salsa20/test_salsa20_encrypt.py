@@ -9,6 +9,7 @@ from util.types import Text
 from util.word import Word
 
 
+@mock.patch('random.randint', return_value=0x0)
 class TestSalsa20CipherEncrypt(unittest.TestCase):
     """Test if encryption returns the same results as the test data.
 
@@ -16,7 +17,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
     https://github.com/das-labor/legacy/blob/master/microcontroller-2/crypto-lib/testvectors/salsa20-full-verified.test-vectors
     """
 
-    @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_1(self, iv):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 0."""
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -73,7 +73,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             *[stream[i] for i in range(8)], bit=512
         ))
 
-    @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bytes_plaintext(self, iv):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
@@ -125,7 +124,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         )
         self.assertEqual(c, m ^ stream)
 
-    @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_256_bytes_plaintext(self, iv):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
@@ -157,7 +155,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         )
         self.assertEqual(c, m ^ stream)
 
-    @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_8_bytes_plaintext(self, iv):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
@@ -167,7 +164,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         stream = Word(0xe3be8fdd8beca2e3, bit=64)
         self.assertEqual(c, m ^ stream)
 
-    @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_2(self, iv):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 9."""
         k = Word((0x00400000, 0x0, 0x0, 0x0),
@@ -224,7 +220,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             *[stream[i] for i in range(8)], bit=512
         ))
 
-    @mock.patch('random.randint', return_value=0x0)
     def test_salsa20_encrypt_256_bit_key_3(self, iv):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 18."""
         k = Word((0x00002000, 0x0, 0x0, 0x0),
