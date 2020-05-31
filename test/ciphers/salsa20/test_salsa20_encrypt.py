@@ -30,8 +30,8 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=128
         ))
         c = Word((0x03,), (0x0,) * 7, bit=8)
-        stream1 = expansion(k, Word(0x0, c, bit=64))
-        self.assertEqual(stream1, Word(
+        stream3 = expansion(k, Word(0x0, c, bit=64))
+        self.assertEqual(stream3, Word(
             0x57BE81F47B17D9AE7C4FF15429A73E10,
             0xACF250ED3A90A93C711308A74C6216A9,
             0xED84CD126DA7F28E8ABF8BB63517E1CA,
@@ -39,8 +39,8 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=128
         ))
         c = Word((0x04,), (0x0,) * 7, bit=8)
-        stream2 = expansion(k, Word(0x0, c, bit=64))
-        self.assertEqual(stream2, Word(
+        stream4 = expansion(k, Word(0x0, c, bit=64))
+        self.assertEqual(stream4, Word(
             0x958211C4BA2EBD5838C635EDB81F513A,
             0x91A294E194F1C039AEEC657DCE40AA7E,
             0x7C0AF57CACEFA40C9F14B71A4B3456A6,
@@ -48,8 +48,8 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=128
         ))
         c = Word((0x07,), (0x0,) * 7, bit=8)
-        stream3 = expansion(k, Word(0x0, c, bit=64))
-        self.assertEqual(stream3, Word(
+        stream7 = expansion(k, Word(0x0, c, bit=64))
+        self.assertEqual(stream7, Word(
             0x696AFCFD0CDDCC83C7E77F11A649D79A,
             0xCDC3354E9635FF137E929933A0BD6F53,
             0x77EFA105A3A4266B7C0D089D08F1E855,
