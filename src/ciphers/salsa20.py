@@ -159,11 +159,11 @@ def encrypt(k: int, text: int) -> int:
     random.seed(time())
     # first 64 bits of the nonce is the unique message number
     unique_message_number = random.randint(0, 2 ** 64)
-    # last 64 bits of the nonce are the counter
+    # last 64 bits of the nonce are the counter in littleendian
     c = 0
     cipher = 0x0
     for text_block in yield_split(512, text.bit_length(), text):
-        nonce = concat_bits(unique_message_number, c, n=64)
+        nonce = concat_bits(unique_message_number, Word(c, bit=64).littleendian(), n=64)
         stream = expansion(k, nonce)
         limited_stream = limit(text_block.bit_length(), 512, stream)
         encrypted_text_block = text_block ^ limited_stream
