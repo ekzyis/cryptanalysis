@@ -11,7 +11,7 @@ class Word(int):
     """Words represent integers but can be created in way which is easier to read.
 
     For example, the word 0xffffffffffffffff consists of four times 0xffff and thus
-    can be easier created using this syntax:
+    can be created for easier reading using this syntax:
         Word(0xffff, 0xffff, 0xffff, 0xffff, bit=16)
     """
 
