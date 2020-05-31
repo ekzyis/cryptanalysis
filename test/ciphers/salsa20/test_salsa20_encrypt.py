@@ -1,9 +1,10 @@
 import unittest
+from functools import reduce
 from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.salsa20 import encrypt, expansion
+from ciphers.salsa20 import expansion
 from util.word import Word
 
 
@@ -20,7 +21,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
-        m = 0x0
         stream0 = expansion(k, Word(0x0, 0x0, bit=64))
         self.assertEqual(stream0, Word(
             0xE3BE8FDD8BECA2E3EA8EF9475B29A6E7,
@@ -56,8 +56,17 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0xCC32B15B93784A36E56A76CC64BC8477,
             bit=128
         ))
-        c = encrypt(k, m)
-        self.assertEqual(c, Word(
+        stream = [
+            stream0,
+            expansion(k, Word(0x0, Word(0x1, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x2, bit=64).littleendian(), bit=64)),
+            stream3,
+            stream4,
+            expansion(k, Word(0x0, Word(0x5, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x6, bit=64).littleendian(), bit=64)),
+            stream7
+        ]
+        self.assertEqual(reduce(lambda a, b: a ^ b, stream), Word(
             (0x50EC2485, 0x637DB19C, 0x6E795E9C, 0x73938280),
             (0x6F6DB320, 0xFE3D0444, 0xD56707D7, 0xB456457F),
             (0x3DB3E8D7, 0x065AF375, 0xA225A709, 0x51C8AB74),
@@ -71,9 +80,17 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         k = Word((0x00400000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
-        m = 0x0
-        c = encrypt(k, m)
-        self.assertEqual(c, Word(
+        stream = [
+            expansion(k, Word(0x0, Word(0x0, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x1, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x2, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x3, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x4, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x5, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x6, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x7, bit=64).littleendian(), bit=64)),
+        ]
+        self.assertEqual(reduce(lambda a, b: a ^ b, stream), Word(
             (0x44936C5A, 0xE8EA9963, 0x0920CEC7, 0xC0FE9E8E),
             (0xA6C51663, 0x66D543D3, 0xA6FCCE3E, 0xAE9B0DF6),
             (0x28C61B62, 0xCABD61B4, 0x4F561044, 0x0C6798E9),
@@ -87,9 +104,17 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         k = Word((0x00000010, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
-        m = 0x0
-        c = encrypt(k, m)
-        self.assertEqual(c, Word(
+        stream = [
+            expansion(k, Word(0x0, Word(0x0, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x1, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x2, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x3, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x4, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x5, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x6, bit=64).littleendian(), bit=64)),
+            expansion(k, Word(0x0, Word(0x7, bit=64).littleendian(), bit=64)),
+        ]
+        self.assertEqual(reduce(lambda a, b: a ^ b, stream), Word(
             (0x00589828, 0x50C947A6, 0x37502384, 0x09A95FFF),
             (0xCA5A5599, 0x90EF1A60, 0xF038ADAA, 0xF965DD6B),
             (0x3931693C, 0x24AF075C, 0xC2766368, 0x3B7B15D1),
