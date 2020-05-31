@@ -5,6 +5,7 @@ from unittest import mock
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.salsa20 import expansion, encrypt
+from util.types import Text
 from util.word import Word
 
 
@@ -66,7 +67,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             (0x4EC4D595, 0xE85225F0, 0x8E2BC03F, 0xE1C42567),
             bit=32
         ))
-        m = 0x0
+        m = Text(0x0, bit=512 * 8)
         c = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
@@ -123,7 +124,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             (0x3B820711, 0x202105D1, 0x20398ECB, 0x96C0C102),
             bit=32
         ))
-        m = 0x0
+        m = Text(0x0, bit=512 * 8)
         c = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
@@ -180,7 +181,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             (0x7DEC66DE, 0xD9AB7DE6, 0x797C502B, 0x3D1B246D),
             bit=32
         ))
-        m = 0x0
+        m = Text(0x0, bit=512 * 8)
         c = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
