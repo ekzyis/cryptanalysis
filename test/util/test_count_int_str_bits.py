@@ -30,6 +30,18 @@ class TestCountIntStrBits(unittest.TestCase):
         self.assertEqual(count_int_str_bits('0x00FF'), 16)
         self.assertEqual(count_int_str_bits('0x00'), 8)
 
+    def test_count_int_str_bits_with_octal_integer_string_without_leading_zeros(self):
+        self.assertEqual(count_int_str_bits('0o41'), 6)
+        self.assertEqual(count_int_str_bits('0o40'), 6)
+        self.assertEqual(count_int_str_bits('0o37'), 6)
+        self.assertEqual(count_int_str_bits('0o1'), 3)
+        self.assertEqual(count_int_str_bits('0o0'), 3)
+
+    def test_count_int_str_bits_with_octal_integer_string_with_leading_zeros(self):
+        self.assertEqual(count_int_str_bits('0o01'), 6)
+        self.assertEqual(count_int_str_bits('0o0377'), 12)
+        self.assertEqual(count_int_str_bits('0o00'), 6)
+
     def test_count_int_str_bits_with_binary_integer_string_without_leading_zeros(self):
         self.assertEqual(count_int_str_bits('0b10000000'), 8)
         self.assertEqual(count_int_str_bits('0b1001'), 4)
@@ -48,3 +60,5 @@ class TestCountIntStrBits(unittest.TestCase):
             count_int_str_bits('0xTEST')
         with self.assertRaises(ValueError):
             count_int_str_bits('0b2')
+        with self.assertRaises(ValueError):
+            count_int_str_bits('0o9')
