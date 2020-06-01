@@ -5,7 +5,6 @@ from unittest import mock
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.salsa20 import expansion, encrypt, encrypt_and_add_iv
-from util.types import Text
 from util.word import Word
 
 
@@ -67,7 +66,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             (0x4EC4D595, 0xE85225F0, 0x8E2BC03F, 0xE1C42567),
             bit=32
         ))
-        m = Text(0x0, bit=4096)
+        m = Word(0x0, bit=4096)
         c, _ = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
@@ -83,7 +82,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
         # 64 bit * 4 * 16 = 256 bit * 16 = 512 bit * 8 = 512 bytes
-        m = Text(
+        m = Word(
             0xdf31a36fbdd19f0d, 0x57519a1a8a9e677b, 0xa7037dc1e72595cb, 0x86ae61b858605ccc,
             0xc3045206b2437afc, 0xe21e6a5c66f631fe, 0xb43a64b51ea2c489, 0x860d212a7c9a72fd,
             0x8ada021ed41e0c95, 0x1f9c8cc391aa8bbc, 0xf4b9d53d3ab1bc13, 0xd950c1ea2762614e,
@@ -139,7 +138,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
         # 64 bit * 4 * 8 = 256 bit * 8 = 256 bytes
-        m = Text(
+        m = Word(
             0xdf31a36fbdd19f0d, 0x57519a1a8a9e677b, 0xa7037dc1e72595cb, 0x86ae61b858605ccc,
             0xc3045206b2437afc, 0xe21e6a5c66f631fe, 0xb43a64b51ea2c489, 0x860d212a7c9a72fd,
             0x8ada021ed41e0c95, 0x1f9c8cc391aa8bbc, 0xf4b9d53d3ab1bc13, 0xd950c1ea2762614e,
@@ -174,7 +173,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
-        m = Text(0xdf31a36fbdd19f0d, bit=64)
+        m = Word(0xdf31a36fbdd19f0d, bit=64)
         c, _ = encrypt(k, m)
         stream = Word(0xe3be8fdd8beca2e3, bit=64)
         self.assertEqual(c, m ^ stream)
@@ -234,7 +233,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             (0x3B820711, 0x202105D1, 0x20398ECB, 0x96C0C102),
             bit=32
         ))
-        m = Text(0x0, bit=4096)
+        m = Word(0x0, bit=4096)
         c, _ = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
@@ -295,7 +294,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             (0x7DEC66DE, 0xD9AB7DE6, 0x797C502B, 0x3D1B246D),
             bit=32
         ))
-        m = Text(0x0, bit=4096)
+        m = Word(0x0, bit=4096)
         c, _ = encrypt(k, m)
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512

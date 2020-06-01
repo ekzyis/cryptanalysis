@@ -2,8 +2,6 @@
 
 from typing import Protocol, Any, TypedDict, Callable
 
-from util.word import Word
-
 
 class CipherFunction(Protocol):
     """Class for type hinting cipher functions (functions with signature as __call__)."""
@@ -26,10 +24,3 @@ CipherOptions = TypedDict('CipherOptions', {
     '-x': str,
     'blocksize': int,
 })
-
-
-class Text(Word):
-    def __init__(self, *args: Any, bit: int = 32) -> None:
-        super().__init__(*args, bit=bit)
-        self.bit = len(self.blocks) * bit
-        delattr(self, 'blocks')

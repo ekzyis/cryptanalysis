@@ -31,6 +31,7 @@ class Word(int):
         super().__init__()
         self.blocks = args
         self.bit = bit
+        self.bits = len(self.blocks) * self.bit
 
     def __iter__(self):
         """Return an iterator to the blocks of bytes."""
