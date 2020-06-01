@@ -1,4 +1,4 @@
-"""Implements wrapping for en- and decryption.
+"""Implements wrapping for en- and decryption of _block ciphers_.
 
 Wrappers are for example functions which implement ECB or encoding.
 The wrappers are implemented to be general purpose. One can pass cipher functions to them
