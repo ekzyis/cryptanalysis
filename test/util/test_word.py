@@ -58,3 +58,9 @@ class TestWord(unittest.TestCase):
         self.assertEqual(w4.littleendian(), 0xAF1254)
         w5 = Word(0x0154, 0x1203, 0x0AFC, bit=16)
         self.assertEqual(w5.littleendian(), 0xFC0A03125401)
+
+    def test_word_hex(self):
+        w1 = Word(0x0, bit=16)
+        self.assertEqual(w1.hex(), '0x0000')
+        w2 = Word(0x13, 0xfa, bit=16)
+        self.assertEqual(w2.hex(), '0x001300fa')

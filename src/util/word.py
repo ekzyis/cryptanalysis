@@ -1,6 +1,7 @@
 """Utility class to store bitstrings in a more readable way."""
 
 from itertools import chain
+from math import ceil
 from typing import List, Any
 
 from util.concat_bits import concat_bits
@@ -40,6 +41,9 @@ class Word(int):
     def __getitem__(self, i):
         """Return the i-th block."""
         return self.blocks[i]
+
+    def hex(self):
+        return "{0:#0{1}x}".format(self, ceil(self.bits / 4) + 2)
 
     def littleendian(self):
         """Return integer in little-endian format."""
