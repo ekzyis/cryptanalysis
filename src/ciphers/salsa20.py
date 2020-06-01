@@ -1,15 +1,14 @@
-"""Salsa20 implementation.
+"""Salsa20/r implementation.
 
 The specification found at https://cr.yp.to/snuffle/spec.pdf is used as a reference
 for this implementation.
 
 Usage:
-    salsa encrypt [options] KEY PLAINTEXT
-    salsa decrypt [options] KEY CIPHERTEXT
+    salsa20 encrypt [options] KEY PLAINTEXT
+    salsa20 decrypt [options] KEY CIPHERTEXT
 
-    -n=N, --round-number=N  Number of rounds. Must be even. [default: 32]
+    -r=[8,12,20]            Number of rounds. [default: 20]
     -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
-    -m=[ecb,none]           Specifies the mode of operation [default: none]
     -x=[utf8,none]          Specifies the encoding of the cipher-/plaintext. [default: none]
 
     KEY                     The key which should be used for en-/decryption.
