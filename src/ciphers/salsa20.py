@@ -182,9 +182,9 @@ def encrypt_and_add_iv(k: int, text: Word) -> Word:
 def salsa20() -> Optional[Word]:
     """Execute Salsa20 cipher with arguments given on comand line.
 
-        Gets arguments from docopt which parses sys.argv.
-        See http://docopt.org/ if you are not familiar with docopt argument parsing.
-        """
+    Gets arguments from docopt which parses sys.argv.
+    See http://docopt.org/ if you are not familiar with docopt argument parsing.
+    """
     args = docopt(__doc__)
 
     raw_text = args['PLAINTEXT'] or args['CIPHERTEXT']
