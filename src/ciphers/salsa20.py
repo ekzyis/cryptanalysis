@@ -164,13 +164,13 @@ def encrypt(k: int, text: Word) -> Tuple[Word, Word]:
         # last 64 bits of the nonce are the counter in littleendian
         return Word(iv, Word(cnt, bit=64).littleendian(), bit=64)
 
-    stream_blocks_needed = ceil(text.bit / 512)
+    stream_blocks_needed = ceil(text.bits / 512)
     stream = Word(*[expansion(k, create_nonce(counter)) for counter in range(stream_blocks_needed)], bit=512)
     stream_bits = stream_blocks_needed * 512
-    return Word(text ^ limit(text.bit, stream_bits, stream), bit=text.bit), iv
+    return Word(text ^ limit(text.bits, stream_bits, stream), bit=text.bits), iv
 
 
 def encrypt_and_add_iv(k: int, text: Word) -> Word:
     """Encrypt the message with the given key with Salsa20 and add the IV for decryption."""
     c, iv = encrypt(k, text)
-    return Word(iv << c.bit | c, bit=text.bit)
+    return Word(iv << c.bit | c, bit=text.bits)
