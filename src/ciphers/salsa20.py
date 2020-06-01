@@ -22,7 +22,7 @@ from math import ceil
 from time import time
 from typing import Optional, Any
 
-from docopt import docopt
+from docopt import docopt  # type: ignore
 
 from util.count_int_str_bits import count_int_str_bits
 from util.limit import limit
