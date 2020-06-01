@@ -191,6 +191,14 @@ def encrypt(k: int, text: Word) -> Word:
     return Word(iv << c.bits | c, bit=text.bits + 64)
 
 
+def decrypt(k: int, text: Word) -> Word:
+    """Decrypt the message with the given key with Salsa20, extracting the IV from the ciphertext."""
+    ciphertext_bits = text.bits - 64
+    iv = text >> ciphertext_bits
+    ciphertext = Word(text & Word((0xFF,) * int(ciphertext_bits / 8), bit=8), bit=ciphertext_bits)
+    return xcrypt(k, ciphertext, iv=iv)
+
+
 def salsa20() -> Optional[Word]:
     """Execute Salsa20 cipher with arguments given on comand line.
 
@@ -207,7 +215,7 @@ def salsa20() -> Optional[Word]:
     if args['encrypt']:
         return encrypt(k, text)
     elif args['decrypt']:
-        pass
+        return decrypt(k, text)
     return None
 
 
