@@ -31,3 +31,23 @@ def count_int_str_bits(x: str) -> int:
     except ValueError:
         raise
     pass
+    # get the base int(x, 0) used to convert the string into a number
+    base = 0
+    for b in [2, 8, 10, 16]:
+        try:
+            int(x, b)
+            base = b
+            break
+        except ValueError:
+            pass
+    assert b != 0
+    if base == 10:
+        x_without_base_prefix = x
+    else:
+        x_without_base_prefix = x[2:]  # remove prefix
+    multiplier = 1
+    if base == 8:
+        multiplier = 3
+    elif base in [10, 16]:
+        multiplier = 4
+    return len(x_without_base_prefix) * multiplier
