@@ -26,10 +26,18 @@ def count_int_str_bits(x: str) -> int:
         count_int_str_bits('32') -> 8
     """
     # input must be in valid format thus int(x,0) should not raise an exception
+    #   except for decimal inputs with leading zeros.
     try:
         int(x, 0)
     except ValueError:
-        raise
+        """Check if int(x, 10) would throw an ValueError because int("01", 0) throws ValueError
+        even though it is a valid number for us.
+        If int(x, 10) also throws an ValueError, the input is really invalid.
+        """
+        try:
+            int(x, 10)
+        except ValueError:
+            raise
     pass
     prefix = x[:2]
     if prefix == '0b':
