@@ -103,7 +103,7 @@ def littleendian(_b: int) -> Word:
     return Word(*b, bit=8)
 
 
-def salsa20(x_: int) -> Word:
+def salsa20_hash(x_: int) -> Word:
     """Calculate the salsa20 hash of the value.
 
     Returns a 64-byte sequence.
@@ -137,7 +137,7 @@ def expansion(k_: int, n_: int) -> Word:
             Word(101, 120, 112, 97, bit=8), Word(110, 100, 32, 51, bit=8),
             Word(50, 45, 98, 121, bit=8), Word(116, 101, 32, 107, bit=8)
         ]
-        return salsa20(
+        return salsa20_hash(
             Word(sigma[0], *split(4, 4 * 8, k0), sigma[1], *n, sigma[2], *split(4, 4 * 8, k1), sigma[3], bit=32))
     else:
         tau = [
@@ -147,7 +147,7 @@ def expansion(k_: int, n_: int) -> Word:
         # split k and n into four slices of four bytes
         k = split(4, 4 * 8, k_)
         n = split(4, 4 * 8, n_)
-        return salsa20(Word(tau[0], *k, tau[1], *n, tau[2], *k, tau[3], bit=32))
+        return salsa20_hash(Word(tau[0], *k, tau[1], *n, tau[2], *k, tau[3], bit=32))
 
 
 def encrypt(k: int, text: Text) -> Tuple[Text, Text]:

@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.salsa20 import salsa20
+from ciphers.salsa20 import salsa20_hash
 from util.word import Word
 
 
@@ -10,7 +10,7 @@ class TestSalsa20CipherSalsa20(unittest.TestCase):
     def test_salsa20_salsa20(self):
         x1 = Word(0x0 * 16 * 4, bit=32)
         z1 = 0x0
-        self.assertEqual(salsa20(x1), z1)
+        self.assertEqual(salsa20_hash(x1), z1)
         x2 = Word(
             (211, 159, 13, 115), (76, 55, 82, 183), (3, 117, 222, 37), (191, 187, 234, 136),
             (49, 237, 179, 48), (1, 106, 178, 219), (175, 199, 166, 48), (86, 16, 179, 207),
@@ -25,7 +25,7 @@ class TestSalsa20CipherSalsa20(unittest.TestCase):
             (219, 236, 232, 135), (111, 155, 110, 18), (24, 232, 95, 158), (179, 19, 48, 202),
             bit=8
         )
-        self.assertEqual(salsa20(x2), z2)
+        self.assertEqual(salsa20_hash(x2), z2)
         x3 = Word(
             (88, 118, 104, 54), (79, 201, 235, 79), (3, 81, 156, 47), (203, 26, 244, 243),
             (191, 187, 234, 136), (211, 159, 13, 115), (76, 55, 82, 183), (3, 117, 222, 37),
@@ -40,12 +40,12 @@ class TestSalsa20CipherSalsa20(unittest.TestCase):
             (27, 111, 114, 114), (118, 40, 152, 157), (180, 57, 27, 94), (107, 42, 236, 35),
             bit=8
         )
-        self.assertEqual(salsa20(x3), z3)
+        self.assertEqual(salsa20_hash(x3), z3)
 
     def test_salsa20_salsa20_raises_value_error_if_input_larger_than_512_bit(self):
         with self.assertRaises(ValueError):
-            salsa20(2 ** 512)
+            salsa20_hash(2 ** 512)
         try:
-            salsa20(2 ** 512 - 1)
+            salsa20_hash(2 ** 512 - 1)
         except ValueError:
             self.fail("salsa20 raised unexpected ValueError")
