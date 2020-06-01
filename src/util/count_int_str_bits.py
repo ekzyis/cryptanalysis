@@ -23,4 +23,9 @@ def count_int_str_bits(x: str) -> int:
         count_int_str_bit('0x0') -> 4
         count_int_str_bits('32') -> 8
     """
+    # input must be in valid format thus int(x,0) should not raise an exception
+    try:
+        int(x, 0)
+    except ValueError:
+        raise
     pass
