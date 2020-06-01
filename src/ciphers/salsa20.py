@@ -175,4 +175,4 @@ def encrypt(k: int, text: Text) -> Tuple[Text, int]:
 def encrypt_and_add_iv(k: int, text: Text) -> Text:
     """Encrypt the message with the given key with Salsa20 and add the IV for decryption."""
     c, iv = encrypt(k, text)
-    return iv << c.bit | c
+    return Text(iv << c.bit | c, bit=text.bit)
