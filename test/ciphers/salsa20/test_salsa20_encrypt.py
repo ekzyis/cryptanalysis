@@ -16,6 +16,19 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
     https://github.com/das-labor/legacy/blob/master/microcontroller-2/crypto-lib/testvectors/salsa20-full-verified.test-vectors
     """
 
+    def _run_test(self, k, m, expected_c, expected_iv):
+        actual_c, actual_iv = encrypt(k, m)
+        self.assertEqual(actual_c, expected_c)
+        self.assertEqual(actual_c.bits, expected_c.bits)
+        self.assertEqual(actual_iv, expected_iv)
+        self.assertEqual(actual_iv.bits, expected_iv.bits)
+        c_with_iv = encrypt_and_add_iv(k, m)
+        self.assertEqual(c_with_iv.bits, expected_c.bits + expected_iv.bits)
+        iv_from_c_with_iv = c_with_iv >> expected_c.bits
+        self.assertEqual(iv_from_c_with_iv, expected_iv)
+        c_from_c_with_iv = c_with_iv & Word((0xFF,) * int(expected_c.bits / 8), bit=8)
+        self.assertEqual(c_from_c_with_iv, expected_c)
+
     def test_salsa20_encrypt_256_bit_key_1(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 0."""
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -67,18 +80,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Word(0x0, bit=4096)
-        c, iv = encrypt(k, m)
-        self.assertEqual(c, Word(
+        expected_c = Word(
             *[stream[i] for i in range(8)], bit=512
-        ))
-        self.assertEqual(c.bits, 4096)
-        self.assertEqual(iv.bits, 64)
-        c_with_iv = encrypt_and_add_iv(k, m)
-        self.assertEqual(c_with_iv.bits, 4096 + 64)
-        iv_from_c_with_iv = c_with_iv >> 4096
-        self.assertEqual(iv_from_c_with_iv, 0x0)
-        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
-        self.assertEqual(c_from_c_with_iv, c)
+        )
+        expected_iv = Word(0x0, bit=64)
+        self._run_test(k, m, expected_c, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -106,7 +112,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0x3e3c9d6a9a839202, 0xeed50cadff279074, 0x2fcb41ea235aedcc, 0xc73f0ce821ba342e,
             0xd8ba37249c59f87d, 0x2b3ddb44d2e392a5, 0xacb4a32cf7272f4e, 0xd1153624755c6a38,
             bit=64)
-        c, iv = encrypt(k, m)
         stream = Word(
             0xe3be8fdd8beca2e3, 0xea8ef9475b29a6e7, 0x003951e1097a5c38, 0xd23b7a5fad9f6844,
             0xb22c97559e2723c7, 0xcbbd3fe4fc8d9a07, 0x44652a83e72a9c46, 0x1876af4d7ef1a117,
@@ -129,15 +134,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0x77efa105a3a4266b, 0x7c0d089d08f1e855, 0xcc32b15b93784a36, 0xe56a76cc64bc8477,
             bit=64
         )
-        self.assertEqual(c, m ^ stream)
-        self.assertEqual(c.bits, 4096)
-        self.assertEqual(iv.bits, 64)
-        c_with_iv = encrypt_and_add_iv(k, m)
-        self.assertEqual(c_with_iv.bits, 4096 + 64)
-        iv_from_c_with_iv = c_with_iv >> 4096
-        self.assertEqual(iv_from_c_with_iv, 0x0)
-        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
-        self.assertEqual(c_from_c_with_iv, c)
+        expected_c = Word(m ^ stream, bit=4096)
+        expected_iv = Word(0x0, bit=64)
+        self._run_test(k, m, expected_c, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_256_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -155,7 +154,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0xf8c38747894e9e38, 0x55caef1fd0fd04b7, 0xbeff18c08c633936, 0x69c9cc6d6d2741fb,
             0x4fcdd255bdd31fa1, 0x1a4ece13df801d2f, 0x5835f331063f2477, 0x2ad5ae463c36ad36,
             bit=64)
-        c, iv = encrypt(k, m)
         stream = Word(
             0xe3be8fdd8beca2e3, 0xea8ef9475b29a6e7, 0x003951e1097a5c38, 0xd23b7a5fad9f6844,
             0xb22c97559e2723c7, 0xcbbd3fe4fc8d9a07, 0x44652a83e72a9c46, 0x1876af4d7ef1a117,
@@ -168,32 +166,19 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0xed84cd126da7f28e, 0x8abf8bb63517e1ca, 0x98e712f4fb2e1a6a, 0xed9fdc73291faa17,
             bit=64
         )
-        self.assertEqual(c, m ^ stream)
-        self.assertEqual(c.bits, 2048)
-        self.assertEqual(iv.bits, 64)
-        c_with_iv = encrypt_and_add_iv(k, m)
-        self.assertEqual(c_with_iv.bits, 2048 + 64)
-        iv_from_c_with_iv = c_with_iv >> 2048
-        self.assertEqual(iv_from_c_with_iv, 0x0)
-        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 256, bit=8)
-        self.assertEqual(c_from_c_with_iv, c)
+        expected_c = Word(m ^ stream, bit=2048)
+        expected_iv = Word(0x0, bit=64)
+        self._run_test(k, m, expected_c, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_8_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
         m = Word(0xdf31a36fbdd19f0d, bit=64)
-        c, iv = encrypt(k, m)
         stream = Word(0xe3be8fdd8beca2e3, bit=64)
-        self.assertEqual(c, m ^ stream)
-        self.assertEqual(c.bits, 64)
-        self.assertEqual(iv.bits, 64)
-        c_with_iv = encrypt_and_add_iv(k, m)
-        self.assertEqual(c_with_iv.bits, 64 + 64)
-        iv_from_c_with_iv = c_with_iv >> 64
-        self.assertEqual(iv_from_c_with_iv, 0x0)
-        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 8, bit=8)
-        self.assertEqual(c_from_c_with_iv, c)
+        expected_c = Word(m ^ stream, bit=64)
+        expected_iv = Word(0x0, bit=64)
+        self._run_test(k, m, expected_c, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_2(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 9."""
@@ -246,18 +231,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Word(0x0, bit=4096)
-        c, iv = encrypt(k, m)
-        self.assertEqual(c, Word(
+        expected_c = Word(
             *[stream[i] for i in range(8)], bit=512
-        ))
-        self.assertEqual(c.bits, 4096)
-        self.assertEqual(iv.bits, 64)
-        c_with_iv = encrypt_and_add_iv(k, m)
-        self.assertEqual(c_with_iv.bits, 4096 + 64)
-        iv_from_c_with_iv = c_with_iv >> 4096
-        self.assertEqual(iv_from_c_with_iv, 0x0)
-        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
-        self.assertEqual(c_from_c_with_iv, c)
+        )
+        expected_iv = Word(0x0, bit=64)
+        self._run_test(k, m, expected_c, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_3(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 18."""
@@ -310,15 +288,8 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Word(0x0, bit=4096)
-        c, iv = encrypt(k, m)
-        self.assertEqual(c, Word(
+        expected_c = Word(
             *[stream[i] for i in range(8)], bit=512
-        ))
-        self.assertEqual(c.bits, 4096)
-        self.assertEqual(iv.bits, 64)
-        c_with_iv = encrypt_and_add_iv(k, m)
-        self.assertEqual(c_with_iv.bits, 4096 + 64)
-        iv_from_c_with_iv = c_with_iv >> 4096
-        self.assertEqual(iv_from_c_with_iv, 0x0)
-        c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
-        self.assertEqual(c_from_c_with_iv, c)
+        )
+        expected_iv = Word(0x0, bit=64)
+        self._run_test(k, m, expected_c, expected_iv)
