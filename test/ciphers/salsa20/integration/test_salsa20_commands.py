@@ -39,7 +39,4 @@ class TestSalsa20Commands(unittest.TestCase):
 
     @default_decrypt_args()
     def test_integration_salsa20_decrypt(self):
-        self.assertEqual(
-            int(salsa20()),
-            0x0
-        )
+        self.assertEqual(int(salsa20()), 0x0)
