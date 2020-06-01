@@ -4,7 +4,7 @@ from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.salsa20 import expansion, encrypt, encrypt_and_add_iv
+from ciphers.salsa20 import expansion, encrypt
 from util.word import Word
 
 
@@ -16,18 +16,21 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
     https://github.com/das-labor/legacy/blob/master/microcontroller-2/crypto-lib/testvectors/salsa20-full-verified.test-vectors
     """
 
-    def _run_test(self, k, m, expected_c, expected_iv):
-        actual_c, actual_iv = encrypt(k, m)
-        self.assertEqual(actual_c, expected_c)
-        self.assertEqual(actual_c.bits, expected_c.bits)
+    def _run_test(self, k, m, expected_c_without_iv, expected_iv):
+        actual_c_with_iv = encrypt(k, m)
+        expected_c_with_iv = Word(
+            expected_iv << expected_c_without_iv.bits | expected_c_without_iv, bit=expected_c_without_iv.bits + 64
+        )
+        self.assertEqual(actual_c_with_iv, expected_c_with_iv)
+        actual_c_without_iv_bits = actual_c_with_iv.bits - 64
+        actual_c_without_iv = Word(
+            actual_c_with_iv & Word((0xFF,) * int(actual_c_without_iv_bits / 8), bit=8), bit=actual_c_without_iv_bits
+        )
+        self.assertEqual(actual_c_without_iv, expected_c_without_iv)
+        self.assertEqual(actual_c_without_iv.bits, expected_c_without_iv.bits)
+        actual_iv = Word(actual_c_with_iv >> actual_c_without_iv.bits, bit=64)
         self.assertEqual(actual_iv, expected_iv)
         self.assertEqual(actual_iv.bits, expected_iv.bits)
-        c_with_iv = encrypt_and_add_iv(k, m)
-        self.assertEqual(c_with_iv.bits, expected_c.bits + expected_iv.bits)
-        iv_from_c_with_iv = c_with_iv >> expected_c.bits
-        self.assertEqual(iv_from_c_with_iv, expected_iv)
-        c_from_c_with_iv = c_with_iv & Word((0xFF,) * int(expected_c.bits / 8), bit=8)
-        self.assertEqual(c_from_c_with_iv, expected_c)
 
     def test_salsa20_encrypt_256_bit_key_1(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 0."""
@@ -72,11 +75,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Word(0x0, bit=4096)
-        expected_c = Word(
+        expected_c_without_iv = Word(
             *[stream[i] for i in range(8)], bit=512
         )
         expected_iv = Word(0x0, bit=64)
-        self._run_test(k, m, expected_c, expected_iv)
+        self._run_test(k, m, expected_c_without_iv, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -126,9 +129,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0x77efa105a3a4266b, 0x7c0d089d08f1e855, 0xcc32b15b93784a36, 0xe56a76cc64bc8477,
             bit=64
         )
-        expected_c = Word(m ^ stream, bit=4096)
+        expected_c_without_iv = Word(m ^ stream, bit=4096)
         expected_iv = Word(0x0, bit=64)
-        self._run_test(k, m, expected_c, expected_iv)
+        self._run_test(k, m, expected_c_without_iv, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_256_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -158,9 +161,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             0xed84cd126da7f28e, 0x8abf8bb63517e1ca, 0x98e712f4fb2e1a6a, 0xed9fdc73291faa17,
             bit=64
         )
-        expected_c = Word(m ^ stream, bit=2048)
+        expected_c_without_iv = Word(m ^ stream, bit=2048)
         expected_iv = Word(0x0, bit=64)
-        self._run_test(k, m, expected_c, expected_iv)
+        self._run_test(k, m, expected_c_without_iv, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_8_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
@@ -215,11 +218,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Word(0x0, bit=4096)
-        expected_c = Word(
+        expected_c_without_iv = Word(
             *[stream[i] for i in range(8)], bit=512
         )
         expected_iv = Word(0x0, bit=64)
-        self._run_test(k, m, expected_c, expected_iv)
+        self._run_test(k, m, expected_c_without_iv, expected_iv)
 
     def test_salsa20_encrypt_256_bit_key_3(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 18."""
@@ -264,8 +267,8 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=32
         ))
         m = Word(0x0, bit=4096)
-        expected_c = Word(
+        expected_c_without_iv = Word(
             *[stream[i] for i in range(8)], bit=512
         )
         expected_iv = Word(0x0, bit=64)
-        self._run_test(k, m, expected_c, expected_iv)
+        self._run_test(k, m, expected_c_without_iv, expected_iv)

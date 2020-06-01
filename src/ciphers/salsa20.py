@@ -20,7 +20,7 @@ import random
 from functools import reduce
 from math import ceil
 from time import time
-from typing import Tuple, Optional, Any
+from typing import Optional, Any
 
 from docopt import docopt
 
@@ -179,7 +179,7 @@ def xcrypt(k: int, text: Word, *args: Any, **kwargs: Any) -> Word:
     return Word(text ^ limit(text.bits, stream_bits, stream), bit=text.bits)
 
 
-def encrypt(k: int, text: Word) -> Tuple[Word, Word]:
+def encrypt(k: int, text: Word) -> Word:
     """Encrypt the message with the givne key with Salsa20.
 
     Make initialization vector dependent of current time to make sure a message is never
@@ -187,12 +187,7 @@ def encrypt(k: int, text: Word) -> Tuple[Word, Word]:
     """
     random.seed(time())
     iv = Word(random.randint(0, 2 ** 64), bit=64)
-    return xcrypt(k, text, iv=iv), iv
-
-
-def encrypt_and_add_iv(k: int, text: Word) -> Word:
-    """Encrypt the message with the given key with Salsa20 and add the IV for decryption."""
-    c, iv = encrypt(k, text)
+    c = xcrypt(k, text, iv=iv)
     return Word(iv << c.bits | c, bit=text.bits + 64)
 
 
@@ -210,7 +205,7 @@ def salsa20() -> Optional[Word]:
     r = int(args['-r'])
     k = int(args['KEY'], 0)
     if args['encrypt']:
-        return encrypt_and_add_iv(k, text)
+        return encrypt(k, text)
     elif args['decrypt']:
         pass
     return None
