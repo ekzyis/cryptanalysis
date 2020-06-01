@@ -10,12 +10,10 @@ key: str = hex(
          bit=32)
 )
 
-# A hexadecimal string for 512 zero bytes (512 * 8 = 4096 bits) must have 4096 / 4 = 1024 digits
-#   because each hexadecimal digit represents 4 bits.
-default_plaintext: str = \
-    "{0:#0{1}x}".format(0, 1026)  # 1024 + 2 because the '0x' prefix is included in calculating the padding
+# A hexadecimal string of 512 zero bytes
+default_plaintext: str = Word(0x0, bit=4096).hex()
 
-default_ciphertext: str = hex(
+default_ciphertext: str = \
     Word(
         0x0 << 4096 |
         Word(
@@ -40,8 +38,7 @@ default_ciphertext: str = hex(
             0x77efa105a3a4266b, 0x7c0d089d08f1e855, 0xcc32b15b93784a36, 0xe56a76cc64bc8477,
             bit=64
         ), bit=4096 + 64
-    )
-)
+    ).hex()
 
 
 def default_encrypt_args(*add_args, **add_kwargs):
