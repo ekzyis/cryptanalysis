@@ -20,8 +20,11 @@ import random
 from functools import reduce
 from math import ceil
 from time import time
-from typing import Tuple
+from typing import Tuple, Optional
 
+from docopt import docopt
+
+from util.count_int_str_bits import count_int_str_bits
 from util.limit import limit
 from util.rot import rot_left
 from util.split import split
@@ -174,3 +177,31 @@ def encrypt_and_add_iv(k: int, text: Word) -> Word:
     """Encrypt the message with the given key with Salsa20 and add the IV for decryption."""
     c, iv = encrypt(k, text)
     return Word(iv << c.bits | c, bit=text.bits + 64)
+
+
+def salsa20() -> Optional[Word]:
+    """Execute Salsa20 cipher with arguments given on comand line.
+
+        Gets arguments from docopt which parses sys.argv.
+        See http://docopt.org/ if you are not familiar with docopt argument parsing.
+        """
+    args = docopt(__doc__)
+
+    raw_text = args['PLAINTEXT'] or args['CIPHERTEXT']
+    bit = count_int_str_bits(raw_text)
+    text = Word(int(raw_text, 0), bit=bit)
+    r = int(args['-r'])
+    k = int(args['KEY'], 0)
+    if args['encrypt']:
+        return encrypt_and_add_iv(k, text)
+    elif args['decrypt']:
+        pass
+    return None
+
+
+if __name__ == "__main__":
+    try:
+        print(salsa20())
+    except ValueError as e:
+        print(e)
+        exit(1)
