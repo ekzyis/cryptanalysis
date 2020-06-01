@@ -71,7 +71,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
+        self.assertEqual(c.bits, 4096)
         c_with_iv = encrypt_and_add_iv(k, m)
+        self.assertEqual(c_with_iv.bits, 4096 + 64)
         iv_from_c_with_iv = c_with_iv >> 4096
         self.assertEqual(iv_from_c_with_iv, 0x0)
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
@@ -127,7 +129,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=64
         )
         self.assertEqual(c, m ^ stream)
+        self.assertEqual(c.bits, 4096)
         c_with_iv = encrypt_and_add_iv(k, m)
+        self.assertEqual(c_with_iv.bits, 4096 + 64)
         iv_from_c_with_iv = c_with_iv >> 4096
         self.assertEqual(iv_from_c_with_iv, 0x0)
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
@@ -163,7 +167,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
             bit=64
         )
         self.assertEqual(c, m ^ stream)
+        self.assertEqual(c.bits, 2048)
         c_with_iv = encrypt_and_add_iv(k, m)
+        self.assertEqual(c_with_iv.bits, 2048 + 64)
         iv_from_c_with_iv = c_with_iv >> 2048
         self.assertEqual(iv_from_c_with_iv, 0x0)
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 256, bit=8)
@@ -177,7 +183,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         c, _ = encrypt(k, m)
         stream = Word(0xe3be8fdd8beca2e3, bit=64)
         self.assertEqual(c, m ^ stream)
+        self.assertEqual(c.bits, 64)
         c_with_iv = encrypt_and_add_iv(k, m)
+        self.assertEqual(c_with_iv.bits, 64 + 64)
         iv_from_c_with_iv = c_with_iv >> 64
         self.assertEqual(iv_from_c_with_iv, 0x0)
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 8, bit=8)
@@ -238,7 +246,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
+        self.assertEqual(c.bits, 4096)
         c_with_iv = encrypt_and_add_iv(k, m)
+        self.assertEqual(c_with_iv.bits, 4096 + 64)
         iv_from_c_with_iv = c_with_iv >> 4096
         self.assertEqual(iv_from_c_with_iv, 0x0)
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
@@ -299,7 +309,9 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         self.assertEqual(c, Word(
             *[stream[i] for i in range(8)], bit=512
         ))
+        self.assertEqual(c.bits, 4096)
         c_with_iv = encrypt_and_add_iv(k, m)
+        self.assertEqual(c_with_iv.bits, 4096 + 64)
         iv_from_c_with_iv = c_with_iv >> 4096
         self.assertEqual(iv_from_c_with_iv, 0x0)
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
