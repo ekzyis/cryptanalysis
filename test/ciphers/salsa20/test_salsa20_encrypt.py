@@ -16,7 +16,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
     https://github.com/das-labor/legacy/blob/master/microcontroller-2/crypto-lib/testvectors/salsa20-full-verified.test-vectors
     """
 
-    def test_salsa20_encrypt_256_bit_key_1(self, iv):
+    def test_salsa20_encrypt_256_bit_key_1(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 0."""
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
@@ -79,7 +79,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
         self.assertEqual(c_from_c_with_iv, c)
 
-    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bytes_plaintext(self, iv):
+    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
@@ -137,7 +137,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
         self.assertEqual(c_from_c_with_iv, c)
 
-    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_256_bytes_plaintext(self, iv):
+    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_256_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
@@ -175,7 +175,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 256, bit=8)
         self.assertEqual(c_from_c_with_iv, c)
 
-    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_8_bytes_plaintext(self, iv):
+    def test_salsa20_encrypt_256_bit_key_1_with_non_zero_8_bytes_plaintext(self, _):
         k = Word((0x80000000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
                  bit=32)
@@ -191,7 +191,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 8, bit=8)
         self.assertEqual(c_from_c_with_iv, c)
 
-    def test_salsa20_encrypt_256_bit_key_2(self, iv):
+    def test_salsa20_encrypt_256_bit_key_2(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 9."""
         k = Word((0x00400000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
@@ -254,7 +254,7 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         c_from_c_with_iv = c_with_iv & Word((0xFF,) * 512, bit=8)
         self.assertEqual(c_from_c_with_iv, c)
 
-    def test_salsa20_encrypt_256_bit_key_3(self, iv):
+    def test_salsa20_encrypt_256_bit_key_3(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 18."""
         k = Word((0x00002000, 0x0, 0x0, 0x0),
                  (0x00000000, 0x0, 0x0, 0x0),
