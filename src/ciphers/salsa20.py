@@ -184,7 +184,11 @@ def encrypt(k: int, text: Word) -> Word:
 
     Make initialization vector dependent of current time to make sure a message is never
     encrypted again with the same key and IV.
+    Raises error if key is larger than 256-bit.
     """
+    if k.bit_length() > 256:
+        raise ValueError("key must be 256-bit.")
+
     random.seed(time())
     iv = Word(random.randint(0, 2 ** 64), bit=64)
     c = xcrypt(k, text, iv=iv)

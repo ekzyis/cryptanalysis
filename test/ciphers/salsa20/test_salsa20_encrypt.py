@@ -272,3 +272,11 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         )
         expected_iv = Word(0x0, bit=64)
         self._run_test(k, m, expected_c_without_iv, expected_iv)
+
+    def test_salsa20_encrypt_raises_error_if_key_larger_than_256_bit(self, _):
+        with self.assertRaises(ValueError):
+            encrypt(2 ** 256, Word(0x0, bit=64))
+        try:
+            encrypt(2 ** 256 - 1, Word(0x0, bit=64))
+        except ValueError:
+            self.fail("encrypt raised unexpected ValueError")
