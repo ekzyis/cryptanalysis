@@ -29,12 +29,11 @@ from typing import Optional, Any, Union
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
+sys.path.insert(0, str(Path(__file__).parent / '..'))
+
 from util.count_int_str_bits import count_int_str_bits
 from util.types import CipherFunction
 from util.wrap import wrap_stream_cipher_functions
-
-sys.path.insert(0, str(Path(__file__).parent / '..'))
-
 from util.limit import limit
 from util.rot import rot_left
 from util.split import split
