@@ -118,7 +118,7 @@ def wrap_block_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction
         w_encrypt = text_int_wrapper(encrypt)
         w_decrypt = text_int_wrapper(decrypt)
 
-    # Only format the output if we are not decrypting and using encoding since encoding would format the output
+    # Only format the output if during decryption when not using encoding since encoding would format the output
     #   itself already
     _format: Mapping[str, Formatter] = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
     # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
