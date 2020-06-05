@@ -24,16 +24,17 @@ from functools import reduce
 from math import ceil
 from pathlib import Path
 from time import time
-from typing import Optional, Any
+from typing import Optional, Any, Union
 
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
+from util.count_int_str_bits import count_int_str_bits
+from util.types import CipherFunction
 from util.wrap import wrap_stream_cipher_functions
 
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
-from util.count_int_str_bits import count_int_str_bits
 from util.limit import limit
 from util.rot import rot_left
 from util.split import split
@@ -188,6 +189,24 @@ def xcrypt(k: int, text: Word, *args: Any, **kwargs: Any) -> Word:
     return Word(text ^ limit(text.bits, stream_bits, stream), bit=text.bits)
 
 
+def cast_text_to_word(cfn: CipherFunction):
+    """Wraps the cipher function to cast the input into a Word."""
+
+    def wrapper(k: int, raw_text: Union[Word, int, str], *args, **kwargs) -> CipherFunction:
+        text = raw_text
+        if isinstance(raw_text, str):
+            bit = count_int_str_bits(raw_text)
+            text = Word(int(raw_text, 0), bit=bit)
+        elif type(raw_text) is int:
+            text = Word(raw_text, bit=raw_text.bit_length())
+        elif isinstance(raw_text, Word):
+            pass
+        return cfn(k, text, *args, **kwargs)
+
+    return wrapper
+
+
+@cast_text_to_word
 def encrypt(k: int, text: Word) -> Word:
     """Encrypt the message with the given key with Salsa20.
 
@@ -204,6 +223,7 @@ def encrypt(k: int, text: Word) -> Word:
     return Word(iv << c.bits | c, bit=text.bits + 64)
 
 
+@cast_text_to_word
 def decrypt(k: int, text: Word) -> Word:
     """Decrypt the message with the given key with Salsa20, extracting the IV from the ciphertext.
 
@@ -231,9 +251,7 @@ def salsa20() -> Optional[Word]:
 
     _encrypt, _decrypt = wrap_stream_cipher_functions(encrypt, decrypt, args)
 
-    raw_text = args['PLAINTEXT'] or args['CIPHERTEXT']
-    bit = count_int_str_bits(raw_text)
-    text = Word(int(raw_text, 0), bit=bit)
+    text = args['PLAINTEXT'] or args['CIPHERTEXT']
     r = int(args['-r'])
     k = int(args['KEY'], 0)
     if args['encrypt']:
