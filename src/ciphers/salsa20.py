@@ -17,12 +17,17 @@ Usage:
 """
 
 import random
+import sys
 from functools import reduce
 from math import ceil
+from pathlib import Path
 from time import time
 from typing import Optional, Any
 
 from docopt import docopt  # type: ignore
+
+# make sure that following imports can be resolved when executing this script from cmdline
+sys.path.insert(0, str(Path(__file__).parent / '..'))
 
 from util.count_int_str_bits import count_int_str_bits
 from util.limit import limit
