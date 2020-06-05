@@ -24,3 +24,9 @@ BlockCipherOptions = TypedDict('BlockCipherOptions', {
     '-x': str,
     'blocksize': int,
 })
+
+StreamCipherOptions = TypedDict('StreamCipherOptions', {
+    '-o': str,
+    '-r': int,
+    '-x': str,
+})

@@ -29,6 +29,8 @@ from typing import Optional, Any
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
+from util.wrap import wrap_stream_cipher_functions
+
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
 from util.count_int_str_bits import count_int_str_bits
@@ -227,15 +229,17 @@ def salsa20() -> Optional[Word]:
     """
     args = docopt(__doc__)
 
+    _encrypt, _decrypt = wrap_stream_cipher_functions(encrypt, decrypt, args)
+
     raw_text = args['PLAINTEXT'] or args['CIPHERTEXT']
     bit = count_int_str_bits(raw_text)
     text = Word(int(raw_text, 0), bit=bit)
     r = int(args['-r'])
     k = int(args['KEY'], 0)
     if args['encrypt']:
-        return encrypt(k, text)
+        return _encrypt(k, text)
     elif args['decrypt']:
-        return decrypt(k, text)
+        return _decrypt(k, text)
     return None
 
 

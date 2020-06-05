@@ -1,4 +1,4 @@
-"""Implements wrapping for en- and decryption of _block ciphers_.
+"""Implements wrapping for en- and decryption.
 
 Wrappers are for example functions which implement ECB or encoding.
 The wrappers are implemented to be general purpose. One can pass cipher functions to them
@@ -11,11 +11,11 @@ The only difference is that that now one can use larger strings since `ecb` will
 and pass them individually to `encrypt` and then return the concatentation of the encrypted blocks
 - which is exactly what ECB mode does.
 """
-from typing import Tuple, Any, Mapping
+from typing import Tuple, Any, Mapping, Dict
 
 from ciphers.modi.ecb import ecb
 from util.encode import encode_wrapper, decode_wrapper
-from util.types import CipherFunction, BlockCipherOptions, Formatter
+from util.types import CipherFunction, BlockCipherOptions, Formatter, StreamCipherOptions
 
 
 def wrap_block_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction,
@@ -99,8 +99,6 @@ def wrap_block_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction
         raise ValueError("Encoding must be utf8 or none.")
     if args['-m'] not in ['ecb', 'none']:
         raise ValueError("Mode must be ecb or none.")
-    if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
-        raise ValueError("Output format must be bin, oct, dec or hex.")
     if n % 2 == 1:
         raise ValueError("Round number must be even.")
 
@@ -118,14 +116,54 @@ def wrap_block_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction
         w_encrypt = text_int_wrapper(encrypt)
         w_decrypt = text_int_wrapper(decrypt)
 
+    w_encrypt, w_decrypt = wrap_cipher_functions_with_formatter(w_encrypt, w_decrypt, args)
+
+    return w_encrypt, w_decrypt
+
+
+def wrap_cipher_functions_with_formatter(encrypt: CipherFunction, decrypt: CipherFunction, args: Dict[str, str]) \
+        -> Tuple[CipherFunction, CipherFunction]:
+    """Wrap the cipher functions with the correct formatter."""
+    utf8_mode: bool = args['-x'] == 'utf8'
+
+    # Check if enum arguments are valid
+    if args['-x'] not in ['utf8', 'none']:
+        raise ValueError("Encoding must be utf8 or none.")
+    if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
+        raise ValueError("Output format must be bin, oct, dec or hex.")
+
     # Only format the output if during decryption when not using encoding since encoding would format the output
     #   itself already
     _format: Mapping[str, Formatter] = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
     # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
     formatter = _format[args['-o']]
-    w_encrypt = format_output_wrapper(w_encrypt, formatter)
+    w_encrypt, w_decrypt = format_output_wrapper(encrypt, formatter), decrypt
     if not utf8_mode:
-        w_decrypt = format_output_wrapper(w_decrypt, formatter)
+        w_decrypt = format_output_wrapper(decrypt, formatter)
+
+    return w_encrypt, w_decrypt
+
+
+def wrap_stream_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction,
+                                 args: StreamCipherOptions) -> Tuple[CipherFunction, CipherFunction]:
+    """Return the correctly wrapped encryption and decryption functions for stream ciphers.
+
+    Only implements encoding and formatting.
+    """
+    utf8_mode: bool = args['-x'] == 'utf8'
+
+    # Check if enum arguments are valid
+    if args['-x'] not in ['utf8', 'none']:
+        raise ValueError("Encoding must be utf8 or none.")
+    if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
+        raise ValueError("Output format must be bin, oct, dec or hex.")
+
+    w_encrypt, w_decrypt = encrypt, decrypt
+    if utf8_mode:
+        w_encrypt = encode_wrapper(encrypt)
+        w_decrypt = text_int_wrapper(decode_wrapper(decrypt))
+
+    w_encrypt, w_decrypt = wrap_cipher_functions_with_formatter(w_encrypt, w_decrypt, args)
 
     return w_encrypt, w_decrypt
 
