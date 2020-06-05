@@ -189,7 +189,7 @@ def xcrypt(k: int, text: Word, *args: Any, **kwargs: Any) -> Word:
 
 
 def encrypt(k: int, text: Word) -> Word:
-    """Encrypt the message with the givne key with Salsa20.
+    """Encrypt the message with the given key with Salsa20.
 
     Make initialization vector dependent of current time to make sure a message is never
     encrypted again with the same key and IV.
