@@ -108,13 +108,13 @@ def wrap_block_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction
     if ecb_mode and utf8_mode:
         w_encrypt = encode_wrapper(ecb(encrypt, blocksize))
         w_decrypt = text_int_wrapper(decode_wrapper(ecb(decrypt, blocksize)))
-    if ecb_mode and not utf8_mode:
+    elif ecb_mode and not utf8_mode:
         w_encrypt = text_int_wrapper(ecb(encrypt, blocksize))
         w_decrypt = text_int_wrapper(ecb(decrypt, blocksize))
-    if not ecb_mode and utf8_mode:
+    elif not ecb_mode and utf8_mode:
         w_encrypt = encode_wrapper(encrypt)
         w_decrypt = decode_wrapper(text_int_wrapper(decrypt))
-    if not ecb_mode and not utf8_mode:
+    elif not ecb_mode and not utf8_mode:
         w_encrypt = text_int_wrapper(encrypt)
         w_decrypt = text_int_wrapper(decrypt)
 
