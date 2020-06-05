@@ -42,7 +42,6 @@ from typing import Sequence, Tuple, Any, Optional
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
-
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
 from util.wrap import get_wrapped_cipher_functions
