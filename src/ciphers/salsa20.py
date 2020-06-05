@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """Salsa20/r implementation.
 
 The specification found at https://cr.yp.to/snuffle/spec.pdf is used as a reference
