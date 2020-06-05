@@ -47,3 +47,11 @@ class TestSalsa20CipherDecrypt(unittest.TestCase):
             decrypt(2 ** 256 - 1, Word(0x0, bit=128))
         except ValueError:
             self.fail("decrypt raised unexpected ValueError")
+
+    def test_salsa20_decrypt_raises_value_error_if_text_is_64_bit_or_smaller(self):
+        with self.assertRaises(ValueError):
+            decrypt(0x0, Word(0x0, bit=64))
+        try:
+            decrypt(0x0, Word(0x0, bit=65))
+        except ValueError:
+            self.fail("decrypt raised unexpected ValueError")

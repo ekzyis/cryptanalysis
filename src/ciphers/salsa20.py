@@ -198,11 +198,14 @@ def encrypt(k: int, text: Word) -> Word:
 def decrypt(k: int, text: Word) -> Word:
     """Decrypt the message with the given key with Salsa20, extracting the IV from the ciphertext.
 
-    Raises error if key is larger than 256-bit.
+    Raises error if key is larger than 256-bit or text is smaller than 64-bit.
     """
     if k.bit_length() > 256:
         raise ValueError("key must be 256-bit.")
 
+    if text.bits <= 64:
+        # text can not be smaller than 64 bits because the IV itself is already 64-bits long.
+        raise ValueError("text must be at least 64-bit.")
     ciphertext_bits = text.bits - 64
     iv = text >> ciphertext_bits
     ciphertext = Word(text & Word((0xFF,) * int(ciphertext_bits / 8), bit=8), bit=ciphertext_bits)
