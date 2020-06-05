@@ -40,7 +40,7 @@ class TestSalsa20CipherDecrypt(unittest.TestCase):
         p = decrypt(k, m)
         self.assertEqual(p, 0x0)
 
-    def test_salsa20_decrypt_raises_error_if_key_larger_than_256_bit(self):
+    def test_salsa20_decrypt_raises_value_error_if_key_larger_than_256_bit(self):
         with self.assertRaises(ValueError):
             decrypt(2 ** 256, Word(0x0, bit=128))
         try:
