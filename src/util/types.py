@@ -17,7 +17,7 @@ class CipherFunction(Protocol):
 
 Formatter = Callable[[Any], Any]
 
-CipherOptions = TypedDict('CipherOptions', {
+BlockCipherOptions = TypedDict('BlockCipherOptions', {
     '-o': str,
     '--round-number': int,
     '-m': str,

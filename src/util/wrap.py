@@ -15,12 +15,12 @@ from typing import Tuple, Any, Mapping
 
 from ciphers.modi.ecb import ecb
 from util.encode import encode_wrapper, decode_wrapper
-from util.types import CipherFunction, CipherOptions, Formatter
+from util.types import CipherFunction, BlockCipherOptions, Formatter
 
 
-def get_wrapped_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction,
-                                 args: CipherOptions) -> Tuple[CipherFunction, CipherFunction]:
-    """Return the correctly wrapped encryption and decryption functions."""
+def wrap_block_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction,
+                                args: BlockCipherOptions) -> Tuple[CipherFunction, CipherFunction]:
+    """Return the correctly wrapped encryption and decryption functions for block ciphers."""
     """When parsing arguments, the following execution order has to be ensured:
         ===========================================================================
         `feal -x utf8 -m ecb encrypt k m`
