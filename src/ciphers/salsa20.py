@@ -31,7 +31,6 @@ from docopt import docopt  # type: ignore
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
-from util.count_int_str_bits import count_int_str_bits
 from util.types import CipherFunction
 from util.wrap import wrap_stream_cipher_functions
 from util.limit import limit
@@ -194,8 +193,8 @@ def cast_text_to_word(cfn: CipherFunction):
     def wrapper(k: int, raw_text: Union[Word, int, str], *args, **kwargs) -> CipherFunction:
         text = raw_text
         if isinstance(raw_text, str):
-            bit = count_int_str_bits(raw_text)
-            text = Word(int(raw_text, 0), bit=bit)
+            text_int = int(raw_text, 0)
+            text = Word(int(raw_text, 0), bit=text_int.bit_length())
         elif type(raw_text) is int:
             text = Word(raw_text, bit=raw_text.bit_length())
         elif isinstance(raw_text, Word):
