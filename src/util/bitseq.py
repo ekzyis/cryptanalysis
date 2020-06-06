@@ -1,12 +1,12 @@
 """Utility functions to create bitstrings."""
-from typing import Any
+from typing import Union, Tuple
 
 from bitstring import Bits
 
 from util.count_int_str_bits import count_int_str_bits
 
 
-def bitseq_from_str(*args: Any, bit=None) -> Bits:
+def bitseq_from_str(*args: Union[Tuple[str, ...], str], bit: int = None) -> Bits:
     """Create a bitstring out of string arguments.
 
     The bits of each string argument will be calculated.
@@ -29,7 +29,7 @@ def bitseq_from_str(*args: Any, bit=None) -> Bits:
     return Bits(argstr)
 
 
-def bitseq(*args: Any, bit: int) -> Bits:
+def bitseq(*args: Union[Tuple[int, ...], int], bit: int) -> Bits:
     """Create a bitstring out of of n-bitstring from integer arguments."""
     argstr = ""
     for arg in args:
@@ -42,16 +42,16 @@ def bitseq(*args: Any, bit: int) -> Bits:
     return Bits(argstr)
 
 
-def bitseq8(*args: int) -> Bits:
+def bitseq8(*args: Union[Tuple[int, ...], int]) -> Bits:
     """Create a bitstring out of 8-bit strings."""
     return bitseq(*args, bit=8)
 
 
-def bitseq32(*args: int) -> Bits:
+def bitseq32(*args: Union[Tuple[int, ...], int]) -> Bits:
     """Create a bitstring out of 32-bit strings."""
     return bitseq(*args, bit=32)
 
 
-def bitseq64(*args: int) -> Bits:
+def bitseq64(*args: Union[Tuple[int, ...], int]) -> Bits:
     """Create a bitstring out of 64-bit strings."""
     return bitseq(*args, bit=64)
