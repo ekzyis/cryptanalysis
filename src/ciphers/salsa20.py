@@ -48,10 +48,10 @@ def quarterround(y: Bits) -> Bits:
         raise ValueError("Input must be 128-bit.")
 
     y0, y1, y2, y3 = y[0:32], y[32:64], y[64:96], y[96:128]
-    z1 = y1 ^ rot_left_bits((bitseq32(y0.uint + y3.uint)), 7)
-    z2 = y2 ^ rot_left_bits((bitseq32(z1.uint + y0.uint)), 9)
-    z3 = y3 ^ rot_left_bits((bitseq32(z2.uint + z1.uint)), 13)
-    z0 = y0 ^ rot_left_bits((bitseq32(z3.uint + z2.uint)), 18)
+    z1 = y1 ^ rot_left_bits((bitseq32(y0.uint + y3.uint & 0xFFFFFFFF)), 7)
+    z2 = y2 ^ rot_left_bits((bitseq32(z1.uint + y0.uint & 0xFFFFFFFF)), 9)
+    z3 = y3 ^ rot_left_bits((bitseq32(z2.uint + z1.uint & 0xFFFFFFFF)), 13)
+    z0 = y0 ^ rot_left_bits((bitseq32(z3.uint + z2.uint & 0xFFFFFFFF)), 18)
     return z0 + z1 + z2 + z3
 
 
