@@ -13,7 +13,7 @@ def bitseq_from_str(*args: str) -> Bits:
     argstr = ""
     for arg in args:
         bit = count_int_str_bits(arg)
-        argstr += "uint:{}={}".format(arg, bit)
+        argstr += "uint:{}={},".format(bit, int(arg, 0))
     argstr = argstr[:-1]
     return Bits(argstr)
 
@@ -22,7 +22,7 @@ def bitseq(*args: int, bit: int) -> Bits:
     """Create a bitstring out of of n-bitstring from integer arguments."""
     argstr = ""
     for arg in args:
-        argstr += "uint:{}={},".format(arg, bit)
+        argstr += "uint:{}={},".format(bit, arg)
     argstr = argstr[:-1]
     return Bits(argstr)
 
