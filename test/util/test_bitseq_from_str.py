@@ -40,3 +40,9 @@ class TestBitSeq(unittest.TestCase):
         self.assertBit(b1, 0x0, 16)
         b2 = bitseq_from_str("0x1", ("0x0",) * 3)
         self.assertBit(b2, 0x1000, 16)
+
+    def test_bitseq_from_str_with_mixed_amount_of_bits(self):
+        b1 = bitseq_from_str("0x10", "0xf")
+        self.assertBit(b1, 0x10f, 12)
+        b2 = bitseq_from_str("0x0001", "0x00f0")
+        self.assertBit(b2, 0x100f0, 32)
