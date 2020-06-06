@@ -1,4 +1,5 @@
 """Utility functions to create bitstrings."""
+from typing import Any
 
 from bitstring import Bits
 
@@ -18,11 +19,15 @@ def bitseq_from_str(*args: str) -> Bits:
     return Bits(argstr)
 
 
-def bitseq(*args: int, bit: int) -> Bits:
+def bitseq(*args: Any, bit: int) -> Bits:
     """Create a bitstring out of of n-bitstring from integer arguments."""
     argstr = ""
     for arg in args:
-        argstr += "uint:{}={},".format(bit, arg)
+        if isinstance(arg, tuple):
+            for tuple_arg in arg:
+                argstr += "uint:{}={},".format(bit, tuple_arg)
+        else:
+            argstr += "uint:{}={},".format(bit, arg)
     argstr = argstr[:-1]
     return Bits(argstr)
 

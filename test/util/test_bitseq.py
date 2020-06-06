@@ -43,6 +43,12 @@ class TestBitSeq(unittest.TestCase):
         except ValueError:
             self.fail("bitseq raised unexpected ValueError")
 
+    def test_bitseq_with_tuple_notation(self):
+        b1 = bitseq((0x0,) * 4, bit=4)
+        self.assertBit(b1, 0x0, 16)
+        b2 = bitseq(0x1, (0x0,) * 3, bit=8)
+        self.assertBit(b2, 0x01000000, 32)
+
     def test_bitseq_from_str(self):
         b1 = bitseq_from_str("0x1", "0x2", "0x3", "0x4")
         self.assertBit(b1, 0x1234, 16)
