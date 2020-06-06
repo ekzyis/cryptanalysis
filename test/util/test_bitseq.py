@@ -21,6 +21,16 @@ class TestBitSeq(unittest.TestCase):
         self.assertEqual(b2.uint, 0x0001000200030004)
         self.assertEqual(len(b2), 64)
 
+    def test_bitseq_with_zero_bits(self):
+        # leading zeros
+        b1 = bitseq(0x0, 0x0, 0xa, 0xf, bit=4)
+        self.assertEqual(b1.uint, 0xaf)
+        self.assertEqual(len(b1), 16)
+        # only zeros
+        b2 = bitseq(0x0, 0x0, 0x0, 0x0, bit=4)
+        self.assertEqual(b2.uint, 0x0)
+        self.assertEqual(len(b2), 16)
+
     def test_bitseq_raises_value_error_if_integer_too_large(self):
         with self.assertRaises(ValueError):
             bitseq(0xf, bit=3)
