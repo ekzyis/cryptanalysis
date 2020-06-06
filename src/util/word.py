@@ -4,8 +4,40 @@ from itertools import chain
 from math import ceil
 from typing import List, Any
 
+from bitstring import Bits
+
 from util.concat_bits import concat_bits
+from util.count_int_str_bits import count_int_str_bits
 from util.split import yield_split
+
+
+def bitseq_from_str(*args: str) -> Bits:
+    argstr = ""
+    for arg in args:
+        bit = count_int_str_bits(arg)
+        argstr += "uint:{}={}".format(arg, bit)
+    argstr = argstr[:-1]
+    return Bits(argstr)
+
+
+def bitseq(*args: int, bit: int) -> Bits:
+    argstr = ""
+    for arg in args:
+        argstr += "uint:{}={},".format(arg, bit)
+    argstr = argstr[:-1]
+    return Bits(argstr)
+
+
+def bitseq8(*args: int) -> Bits:
+    return bitseq(*args, bit=8)
+
+
+def bitseq32(*args: int) -> Bits:
+    return bitseq(*args, bit=32)
+
+
+def bitseq64(*args: int) -> Bits:
+    return bitseq(*args, bit=64)
 
 
 class Word(int):

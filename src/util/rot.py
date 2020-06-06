@@ -1,4 +1,14 @@
 """Exports functions which implement bit rotation."""
+from bitstring import Bits
+
+
+def rot_left_bits(bits: Bits, i: int) -> Bits:
+    """Bit rotation / Circular shift to the left for bitstring.Bits.
+
+    Wrapper for rot_left.
+    """
+    rotated = rot_left(bits.uint, i, len(bits))
+    return Bits("uint:{}={}".format(len(bits), rotated))
 
 
 def rot_left(bits: int, i: int, max_bit: int) -> int:
