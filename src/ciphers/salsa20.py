@@ -197,7 +197,8 @@ def cast_text_to_word(cfn: CipherFunction):
             bit = count_int_str_bits(raw_text)
             text = Word(int(raw_text, 0), bit=bit)
         elif type(raw_text) is int:
-            text = Word(raw_text, bit=raw_text.bit_length())
+            bit = count_int_str_bits(hex(raw_text))
+            text = Word(raw_text, bit=bit)
         elif isinstance(raw_text, Word):
             pass
         return cfn(k, text, *args, **kwargs)
