@@ -9,9 +9,12 @@ from util.bitseq import bitseq, bitseq_from_str
 
 class TestBitSeq(unittest.TestCase):
 
+    def test_bitseq_returns_bitstring_Bits_instance(self):
+        b = bitseq(0x1, 0x2, 0x3, 0x4, bit=4)
+        self.assertIsInstance(b, bitstring.Bits)
+
     def test_bitseq_with_only_integer_arguments(self):
         b1 = bitseq(0x1, 0x2, 0x3, 0x4, bit=4)
-        self.assertIsInstance(b1, bitstring.Bits)
         self.assertEqual(b1.uint, 0x1234)
         self.assertEqual(len(b1), 16)
         b2 = bitseq(0x1, 0x2, 0x3, 0x4, bit=16)
@@ -28,7 +31,6 @@ class TestBitSeq(unittest.TestCase):
 
     def test_bitseq_from_str(self):
         b1 = bitseq_from_str("0x1", "0x2", "0x3", "0x4")
-        self.assertIsInstance(b1, bitstring.Bits)
         self.assertEqual(b1.uint, 0x1234)
         self.assertEqual(len(b1), 16)
         b2 = bitseq_from_str("0x01", "0x02", "0x03", "0x04")
