@@ -34,7 +34,8 @@ sys.path.insert(0, str(Path(__file__).parent / '..'))
 
 from util.wrap import wrap_stream_cipher_functions
 from util.rot import rot_left_bits
-from util.word import Word, bitseq8, bitseq32, bitseq_from_str
+from util.word import Word
+from util.bitseq import bitseq_from_str, bitseq8, bitseq32
 
 
 def quarterround(y: Bits) -> Bits:
