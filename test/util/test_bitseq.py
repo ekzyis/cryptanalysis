@@ -48,3 +48,7 @@ class TestBitSeq(unittest.TestCase):
         self.assertBit(b1, 0x0, 16)
         b2 = bitseq(0x1, (0x0,) * 3, bit=8)
         self.assertBit(b2, 0x01000000, 32)
+
+    def test_bitseq_with_bits(self):
+        b1 = bitseq(Bits("uint:8=1"), Bits("uint:16=15"), bit=16)
+        self.assertBit(b1, 0x01000f, 32)
