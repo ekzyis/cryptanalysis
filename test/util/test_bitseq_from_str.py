@@ -52,3 +52,9 @@ class TestBitSeq(unittest.TestCase):
         self.assertBit(b1, 0x0000, 16)
         b2 = bitseq_from_str("0x1f", "0x0f", bit=16)
         self.assertBit(b2, 0x001f000f, 32)
+
+    def test_bitseq_from_str_raises_value_error_if_integer_too_large(self):
+        with self.assertRaises(ValueError):
+            bitseq_from_str("0xf", bit=3)
+        with self.assertRaises(ValueError):
+            bitseq_from_str("0x10", bit=4)
