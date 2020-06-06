@@ -34,3 +34,9 @@ class TestBitSeq(unittest.TestCase):
         # only zeros
         b2 = bitseq_from_str("0x0", "0x0", "0x0", "0x0")
         self.assertBit(b2, 0x0, 16)
+
+    def test_bitseq_from_str_with_tuple_notation(self):
+        b1 = bitseq_from_str(("0x0",) * 4)
+        self.assertBit(b1, 0x0, 16)
+        b2 = bitseq_from_str("0x1", ("0x0",) * 3)
+        self.assertBit(b2, 0x1000, 16)
