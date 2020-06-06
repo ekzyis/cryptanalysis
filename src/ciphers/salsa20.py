@@ -63,7 +63,7 @@ def rowround(y_: Bits) -> Bits:
     """
     if len(y_) != 512:
         raise ValueError("Input must be 512-bit.")
-    y = [y_[i:i + 32] for i in range(0, 480, 32)]
+    y = [y_[i:i + 32] for i in range(0, 512, 32)]
     z = [None] * 16
     q = quarterround(bitseq32(y[0], y[1], y[2], y[3]))
     z[0], z[1], z[2], z[3] = [q[i:i + 32] for i in range(0, 128, 32)]
@@ -84,7 +84,7 @@ def columnround(x_: Bits) -> Bits:
     """
     if len(x_) != 512:
         raise ValueError("Input must be 512-bit.")
-    x = [x_[i:i + 32] for i in range(0, 480, 32)]
+    x = [x_[i:i + 32] for i in range(0, 512, 32)]
     y = [None] * 16
     q = quarterround(bitseq32(x[0], x[4], x[8], x[12]))
     y[0], y[4], y[8], y[12] = [q[i:i + 32] for i in range(0, 128, 32)]
@@ -116,7 +116,7 @@ def salsa20_hash(x_: Bits) -> Bits:
     if len(x_) != 512:
         raise ValueError("Input must be 512-bit.")
 
-    x = [x_[i:i + 32].uintle for i in range(0, 480, 32)]
+    x = [x_[i:i + 32].uintle for i in range(0, 512, 32)]
     z = [reduce(lambda a, _: doubleround(a), range(10), xi) for xi in x]
     return sum([bitseq32(xi + zi & 0xFFFFFFFF).uintle for xi, zi in zip(x, z)])
 
