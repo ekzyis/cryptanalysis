@@ -6,7 +6,7 @@ from bitstring import Bits
 from util.count_int_str_bits import count_int_str_bits
 
 
-def bitseq_from_str(*args: Any) -> Bits:
+def bitseq_from_str(*args: Any, bit=None) -> Bits:
     """Create a bitstring out of string arguments.
 
     The bits of each string argument will be calculated.
@@ -14,8 +14,8 @@ def bitseq_from_str(*args: Any) -> Bits:
     argstr = ""
 
     def add_to_argstr(argstr_: str, arg_to_add: str) -> str:
-        bit = count_int_str_bits(arg_to_add)
-        argstr_ += "uint:{}={},".format(bit, int(arg_to_add, 0))
+        bit_ = bit or count_int_str_bits(arg_to_add)
+        argstr_ += "uint:{}={},".format(bit_, int(arg_to_add, 0))
         return argstr_
 
     for arg in args:
