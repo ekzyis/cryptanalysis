@@ -4,7 +4,7 @@ import bitstring
 
 # noinspection PyUnresolvedReferences
 import test.context
-from util.bitseq import bitseq, bitseq_from_str
+from util.bitseq import bitseq
 
 
 class TestBitSeq(unittest.TestCase):
@@ -48,9 +48,3 @@ class TestBitSeq(unittest.TestCase):
         self.assertBit(b1, 0x0, 16)
         b2 = bitseq(0x1, (0x0,) * 3, bit=8)
         self.assertBit(b2, 0x01000000, 32)
-
-    def test_bitseq_from_str(self):
-        b1 = bitseq_from_str("0x1", "0x2", "0x3", "0x4")
-        self.assertBit(b1, 0x1234, 16)
-        b2 = bitseq_from_str("0x01", "0x02", "0x03", "0x04")
-        self.assertBit(b2, 0x01020304, 32)
