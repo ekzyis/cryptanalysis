@@ -220,9 +220,9 @@ def salsa20() -> Optional[str]:
     _encrypt, _decrypt = fhex_wrapper(encrypt, decrypt)
 
     if args['encrypt']:
-        return fhex(encrypt(k, text))
+        return _encrypt(k, text)
     elif args['decrypt']:
-        return fhex(decrypt(k, text))
+        return _decrypt(k, text)
     return None
 
 
