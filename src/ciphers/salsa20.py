@@ -116,9 +116,12 @@ def salsa20_hash(x_: Bits) -> Bits:
     if len(x_) != 512:
         raise ValueError("Input must be 512-bit.")
 
-    x = [x_[i:i + 32].uintle for i in range(0, 512, 32)]
-    z = [reduce(lambda a, _: doubleround(a), range(10), xi) for xi in x]
-    return sum([bitseq32(xi + zi & 0xFFFFFFFF).uintle for xi, zi in zip(x, z)])
+    # view each 4-byte sequence as a word in little-endian form.
+    x = pack("<16L", *[x_[i:i + 32].uint for i in range(0, 512, 32)])
+    z = reduce(lambda a, _: doubleround(a), range(10), x)
+    x_bitseq32 = [x[i:i + 32] for i in range(0, 512, 32)]
+    z_bitseq32 = [z[i:i + 32] for i in range(0, 512, 32)]
+    return sum([bitseq32(xi.uint + zi.uint & 0xFFFFFFFF) for xi, zi in zip(x_bitseq32, z_bitseq32)])
 
 
 def expansion(k: Bits, n: Bits) -> Bits:
