@@ -33,8 +33,9 @@ from docopt import docopt  # type: ignore
 sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
 from ciphers.modi.wrap import fhex_wrapper
+from util.encode import encode_wrapper, decode_wrapper
 from util.rot import rot_left_bits
-from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64, fhex
+from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64
 
 
 def quarterround(y: Bits) -> Bits:
@@ -216,6 +217,11 @@ def salsa20() -> Optional[str]:
     text = bitseq_from_str(args['PLAINTEXT'] or args['CIPHERTEXT'])
     r = int(args['-r'])
     k = bitseq_from_str(args['KEY'])
+
+    # add wrappers to implement option behaviour
+    _encrypt, _decrypt = encrypt, decrypt
+    if args['-x'] == 'utf8':
+        _encrypt, _decrypt = encode_wrapper(encrypt), decode_wrapper(decrypt)
 
     _encrypt, _decrypt = fhex_wrapper(encrypt, decrypt)
 
