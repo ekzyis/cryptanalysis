@@ -14,6 +14,7 @@ and pass them individually to `encrypt` and then return the concatentation of th
 from typing import Tuple, Any, Mapping, Dict, Callable
 
 from ciphers.modi.ecb import ecb
+from util.bitseq import fhex
 from util.encode import encode_wrapper, decode_wrapper
 from util.types import CipherFunction, BlockCipherOptions, Formatter
 
@@ -159,6 +160,10 @@ def format_output_wrapper(formatter: Formatter) -> Callable[[CipherFunction], Ci
 def text_int_wrapper(cipher_fn: CipherFunction) -> CipherFunction:
     """Return wrapper for cipher functions which casts text input to numbers."""
     return format_input_wrapper(lambda text: int(text, 0))(cipher_fn)
+
+
+def fhex_wrapper(*cipher_fn: CipherFunction) -> Tuple[CipherFunction, ...]:
+    return tuple(format_input_wrapper(fhex)(cfn) for cfn in cipher_fn)
 
 
 def format_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
