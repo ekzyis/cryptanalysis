@@ -207,7 +207,7 @@ def decrypt(k: Bits, text: Bits) -> Bits:
 
 
 def salsa20() -> Optional[str]:
-    """Execute Salsa20 cipher with arguments given on comand line.
+    """Execute Salsa20 cipher with arguments given on command line.
 
     Gets arguments from docopt which parses sys.argv.
     See http://docopt.org/ if you are not familiar with docopt argument parsing.
