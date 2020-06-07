@@ -37,6 +37,8 @@ from util.rot import rot_left_bits
 from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64
 from util.types import CipherFunction
 
+__SALSA_20_ROUNDS__: int = 20
+
 
 def quarterround(y: Bits) -> Bits:
     """Calculate the quarterround value of the input as specified in the paper.
@@ -118,7 +120,7 @@ def salsa20_hash(x_: Bits) -> Bits:
 
     # view each 4-byte sequence as a word in little-endian form.
     x = pack("<16L", *[x_[i:i + 32].uint for i in range(0, 512, 32)])
-    z = reduce(lambda a, _: doubleround(a), range(10), x)
+    z = reduce(lambda a, _: doubleround(a), range(int(__SALSA_20_ROUNDS__ / 2)), x)
     x_bitseq32 = [x[i:i + 32] for i in range(0, 512, 32)]
     z_bitseq32 = [z[i:i + 32] for i in range(0, 512, 32)]
     return sum([littleendian(bitseq32(xi.uint + zi.uint & 0xFFFFFFFF)) for xi, zi in zip(x_bitseq32, z_bitseq32)])
@@ -256,7 +258,8 @@ def salsa20() -> Optional[str]:
 
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     k = args['KEY']
-    r = int(args['-r'])
+    global __SALSA_20_ROUNDS__
+    __SALSA_20_ROUNDS__ = int(args['-r'])
     cfn = _salsa20_options_wrap(args)
     return cfn(k, text)
 
