@@ -35,7 +35,7 @@ sys.path.insert(0, str(Path(__file__).parent / '..'))
 from util.wrap import wrap_stream_cipher_functions
 from util.rot import rot_left_bits
 from util.word import Word
-from util.bitseq import bitseq_from_str, bitseq8, bitseq32
+from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian
 
 
 def quarterround(y: Bits) -> Bits:
@@ -121,7 +121,7 @@ def salsa20_hash(x_: Bits) -> Bits:
     z = reduce(lambda a, _: doubleround(a), range(10), x)
     x_bitseq32 = [x[i:i + 32] for i in range(0, 512, 32)]
     z_bitseq32 = [z[i:i + 32] for i in range(0, 512, 32)]
-    return sum([bitseq32(xi.uint + zi.uint & 0xFFFFFFFF) for xi, zi in zip(x_bitseq32, z_bitseq32)])
+    return sum([littleendian(bitseq32(xi.uint + zi.uint & 0xFFFFFFFF)) for xi, zi in zip(x_bitseq32, z_bitseq32)])
 
 
 def expansion(k: Bits, n: Bits) -> Bits:
