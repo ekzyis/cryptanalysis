@@ -10,7 +10,6 @@ Usage:
     salsa20 decrypt [options] KEY CIPHERTEXT
 
     -r=[8,12,20]            Number of rounds. [default: 20]
-    -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
     -x=[utf8,none]          Specifies the encoding of the cipher-/plaintext. [default: none]
 
     KEY                     The key which should be used for en-/decryption.
