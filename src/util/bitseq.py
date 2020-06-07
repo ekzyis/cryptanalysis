@@ -73,3 +73,8 @@ def bitseq32(*args: Union[Tuple[Union[int, Bits], ...], int, Bits]) -> Bits:
 def bitseq64(*args: Union[Tuple[Union[int, Bits], ...], int, Bits]) -> Bits:
     """Create a bitstring out of 64-bit strings."""
     return bitseq(*args, bit=64)
+
+
+def bitseq128(*args: Union[Tuple[Union[int, Bits], ...], int, Bits]) -> Bits:
+    """Create a bitstring out of 128-bit strings."""
+    return bitseq(*args, bit=128)
