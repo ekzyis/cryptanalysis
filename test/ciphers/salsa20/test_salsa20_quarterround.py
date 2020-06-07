@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.salsa20 import quarterround
+from ciphers.stream.salsa20 import quarterround
 from util.bitseq import bitseq32, bitseq
 
 

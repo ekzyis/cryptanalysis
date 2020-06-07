@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import fk
+from ciphers.block.feal import fk
 
 
 class TestFEALCipherFk(unittest.TestCase):

@@ -1,6 +1,6 @@
 import unittest
 
-from ciphers.salsa20 import expansion
+from ciphers.stream.salsa20 import expansion
 from util.bitseq import bitseq, bitseq8
 
 

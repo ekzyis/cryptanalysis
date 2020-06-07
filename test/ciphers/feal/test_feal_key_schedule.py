@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import key_schedule
+from ciphers.block.feal import key_schedule
 
 
 class TestFEALCipherKeySchedule(unittest.TestCase):

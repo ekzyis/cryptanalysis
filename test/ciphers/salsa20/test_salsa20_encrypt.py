@@ -4,7 +4,7 @@ from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.salsa20 import expansion, encrypt
+from ciphers.stream.salsa20 import expansion, encrypt
 from util.bitseq import bitseq32, bitseq64, littleendian, bitseq128, bitseq
 
 

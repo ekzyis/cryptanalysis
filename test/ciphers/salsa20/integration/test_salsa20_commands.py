@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.salsa20 import salsa20
+from ciphers.stream.salsa20 import salsa20
 from test.ciphers.salsa20.integration.patchers import default_decrypt_args, default_encrypt_args
 from util.bitseq import bitseq, bitseq64, fhex
 

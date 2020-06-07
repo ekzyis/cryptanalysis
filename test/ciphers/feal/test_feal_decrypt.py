@@ -3,7 +3,7 @@ import unittest
 # noinspection PyUnresolvedReferences
 import test.context
 # noinspection PyProtectedMember
-from ciphers.feal import decrypt, _decrypt_preprocessing, _decrypt_iterative_calculation
+from ciphers.block.feal import decrypt, _decrypt_preprocessing, _decrypt_iterative_calculation
 
 
 class TestFEALCipherDecrypt(unittest.TestCase):
