@@ -11,7 +11,7 @@ The only difference is that that now one can use larger strings since `ecb` will
 and pass them individually to `encrypt` and then return the concatentation of the encrypted blocks
 - which is exactly what ECB mode does.
 """
-from typing import Tuple, Any, Mapping, Dict
+from typing import Tuple, Any, Mapping, Dict, Callable
 
 from ciphers.modi.ecb import ecb
 from util.encode import encode_wrapper, decode_wrapper
@@ -137,31 +137,37 @@ def wrap_cipher_functions_with_formatter(encrypt: CipherFunction, decrypt: Ciphe
     _format: Mapping[str, Formatter] = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
     # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
     formatter = _format[args['-o']]
-    w_encrypt, w_decrypt = format_output_wrapper(encrypt, formatter), decrypt
+    w_encrypt, w_decrypt = format_output_wrapper(formatter)(encrypt), decrypt
     if not utf8_mode:
-        w_decrypt = format_output_wrapper(decrypt, formatter)
+        w_decrypt = format_output_wrapper(formatter)(decrypt)
 
     return w_encrypt, w_decrypt
 
 
-def format_output_wrapper(cipher_fn: CipherFunction, formatter: Formatter) -> CipherFunction:
+def format_output_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
     """Return wrapper for cipher functions to cast the output into the specified format."""
 
-    def cipher_fn_wrapper(key: int, text: Any, *args: Any, **kwargs: Any) -> Any:
-        return formatter(cipher_fn(key, text, *args, **kwargs))
+    def _wrapper(cipher_fn: CipherFunction):
+        def cipher_fn_wrapper(key: int, text: Any, *args: Any, **kwargs: Any) -> Any:
+            return formatter(cipher_fn(key, text, *args, **kwargs))
 
-    return cipher_fn_wrapper
+        return cipher_fn_wrapper
+
+    return _wrapper
 
 
 def text_int_wrapper(cipher_fn: CipherFunction) -> CipherFunction:
     """Return wrapper for cipher functions which casts text input to numbers."""
-    return format_input_wrapper(cipher_fn, lambda text: int(text, 0))
+    return format_input_wrapper(lambda text: int(text, 0))(cipher_fn)
 
 
-def format_input_wrapper(cipher_fn: CipherFunction, formatter: Formatter) -> CipherFunction:
+def format_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
     """Return wrapper for cipher functions to cast cipher function text input into the specified format."""
 
-    def cipher_fn_wrapper(key: int, text: int, *args: Any, **kwargs: Any) -> Any:
-        return cipher_fn(key, formatter(text), *args, **kwargs)
+    def _wrapper(cipher_fn: CipherFunction):
+        def cipher_fn_wrapper(key: int, text: int, *args: Any, **kwargs: Any) -> Any:
+            return cipher_fn(key, formatter(text), *args, **kwargs)
 
-    return cipher_fn_wrapper
+        return cipher_fn_wrapper
+
+    return _wrapper
