@@ -34,8 +34,7 @@ sys.path.insert(0, str(Path(__file__).parent / '..'))
 
 from util.wrap import wrap_stream_cipher_functions
 from util.rot import rot_left_bits
-from util.word import Word
-from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian
+from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64
 
 
 def quarterround(y: Bits) -> Bits:
@@ -186,7 +185,7 @@ def encrypt(k: Bits, text: Bits) -> Bits:
         raise ValueError("key must be 256-bit.")
 
     random.seed(time())
-    iv = Word(random.randint(0, 2 ** 64), bit=64)
+    iv = bitseq64(random.randint(0, 2 ** 64))
     c = xcrypt(k, text, iv=iv)
     return iv + c
 
