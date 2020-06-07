@@ -29,6 +29,17 @@ def bitseq_from_str(*args: Union[Tuple[str, ...], str], bit: int = None) -> Bits
     return Bits(argstr)
 
 
+def littleendian(b: Bits) -> Bits:
+    """Return the bitstring.Bits in little endian.
+
+    Example:
+        littleendian(Bits("0x123456")) -> Bits("0x563412")
+        littleendian(Bits("0x1234")) -> Bits("0x3412")
+    """
+    le = b.uintle
+    return Bits("uint:{}={}".format(len(b), le))
+
+
 def bitseq(*args: Union[Tuple[Union[int, Bits], ...], int, Bits], bit: int) -> Bits:
     """Create a bitstring out of of n-bitstring from integer arguments."""
     argstr = ""
