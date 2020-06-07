@@ -30,10 +30,12 @@ from bitstring import Bits, pack
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
+from ciphers.modi.wrap import fhex_wrapper
+
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
 from util.rot import rot_left_bits
-from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64
+from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64, fhex
 
 
 def quarterround(y: Bits) -> Bits:
@@ -204,7 +206,7 @@ def decrypt(k: Bits, text: Bits) -> Bits:
     return xcrypt(k, c, iv=iv)
 
 
-def salsa20() -> Optional[Bits]:
+def salsa20() -> Optional[str]:
     """Execute Salsa20 cipher with arguments given on comand line.
 
     Gets arguments from docopt which parses sys.argv.
@@ -215,10 +217,13 @@ def salsa20() -> Optional[Bits]:
     text = bitseq_from_str(args['PLAINTEXT'] or args['CIPHERTEXT'])
     r = int(args['-r'])
     k = bitseq_from_str(args['KEY'])
+
+    _encrypt, _decrypt = fhex_wrapper(encrypt, decrypt)
+
     if args['encrypt']:
-        return encrypt(k, text)
+        return fhex(encrypt(k, text))
     elif args['decrypt']:
-        return decrypt(k, text)
+        return fhex(decrypt(k, text))
     return None
 
 
