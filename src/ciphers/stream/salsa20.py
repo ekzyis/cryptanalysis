@@ -207,7 +207,7 @@ def decrypt(k: Bits, text: Bits) -> Bits:
     return xcrypt(k, c, iv=iv)
 
 
-def salsa20_options_wrap(args: Dict[str, Union[str, int]]) \
+def _salsa20_options_wrap(args: Dict[str, Union[str, int]]) \
         -> CipherFunction:
     """Wrap encrypt and decrypt cipher function with options wrapper to implement option-specific behaviour.
 
@@ -258,7 +258,7 @@ def salsa20() -> Optional[str]:
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     k = args['KEY']
     r = int(args['-r'])
-    cfn = salsa20_options_wrap(args)
+    cfn = _salsa20_options_wrap(args)
     return cfn(k, text)
 
 
