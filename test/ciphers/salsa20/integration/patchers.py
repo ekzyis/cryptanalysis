@@ -2,9 +2,9 @@
 from unittest import mock
 
 from test.ciphers.sysv_patcher import sysv_patcher
-from util.bitseq import bitseq, bitseq32, bitseq64
+from util.bitseq import bitseq, bitseq32, bitseq64, fhex
 
-key: str = str(
+key: str = fhex(
     bitseq32(
         (0x80000000, 0x0, 0x0, 0x0),
         (0x00000000, 0x0, 0x0, 0x0),
@@ -12,9 +12,9 @@ key: str = str(
 )
 
 # A hexadecimal string of 512 zero bytes
-default_plaintext: str = str(bitseq(0x0, bit=4096))
+default_plaintext: str = fhex(bitseq(0x0, bit=4096))
 
-default_ciphertext: str = str(
+default_ciphertext: str = fhex(
     bitseq64(
         0x0,
         0xe3be8fdd8beca2e3, 0xea8ef9475b29a6e7, 0x003951e1097a5c38, 0xd23b7a5fad9f6844,

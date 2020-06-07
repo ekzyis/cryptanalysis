@@ -4,7 +4,7 @@ import unittest
 import test.context
 from ciphers.salsa20 import salsa20
 from test.ciphers.salsa20.integration.patchers import default_decrypt_args, default_encrypt_args
-from util.bitseq import bitseq, bitseq64
+from util.bitseq import bitseq, bitseq64, fhex
 
 
 class TestSalsa20Commands(unittest.TestCase):
@@ -33,9 +33,9 @@ class TestSalsa20Commands(unittest.TestCase):
             0x696afcfd0cddcc83, 0xc7e77f11a649d79a, 0xcdc3354e9635ff13, 0x7e929933a0bd6f53,
             0x77efa105a3a4266b, 0x7c0d089d08f1e855, 0xcc32b15b93784a36, 0xe56a76cc64bc8477,
         )
-        self.assertEqual(salsa20(), str(c))
+        self.assertEqual(salsa20(), fhex(c))
 
     @default_decrypt_args()
     def test_integration_salsa20_decrypt(self):
         p = bitseq(0x0, bit=4096)
-        self.assertEqual(salsa20(), str(p))
+        self.assertEqual(salsa20(), fhex(p))
