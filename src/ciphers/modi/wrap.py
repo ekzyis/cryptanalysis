@@ -163,7 +163,7 @@ def text_int_wrapper(cipher_fn: CipherFunction) -> CipherFunction:
 
 
 def fhex_wrapper(*cipher_fn: CipherFunction) -> Tuple[CipherFunction, ...]:
-    return tuple(format_input_wrapper(fhex)(cfn) for cfn in cipher_fn)
+    return tuple(format_output_wrapper(fhex)(cfn) for cfn in cipher_fn)
 
 
 def format_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
