@@ -24,7 +24,7 @@ from functools import reduce
 from math import ceil
 from pathlib import Path
 from time import time
-from typing import Any, Optional
+from typing import Any, Optional, Union, Dict
 
 from bitstring import Bits, pack
 from docopt import docopt  # type: ignore
@@ -32,10 +32,11 @@ from docopt import docopt  # type: ignore
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
-from ciphers.modi.wrap import fhex_wrapper
+from ciphers.modi.wrap import fhex_wrapper, text_input_to_bitseq_wrapper
 from util.encode import encode_wrapper, decode_wrapper
 from util.rot import rot_left_bits
 from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64
+from util.types import CipherFunction
 
 
 def quarterround(y: Bits) -> Bits:
@@ -206,6 +207,46 @@ def decrypt(k: Bits, text: Bits) -> Bits:
     return xcrypt(k, c, iv=iv)
 
 
+def salsa20_options_wrap(args: Dict[str, Union[str, int]]) \
+        -> CipherFunction:
+    """Wrap encrypt and decrypt cipher function with options wrapper to implement option-specific behaviour.
+
+    Returns wrapped encrypt when encrypting; wrapped decrypt when decrypting."""
+
+    # the key must always be casted into a bitstring
+    def key_wrapper(cfn: CipherFunction) -> CipherFunction:
+        def cipher_fn_wrapper(key: str, text_: Any, *args_: Any, **kwargs: Any) -> Any:
+            return cfn(bitseq_from_str(key), text_, *args_, **kwargs)
+
+        return cipher_fn_wrapper
+
+    _encrypt, _decrypt = key_wrapper(encrypt), key_wrapper(decrypt)
+    if args['encrypt']:
+        if args['-x'] == 'utf8':
+            # the text must be encoded before encryption
+            # (this results into a bitstring)
+            text_wrapper = encode_wrapper
+        else:
+            # the text must be casted into a bitstring
+            text_wrapper = text_input_to_bitseq_wrapper
+        _encrypt = text_wrapper(_encrypt)
+        # output full hex string
+        _encrypt = fhex_wrapper(_encrypt)
+        return _encrypt
+    elif args['decrypt']:
+        # the text must always be cast into a bitstring
+        _decrypt = text_input_to_bitseq_wrapper(_decrypt)
+        if args['-x'] == 'utf8':
+            # the decryption output must be decoded
+            _decrypt = decode_wrapper(_decrypt)
+        else:
+            # output full hex string
+            _decrypt = fhex_wrapper(_decrypt)
+        return _decrypt
+    else:
+        raise ValueError("args must be a dict with key 'encrypt' or 'decrypt' set.")
+
+
 def salsa20() -> Optional[str]:
     """Execute Salsa20 cipher with arguments given on command line.
 
@@ -214,22 +255,11 @@ def salsa20() -> Optional[str]:
     """
     args = docopt(__doc__)
 
-    text = bitseq_from_str(args['PLAINTEXT'] or args['CIPHERTEXT'])
+    text = args['PLAINTEXT'] or args['CIPHERTEXT']
+    k = args['KEY']
     r = int(args['-r'])
-    k = bitseq_from_str(args['KEY'])
-
-    # add wrappers to implement option behaviour
-    _encrypt, _decrypt = encrypt, decrypt
-    if args['-x'] == 'utf8':
-        _encrypt, _decrypt = encode_wrapper(encrypt), decode_wrapper(decrypt)
-
-    _encrypt, _decrypt = fhex_wrapper(encrypt, decrypt)
-
-    if args['encrypt']:
-        return _encrypt(k, text)
-    elif args['decrypt']:
-        return _decrypt(k, text)
-    return None
+    cfn = salsa20_options_wrap(args)
+    return cfn(k, text)
 
 
 if __name__ == "__main__":
