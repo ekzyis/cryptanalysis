@@ -6,6 +6,13 @@ from bitstring import Bits
 from util.count_int_str_bits import count_int_str_bits
 
 
+def fhex(b: Bits) -> str:
+    """Return full hex string representation of Bits. Workaround for truncation issue in Bits.__str__."""
+    if len(b) % 4 != 0:
+        raise ValueError("bitstring length must be multiple of 4.")
+    return "0x" + hex(b.uint)[2:].zfill(int(len(b) / 4))
+
+
 def bitseq_from_str(*args: Union[Tuple[str, ...], str], bit: int = None) -> Bits:
     """Create a bitstring out of string arguments.
 
