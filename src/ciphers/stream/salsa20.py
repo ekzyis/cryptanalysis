@@ -30,10 +30,9 @@ from bitstring import Bits, pack
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
+sys.path.insert(0, str(Path(__file__).parent / '../..'))
+
 from ciphers.modi.wrap import fhex_wrapper
-
-sys.path.insert(0, str(Path(__file__).parent / '..'))
-
 from util.rot import rot_left_bits
 from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64, fhex
 

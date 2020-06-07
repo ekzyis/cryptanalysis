@@ -42,7 +42,7 @@ from typing import Sequence, Tuple, Any, Optional
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
-sys.path.insert(0, str(Path(__file__).parent / '..'))
+sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
 from ciphers.modi.wrap import wrap_block_cipher_functions
 from util.concat_bits import concat_bits
