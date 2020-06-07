@@ -24,144 +24,128 @@ from functools import reduce
 from math import ceil
 from pathlib import Path
 from time import time
-from typing import Optional, Any, Union
+from typing import Any, Optional
 
+from bitstring import Bits, pack
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
-from util.count_int_str_bits import count_int_str_bits
-from util.types import CipherFunction
-from util.wrap import wrap_stream_cipher_functions
-from util.limit import limit
-from util.rot import rot_left
-from util.split import split
-from util.word import Word
+from util.rot import rot_left_bits
+from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64
 
 
-def quarterround(y: int) -> Word:
+def quarterround(y: Bits) -> Bits:
     """Calculate the quarterround value of the input as specified in the paper.
 
     Returns a 128-bit value.
-    Raises error if input is larger than 128-bit.
+    Raises error if input is not 128-bit.
     """
-    if y.bit_length() > 128:
+    if len(y) != 128:
         raise ValueError("Input must be 128-bit.")
-    y_ = split(4, 32, y)
-    y0, y1, y2, y3 = y_
-    z1 = y1 ^ rot_left((y0 + y3) % (2 ** 32), 7, 32)
-    z2 = y2 ^ rot_left((z1 + y0) % (2 ** 32), 9, 32)
-    z3 = y3 ^ rot_left((z2 + z1) % (2 ** 32), 13, 32)
-    z0 = y0 ^ rot_left((z3 + z2) % (2 ** 32), 18, 32)
-    return Word(z0, z1, z2, z3, bit=32)
+
+    y0, y1, y2, y3 = y[0:32], y[32:64], y[64:96], y[96:128]
+    z1 = y1 ^ rot_left_bits((bitseq32(y0.uint + y3.uint & 0xFFFFFFFF)), 7)
+    z2 = y2 ^ rot_left_bits((bitseq32(z1.uint + y0.uint & 0xFFFFFFFF)), 9)
+    z3 = y3 ^ rot_left_bits((bitseq32(z2.uint + z1.uint & 0xFFFFFFFF)), 13)
+    z0 = y0 ^ rot_left_bits((bitseq32(z3.uint + z2.uint & 0xFFFFFFFF)), 18)
+    return z0 + z1 + z2 + z3
 
 
-def rowround(_y: int) -> Word:
+def rowround(y_: Bits) -> Bits:
     """Calculate the rowround value of the input as specified in the paper.
 
     Returns a 512-bit value.
-    Raises error if input is larger than 512-bit.
+    Raises error if input is not 512-bit.
     """
-    if _y.bit_length() > 512:
+    if len(y_) != 512:
         raise ValueError("Input must be 512-bit.")
-    y = split(16, 32, _y)
+    y = [y_[i:i + 32] for i in range(0, 512, 32)]
     z = [None] * 16
-    z[0], z[1], z[2], z[3] = quarterround(Word(y[0], y[1], y[2], y[3], bit=32))
-    z[5], z[6], z[7], z[4] = quarterround(Word(y[5], y[6], y[7], y[4], bit=32))
-    z[10], z[11], z[8], z[9] = quarterround(Word(y[10], y[11], y[8], y[9], bit=32))
-    z[15], z[12], z[13], z[14] = quarterround(Word(y[15], y[12], y[13], y[14], bit=32))
-    return Word(*z, bit=32)
+    q = quarterround(bitseq32(y[0], y[1], y[2], y[3]))
+    z[0], z[1], z[2], z[3] = [q[i:i + 32] for i in range(0, 128, 32)]
+    q = quarterround(bitseq32(y[5], y[6], y[7], y[4]))
+    z[5], z[6], z[7], z[4] = [q[i:i + 32] for i in range(0, 128, 32)]
+    q = quarterround(bitseq32(y[10], y[11], y[8], y[9]))
+    z[10], z[11], z[8], z[9] = [q[i:i + 32] for i in range(0, 128, 32)]
+    q = quarterround(bitseq32(y[15], y[12], y[13], y[14]))
+    z[15], z[12], z[13], z[14] = [q[i:i + 32] for i in range(0, 128, 32)]
+    return bitseq32(*z)
 
 
-def columnround(_x: int) -> Word:
+def columnround(x_: Bits) -> Bits:
     """Calculate the columnround value of the input as specified in the paper.
 
     Returns a 512-bit value.
-    Raises error if input is larger than 512-bit.
+    Raises error if input is not 512-bit.
     """
-    if _x.bit_length() > 512:
+    if len(x_) != 512:
         raise ValueError("Input must be 512-bit.")
-    x = split(16, 32, _x)
+    x = [x_[i:i + 32] for i in range(0, 512, 32)]
     y = [None] * 16
-    y[0], y[4], y[8], y[12] = quarterround(Word(x[0], x[4], x[8], x[12], bit=32))
-    y[5], y[9], y[13], y[1] = quarterround(Word(x[5], x[9], x[13], x[1], bit=32))
-    y[10], y[14], y[2], y[6] = quarterround(Word(x[10], x[14], x[2], x[6], bit=32))
-    y[15], y[3], y[7], y[11] = quarterround(Word(x[15], x[3], x[7], x[11], bit=32))
-    return Word(*y, bit=32)
+    q = quarterround(bitseq32(x[0], x[4], x[8], x[12]))
+    y[0], y[4], y[8], y[12] = [q[i:i + 32] for i in range(0, 128, 32)]
+    q = quarterround(bitseq32(x[5], x[9], x[13], x[1]))
+    y[5], y[9], y[13], y[1] = [q[i:i + 32] for i in range(0, 128, 32)]
+    q = quarterround(bitseq32(x[10], x[14], x[2], x[6]))
+    y[10], y[14], y[2], y[6] = [q[i:i + 32] for i in range(0, 128, 32)]
+    q = quarterround(bitseq32(x[15], x[3], x[7], x[11]))
+    y[15], y[3], y[7], y[11] = [q[i:i + 32] for i in range(0, 128, 32)]
+    return bitseq32(*y)
 
 
-def doubleround(x: int) -> Word:
+def doubleround(x: Bits) -> Bits:
     """Calculate the doubleround value of the input as specified in the paper.
 
     Returns a 512-bit value.
-    Raises error if input is larger than 512-bit.
+    Raises error if input is not 512-bit.
     """
     # argument checking is done by column- and rowround.
     return rowround(columnround(x))
 
 
-def littleendian(_b: int) -> Word:
-    """Calculate the value of the integer when its bytes are interpreted in reverse order.
-
-    Returns a 32-bit value.
-    Raises error if input is larger than 32-bit.
-    """
-    if _b.bit_length() > 32:
-        raise ValueError("Input must be 32-bit.")
-    b = split(4, 8, _b)
-    b.reverse()
-    return Word(*b, bit=8)
-
-
-def salsa20_hash(x_: int) -> Word:
+def salsa20_hash(x_: Bits) -> Bits:
     """Calculate the salsa20 hash of the value.
 
     Returns a 64-byte sequence.
-    Raises error if input is larger than 512-bit.
+    Raises error if input is not 512-bit.
     """
-    if x_.bit_length() > 512:
+    if len(x_) != 512:
         raise ValueError("Input must be 512-bit.")
-    x = split(64, 8, x_)
-    # [a, b, c, d, e, f, g, h] -> [ [a,b,c,d], [e,f,g,h] ]
-    zipped = [x[i:i + 4] for i in range(0, len(x), 4)]
-    littleendian_words = [Word(*b, bit=8).littleendian() for b in zipped]
-    w = Word(*littleendian_words, bit=32)
-    z = split(16, 32, reduce(lambda a, _: doubleround(a), range(10), w))
-    return Word(*[littleendian((xi + zi) % 2 ** 32) for xi, zi in zip(w, z)], bit=32)
+
+    # view each 4-byte sequence as a word in little-endian form.
+    x = pack("<16L", *[x_[i:i + 32].uint for i in range(0, 512, 32)])
+    z = reduce(lambda a, _: doubleround(a), range(10), x)
+    x_bitseq32 = [x[i:i + 32] for i in range(0, 512, 32)]
+    z_bitseq32 = [z[i:i + 32] for i in range(0, 512, 32)]
+    return sum([littleendian(bitseq32(xi.uint + zi.uint & 0xFFFFFFFF)) for xi, zi in zip(x_bitseq32, z_bitseq32)])
 
 
-def expansion(k_: int, n_: int) -> Word:
+def expansion(k: Bits, n: Bits) -> Bits:
     """Expand the key and the nonce into a 64-byte sequence.
 
     Returns a 64-byte sequence.
-    Raises error if key is larger than 256-bit or nonce is larger than 128-bit.
+    Raises error if key is not 256-bit or nonce is not 128-bit.
     """
-    if n_.bit_length() > 128:
+    if len(n) != 128:
         raise ValueError("n must be 128-bit.")
-    if k_.bit_length() > 128:
-        if k_.bit_length() > 256:
-            raise ValueError("k must be 256-bit.")
-        k0, k1 = split(2, 16 * 8, k_)
-        n = split(4, 4 * 8, n_)
-        sigma = [
-            Word(101, 120, 112, 97, bit=8), Word(110, 100, 32, 51, bit=8),
-            Word(50, 45, 98, 121, bit=8), Word(116, 101, 32, 107, bit=8)
-        ]
-        return salsa20_hash(
-            Word(sigma[0], *split(4, 4 * 8, k0), sigma[1], *n, sigma[2], *split(4, 4 * 8, k1), sigma[3], bit=32))
+    if len(k) != 128:
+        if len(k) != 256:
+            raise ValueError("k must be 128 or 256-bit.")
+        k0, k1 = k[:128], k[128:]
+        sigma = [bitseq8(101, 120, 112, 97), bitseq8(110, 100, 32, 51),
+                 bitseq8(50, 45, 98, 121), bitseq8(116, 101, 32, 107)]
+        return salsa20_hash(sigma[0] + k0 + sigma[1] + n + sigma[2] + k1 + sigma[3])
+    elif len(k) == 128:
+        tau = [bitseq8(101, 120, 112, 97), bitseq8(110, 100, 32, 49),
+               bitseq8(54, 45, 98, 121), bitseq8(116, 101, 32, 107)]
+        return salsa20_hash(tau[0] + k + tau[1] + n + tau[2] + k + tau[3])
     else:
-        tau = [
-            Word(101, 120, 112, 97, bit=8), Word(110, 100, 32, 49, bit=8),
-            Word(54, 45, 98, 121, bit=8), Word(116, 101, 32, 107, bit=8)
-        ]
-        # split k and n into four slices of four bytes
-        k = split(4, 4 * 8, k_)
-        n = split(4, 4 * 8, n_)
-        return salsa20_hash(Word(tau[0], *k, tau[1], *n, tau[2], *k, tau[3], bit=32))
+        raise ValueError("k must be 128 or 256-bit.")
 
 
-def xcrypt(k: int, text: Word, *args: Any, **kwargs: Any) -> Word:
+def xcrypt(k: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
     """En- or decrypt the message with the given key with Salsa20.
 
     En- and decryption use the same algorithm because the inverse of XOR is XOR thus this function is called 'xcrypt'.
@@ -177,71 +161,50 @@ def xcrypt(k: int, text: Word, *args: Any, **kwargs: Any) -> Word:
         raise TypeError("xcrypt needs initialization vector as keyword argument")
     # first 64 bits of the nonce is the unique message number / initialization vector
     iv = kwargs['iv']
+    if len(iv) != 64:
+        raise ValueError("IV must be 64-bit.")
 
-    def create_nonce(cnt: int):
+    def create_nonce(cnt: int) -> Bits:
         # last 64 bits of the nonce are the counter in littleendian
-        return Word(iv, Word(cnt, bit=64).littleendian(), bit=64)
+        return iv + pack('<1Q', cnt)
 
-    stream_blocks_needed = ceil(text.bits / 512)
-    stream = Word(*[expansion(k, create_nonce(counter)) for counter in range(stream_blocks_needed)], bit=512)
-    stream_bits = stream_blocks_needed * 512
-    return Word(text ^ limit(text.bits, stream_bits, stream), bit=text.bits)
-
-
-def cast_text_to_word(cfn: CipherFunction):
-    """Wraps the cipher function to cast the input into a Word."""
-
-    def wrapper(k: int, raw_text: Union[Word, int, str], *args, **kwargs) -> CipherFunction:
-        text = raw_text
-        if isinstance(raw_text, str):
-            bit = count_int_str_bits(raw_text)
-            text = Word(int(raw_text, 0), bit=bit)
-        elif type(raw_text) is int:
-            bit = count_int_str_bits(hex(raw_text))
-            text = Word(raw_text, bit=bit)
-        elif isinstance(raw_text, Word):
-            pass
-        return cfn(k, text, *args, **kwargs)
-
-    return wrapper
+    stream_blocks_needed = ceil(len(text) / 512)
+    stream = sum([expansion(k, create_nonce(counter)) for counter in range(stream_blocks_needed)])
+    return text ^ stream[:len(text)]
 
 
-@cast_text_to_word
-def encrypt(k: int, text: Word) -> Word:
+def encrypt(k: Bits, text: Bits) -> Bits:
     """Encrypt the message with the given key with Salsa20.
 
     Make initialization vector dependent of current time to make sure a message is never
     encrypted again with the same key and IV.
-    Raises error if key is larger than 256-bit.
+    Raises error if key is not 256-bit.
     """
-    if k.bit_length() > 256:
+    if len(k) != 256:
         raise ValueError("key must be 256-bit.")
 
     random.seed(time())
-    iv = Word(random.randint(0, 2 ** 64), bit=64)
+    iv = bitseq64(random.randint(0, 2 ** 64))
     c = xcrypt(k, text, iv=iv)
-    return Word(iv << c.bits | c, bit=text.bits + 64)
+    return iv + c
 
 
-@cast_text_to_word
-def decrypt(k: int, text: Word) -> Word:
+def decrypt(k: Bits, text: Bits) -> Bits:
     """Decrypt the message with the given key with Salsa20, extracting the IV from the ciphertext.
 
-    Raises error if key is larger than 256-bit or text is smaller than 64-bit.
+    Raises error if key is not 256-bit or text is not 64-bit.
     """
-    if k.bit_length() > 256:
+    if len(k) != 256:
         raise ValueError("key must be 256-bit.")
 
-    if text.bits <= 64:
-        # text can not be smaller than 64 bits because the IV itself is already 64-bits long.
-        raise ValueError("text must be at least 64-bit.")
-    ciphertext_bits = text.bits - 64
-    iv = text >> ciphertext_bits
-    ciphertext = Word(text & Word((0xFF,) * int(ciphertext_bits / 8), bit=8), bit=ciphertext_bits)
-    return xcrypt(k, ciphertext, iv=iv)
+    if len(text) <= 64:
+        # text can not be smaller than or equal to 64 bits because the IV itself is already 64-bits long.
+        raise ValueError("text must be larger than 64-bit.")
+    iv, c = text[:64], text[64:]
+    return xcrypt(k, c, iv=iv)
 
 
-def salsa20() -> Optional[Word]:
+def salsa20() -> Optional[Bits]:
     """Execute Salsa20 cipher with arguments given on comand line.
 
     Gets arguments from docopt which parses sys.argv.
@@ -249,15 +212,13 @@ def salsa20() -> Optional[Word]:
     """
     args = docopt(__doc__)
 
-    _encrypt, _decrypt = wrap_stream_cipher_functions(encrypt, decrypt, args)
-
-    text = args['PLAINTEXT'] or args['CIPHERTEXT']
+    text = bitseq_from_str(args['PLAINTEXT'] or args['CIPHERTEXT'])
     r = int(args['-r'])
-    k = int(args['KEY'], 0)
+    k = bitseq_from_str(args['KEY'])
     if args['encrypt']:
-        return _encrypt(k, text)
+        return encrypt(k, text)
     elif args['decrypt']:
-        return _decrypt(k, text)
+        return decrypt(k, text)
     return None
 
 

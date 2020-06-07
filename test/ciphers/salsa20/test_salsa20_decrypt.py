@@ -3,18 +3,19 @@ import unittest
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.salsa20 import decrypt
-from util.word import Word
+from util.bitseq import bitseq32, bitseq, bitseq64
 
 
 class TestSalsa20CipherDecrypt(unittest.TestCase):
 
     def test_salsa20_decrypt(self):
-        k = Word((0x80000000, 0x0, 0x0, 0x0),
-                 (0x00000000, 0x0, 0x0, 0x0),
-                 bit=32)
-        m = Word(
-            0x0 << 4096 |
-            Word(
+        k = bitseq32(
+            (0x80000000, 0x0, 0x0, 0x0),
+            (0x00000000, 0x0, 0x0, 0x0),
+        )
+        m = bitseq(
+            0x0 +
+            bitseq64(
                 0xe3be8fdd8beca2e3, 0xea8ef9475b29a6e7, 0x003951e1097a5c38, 0xd23b7a5fad9f6844,
                 0xb22c97559e2723c7, 0xcbbd3fe4fc8d9a07, 0x44652a83e72a9c46, 0x1876af4d7ef1a117,
                 0x8da2b74eef1b6283, 0xe7e20166abcae538, 0xe9716e4669e2816b, 0x6b20c5c356802001,
@@ -34,24 +35,30 @@ class TestSalsa20CipherDecrypt(unittest.TestCase):
                 0x903e6505ce44fdc2, 0x93920c6a9ec7057e, 0x23df7dad298f82dd, 0xf4efb7fdc7bfc622,
                 0x696afcfd0cddcc83, 0xc7e77f11a649d79a, 0xcdc3354e9635ff13, 0x7e929933a0bd6f53,
                 0x77efa105a3a4266b, 0x7c0d089d08f1e855, 0xcc32b15b93784a36, 0xe56a76cc64bc8477,
-                bit=64
-            ), bit=4096 + 64
+            ),
+            bit=4096 + 64
         )
         p = decrypt(k, m)
-        self.assertEqual(p, 0x0)
+        self.assertEqual(p, bitseq(0x0, bit=4096))
 
-    def test_salsa20_decrypt_raises_value_error_if_key_larger_than_256_bit(self):
+    def test_salsa20_decrypt_raises_value_error_if_key_not_256_bit(self):
+        m = bitseq64(0x0, 0x0)
         with self.assertRaises(ValueError):
-            decrypt(2 ** 256, Word(0x0, bit=128))
+            k1 = bitseq(0x0, bit=257)
+            decrypt(k1, m)
         try:
-            decrypt(2 ** 256 - 1, Word(0x0, bit=128))
+            k2 = bitseq(0x0, bit=256)
+            decrypt(k2, m)
         except ValueError:
             self.fail("decrypt raised unexpected ValueError")
 
     def test_salsa20_decrypt_raises_value_error_if_text_is_64_bit_or_smaller(self):
+        k = bitseq64(0x0, 0x0, 0x0, 0x0)
         with self.assertRaises(ValueError):
-            decrypt(0x0, Word(0x0, bit=64))
+            m1 = bitseq(0x0, bit=64)
+            decrypt(k, m1)
         try:
-            decrypt(0x0, Word(0x0, bit=65))
+            m2 = bitseq(0x0, bit=65)
+            decrypt(k, m2)
         except ValueError:
             self.fail("decrypt raised unexpected ValueError")
