@@ -44,7 +44,7 @@ from docopt import docopt  # type: ignore
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
-from util.wrap import wrap_block_cipher_functions
+from ciphers.modi.wrap import wrap_block_cipher_functions
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
