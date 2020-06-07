@@ -32,7 +32,6 @@ from docopt import docopt  # type: ignore
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '..'))
 
-from util.wrap import wrap_stream_cipher_functions
 from util.rot import rot_left_bits
 from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64
 
@@ -213,15 +212,13 @@ def salsa20() -> Optional[Bits]:
     """
     args = docopt(__doc__)
 
-    _encrypt, _decrypt = wrap_stream_cipher_functions(encrypt, decrypt, args)
-
     text = bitseq_from_str(args['PLAINTEXT'] or args['CIPHERTEXT'])
     r = int(args['-r'])
     k = bitseq_from_str(args['KEY'])
     if args['encrypt']:
-        return _encrypt(k, text)
+        return encrypt(k, text)
     elif args['decrypt']:
-        return _decrypt(k, text)
+        return decrypt(k, text)
     return None
 
 
