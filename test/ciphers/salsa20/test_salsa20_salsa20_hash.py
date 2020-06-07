@@ -7,7 +7,7 @@ from util.word import Word
 
 
 class TestSalsa20CipherSalsa20(unittest.TestCase):
-    def test_salsa20_salsa20(self):
+    def test_salsa20_salsa20_hash(self):
         x1 = Word(0x0 * 16 * 4, bit=32)
         z1 = 0x0
         self.assertEqual(salsa20_hash(x1), z1)
@@ -42,7 +42,7 @@ class TestSalsa20CipherSalsa20(unittest.TestCase):
         )
         self.assertEqual(salsa20_hash(x3), z3)
 
-    def test_salsa20_salsa20_raises_value_error_if_input_larger_than_512_bit(self):
+    def test_salsa20_salsa20_hash_raises_value_error_if_input_larger_than_512_bit(self):
         with self.assertRaises(ValueError):
             salsa20_hash(2 ** 512)
         try:
