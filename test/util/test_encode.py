@@ -6,10 +6,10 @@ from util.encode import encode, decode, encode_wrapper, decode_wrapper
 
 class TestEncode(unittest.TestCase):
     def test_encode(self):
-        self.assertEqual(encode("test"), 0x74657374)
+        self.assertEqual(encode("test"), "0x74657374")
 
     def test_encode_with_whitespace(self):
-        self.assertEqual(encode("this is a test"), 0x7468697320697320612074657374)
+        self.assertEqual(encode("this is a test"), "0x7468697320697320612074657374")
 
     def test_decode(self):
         self.assertEqual(decode(0x74657374), "test")
