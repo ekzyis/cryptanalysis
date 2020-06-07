@@ -42,10 +42,9 @@ from typing import Sequence, Tuple, Any, Optional
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
+sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
-sys.path.insert(0, str(Path(__file__).parent / '..'))
-
-from util.wrap import get_wrapped_cipher_functions
+from ciphers.modi.wrap import wrap_block_cipher_functions
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
@@ -239,7 +238,7 @@ def feal() -> Optional[int]:
 
     # Wrap encrypt and decrypt functions depending on arguments given on cmdline
     args['blocksize'] = 64
-    _encrypt, _decrypt = get_wrapped_cipher_functions(encrypt, decrypt, args)
+    _encrypt, _decrypt = wrap_block_cipher_functions(encrypt, decrypt, args)
 
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     n = int(args['--round-number'])

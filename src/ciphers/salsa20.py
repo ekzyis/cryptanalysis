@@ -1,1 +1,0 @@
-"""Salsa20 implementation."""

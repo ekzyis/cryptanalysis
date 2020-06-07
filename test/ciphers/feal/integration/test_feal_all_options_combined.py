@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.feal import feal
+from ciphers.block.feal import feal
 from test.ciphers.feal.integration.patchers import default_encrypt_args, default_decrypt_args
 
 

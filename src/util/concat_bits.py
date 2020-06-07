@@ -12,7 +12,7 @@ def concat_bits(*args: int, n: int) -> int:
     args_.reverse()
     r = 0
     for i, arg in enumerate(args_):
-        if arg > 2 ** n:
-            raise ValueError("subkey is larger than slot given by n")
+        if arg.bit_length() > n:
+            raise ValueError("bitstring is larger than slot given by n")
         r |= arg << (i * n)
     return r

@@ -1,5 +1,7 @@
 """Exports function which splits numbers into an array of bitstrings."""
-from typing import List
+from typing import List, Iterator
+
+from util.limit import limit
 
 
 def split(n: int, size: int, bits: int) -> List[int]:
@@ -19,3 +21,15 @@ def split(n: int, size: int, bits: int) -> List[int]:
     bitstrings = [(bits >> i * size) % 2 ** size for i in range(n)]
     bitstrings.reverse()
     return bitstrings
+
+
+def yield_split(n: int, x_bits: int, x: int) -> Iterator[int]:
+    """Split a number into bitstrings of given size.
+
+    Returns n-bitstrings by removing the n most significant bits from x.
+    """
+    while x_bits > n:
+        yield limit(n, x_bits, x)
+        x %= 2 ** (x_bits - n)
+        x_bits -= n
+    yield x
