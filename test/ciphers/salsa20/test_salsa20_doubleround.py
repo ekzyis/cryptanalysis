@@ -33,7 +33,7 @@ class TestSalsa20CipherDoubleRound(unittest.TestCase):
         )
         self.assertEqual(doubleround(x2), y2)
 
-    def test_salsa20_doubleround_raises_value_error_if_input_larger_than_512_bit(self):
+    def test_salsa20_doubleround_raises_value_error_if_input_not_512_bit(self):
         with self.assertRaises(ValueError):
             x1 = bitseq((0x0,) * 513, bit=1)
             doubleround(x1)

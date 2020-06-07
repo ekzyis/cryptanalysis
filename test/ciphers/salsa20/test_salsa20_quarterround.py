@@ -35,7 +35,7 @@ class TestSalsa20CipherQuarterround(unittest.TestCase):
         y7 = bitseq32(0x3e2f308c, 0xd90a8f36, 0x6ab2a923, 0x2883524c)
         self.assertEqual(quarterround(x7), y7)
 
-    def test_salsa20_quarterround_raises_value_error_if_input_larger_than_128_bit(self):
+    def test_salsa20_quarterround_raises_value_error_if_input_not_128_bit(self):
         with self.assertRaises(ValueError):
             x1 = bitseq((0x0,) * 129, bit=1)
             quarterround(x1)

@@ -101,7 +101,7 @@ def doubleround(x: Bits) -> Bits:
     """Calculate the doubleround value of the input as specified in the paper.
 
     Returns a 512-bit value.
-    Raises error if input is larger than 512-bit.
+    Raises error if input is not 512-bit.
     """
     # argument checking is done by column- and rowround.
     return rowround(columnround(x))
@@ -111,7 +111,7 @@ def salsa20_hash(x_: Bits) -> Bits:
     """Calculate the salsa20 hash of the value.
 
     Returns a 64-byte sequence.
-    Raises error if input is larger than 512-bit.
+    Raises error if input is not 512-bit.
     """
     if len(x_) != 512:
         raise ValueError("Input must be 512-bit.")
@@ -128,7 +128,7 @@ def expansion(k: Bits, n: Bits) -> Bits:
     """Expand the key and the nonce into a 64-byte sequence.
 
     Returns a 64-byte sequence.
-    Raises error if key is larger than 256-bit or nonce is larger than 128-bit.
+    Raises error if key is not 256-bit or nonce is not 128-bit.
     """
     if len(n) != 128:
         raise ValueError("n must be 128-bit.")
@@ -180,9 +180,9 @@ def encrypt(k: Bits, text: Bits) -> Bits:
 
     Make initialization vector dependent of current time to make sure a message is never
     encrypted again with the same key and IV.
-    Raises error if key is larger than 256-bit.
+    Raises error if key is not 256-bit.
     """
-    if len(k) > 256:
+    if len(k) != 256:
         raise ValueError("key must be 256-bit.")
 
     random.seed(time())
@@ -194,7 +194,7 @@ def encrypt(k: Bits, text: Bits) -> Bits:
 def decrypt(k: Bits, text: Bits) -> Bits:
     """Decrypt the message with the given key with Salsa20, extracting the IV from the ciphertext.
 
-    Raises error if key is larger than 256-bit or text is smaller than 64-bit.
+    Raises error if key is not 256-bit or text is not 64-bit.
     """
     if len(k) != 256:
         raise ValueError("key must be 256-bit.")
