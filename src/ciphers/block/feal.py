@@ -48,7 +48,8 @@ sys.path.insert(0, str(Path(__file__).parent / '../..'))
 from ciphers.modi.ecb import ecb
 from util.bitseq import bitseq32, bitseq8, bitseq64
 from util.encode import decode_wrapper, encode_wrapper
-from ciphers.modi.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper
+from ciphers.modi.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper, \
+    text_input_padder
 from util.rot import rot_left_bits
 from util.types import CipherFunction, Formatter
 
@@ -318,6 +319,7 @@ def _feal_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
         if ecb_mode:
             _encrypt = ecb(_encrypt, blocksize)
         if utf8_mode:
+            _encrypt = text_input_padder(blocksize)(_encrypt)
             _encrypt = encode_wrapper(_encrypt)
         else:
             _encrypt = text_input_to_bitseq_wrapper(_encrypt)

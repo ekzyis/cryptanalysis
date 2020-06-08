@@ -13,7 +13,9 @@ and pass them individually to `encrypt` and then return the concatentation of th
 """
 from typing import Any, Callable
 
-from util.bitseq import fhex, bitseq_from_str
+from bitstring import Bits
+
+from util.bitseq import fhex, bitseq_from_str, bitseq
 from util.types import CipherFunction, Formatter
 
 
@@ -46,6 +48,25 @@ text_input_to_int_wrapper = text_input_wrapper(lambda text: int(text, 0))
 fhex_output_wrapper = output_wrapper(fhex)
 
 text_input_to_bitseq_wrapper = text_input_wrapper(bitseq_from_str)
+
+
+def padder(blocksize: int) -> Callable[[Bits], Bits]:
+    """Return function which left-pads text input with zeros to fit blocksize."""
+
+    def _padder(text: Bits):
+        # add padding
+        remainder = blocksize % len(text)
+        if remainder != 0:
+            padding = bitseq(0x0, bit=remainder)
+            return padding + text
+        return text
+
+    return _padder
+
+
+def text_input_padder(blocksize: int) -> Callable[[CipherFunction], CipherFunction]:
+    """Return wrapper for ciphers function to left-pad text input with zeros to fit blocksize."""
+    return text_input_wrapper(padder(blocksize))
 
 
 def key_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:

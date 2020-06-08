@@ -10,7 +10,7 @@ from typing import Any
 
 from bitstring import Bits
 
-from util.bitseq import bitseq
+from ciphers.modi.wrap import padder
 from util.types import CipherFunction
 
 
@@ -26,10 +26,7 @@ def ecb(cipher_fn: CipherFunction, blocksize: int) -> CipherFunction:
 
     def _ecb(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
         # add padding
-        remainder = len(text) % blocksize
-        if remainder != 0:
-            padding = bitseq(0x0, bit=remainder)
-            text = padding + text
+        text = padder(blocksize)(text)
         # split text into blocks
         in_blocks = [text[i:i + blocksize] for i in range(0, len(text), blocksize)]
         # crypt each block independently
