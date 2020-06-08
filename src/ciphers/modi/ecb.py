@@ -24,7 +24,7 @@ def ecb(cipher_fn: CipherFunction, blocksize: int) -> CipherFunction:
     :param blocksize        Block size of cipher in bits on which we want to use ECB mode
     """
 
-    def _ecb(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> int:
+    def _ecb(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
         # add padding
         remainder = len(text) % blocksize
         if remainder != 0:
