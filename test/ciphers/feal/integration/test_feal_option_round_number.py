@@ -10,12 +10,12 @@ class TestFEALOptionRoundNumber(unittest.TestCase):
     @default_encrypt_args('-n', '16')
     def test_integration_feal_encrypt_round_number(self):
         c = feal()
-        self.assertEqual(c, "0x01a94383eb19ba07")
+        self.assertEqual(c, str(0x01a94383eb19ba07))
 
     @default_decrypt_args('-n', '16', text='0x01a94383eb19ba07')
     def test_integration_feal_decrypt_round_number(self):
         p = feal()
-        self.assertEqual(p, "0x0000000000000000")
+        self.assertEqual(p, "0")
 
     @default_encrypt_args('-n', '1')
     def test_integration_feal_encrypt_raises_error_on_uneven_round_number(self):
