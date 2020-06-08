@@ -55,8 +55,8 @@ def padder(blocksize: int) -> Callable[[Bits], Bits]:
 
     def _padder(text: Bits):
         # add padding
-        if len(text) < blocksize:
-            pad_amount = blocksize - len(text)
+        pad_amount = (blocksize - len(text) % blocksize) % blocksize
+        if pad_amount != 0:
             padding = bitseq(0x0, bit=pad_amount)
             return padding + text
         return text
