@@ -40,7 +40,7 @@ class TestFEALCipherDecrypt(unittest.TestCase):
         c = bitseq64(0x9C9B54973DF685F8)
         k = bitseq128(0x123456789ABCDEF0123456789ABCDEF)
         p = decrypt(k, c)
-        self.assertEqual(p, "0x0")
+        self.assertEqual(p, "0x0000000000000000")
 
     def test_feal_decrypt_preprocessing_matches_specification_in_paper(self):
         # i/o values taken from test for encrypt.
