@@ -120,8 +120,8 @@ def f(a: Bits, b: Bits) -> Bits:
         raise ValueError("a key must be 32-bit")
     if len(b) != 16:
         raise ValueError("b key must be 16-bit")
-    a_k = a[0:4], a[4:8], a[8:12], a[12:16]
-    b_k = b[0:4], b[4:8], b[8:12], b[12:16]
+    a_k = a[0:8], a[8:16], a[16:24], a[24:32]
+    b_k = b[0:8], b[8:16], b[16:24], b[24:32]
     f1 = a_k[1] ^ b_k[0]
     f2 = a_k[2] ^ b_k[1]
     f1 ^= a_k[0]
