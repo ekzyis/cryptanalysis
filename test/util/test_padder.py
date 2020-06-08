@@ -3,11 +3,11 @@ import unittest
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.modi.wrap import padder
-from util.bitseq import bitseq8, bitseq16
+from util.bitseq import bitseq8
 
 
 class TestPadder(unittest.TestCase):
-    def test_padder_with_no_leading_zeros(self):
+    def test_padder_with_text_smaller_than_blocksize(self):
         _padder = padder(4)
         b = bitseq8(0xfa)
         self.assertEqual(_padder(b), "0xfa")
@@ -16,11 +16,10 @@ class TestPadder(unittest.TestCase):
         _padder = padder(32)
         self.assertEqual(_padder(b), "0x000000fa")
 
-    def test_padder_with_leading_zeros(self):
-        _padder = padder(4)
-        b = bitseq16(0x00fa)
-        self.assertEqual(_padder(b), "0x00fa")
+    def test_padder_with_text_bigger_than_blocksize(self):
         _padder = padder(16)
-        self.assertEqual(_padder(b), "0x00fa")
+        b = bitseq8(0xfa, 0xfa, 0xfa)
+        self.assertEqual(_padder(b), "0x00fafafa")
         _padder = padder(32)
-        self.assertEqual(_padder(b), "0x000000fa")
+        b = bitseq8((0xfa,) * 5)
+        self.assertEqual(_padder(b), "0x000000fafafafafa")
