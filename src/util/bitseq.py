@@ -48,7 +48,7 @@ def littleendian(b: Bits) -> Bits:
 
 
 def bitseq(*args: Union[Tuple[Union[int, Bits], ...], int, Bits], bit: int) -> Bits:
-    """Create a bitstring out of of n-bitstring from integer arguments."""
+    """Create a bitstring out of n-bitstring from integer arguments."""
     argstr = ""
 
     def add_to_argstr(argstr_: str, arg_to_add: Union[int, Bits]) -> str:
