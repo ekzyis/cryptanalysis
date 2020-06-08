@@ -352,7 +352,7 @@ def feal() -> Optional[str]:
     args['blocksize'] = 64
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     n = int(args['--round-number'])
-    k = int(args['KEY'], 0)
+    k = args['KEY']
     cfn = _feal_options_wrap(args)
     return cfn(k, text, n=n)
 
