@@ -21,7 +21,7 @@ def output_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFun
     """Return wrapper for cipher functions to cast the output into the specified format."""
 
     def _wrapper(cipher_fn: CipherFunction):
-        def cipher_fn_wrapper(key: int, text: Any, *args: Any, **kwargs: Any) -> Any:
+        def cipher_fn_wrapper(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
             return formatter(cipher_fn(key, text, *args, **kwargs))
 
         return cipher_fn_wrapper
@@ -33,7 +33,7 @@ def text_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], Ciphe
     """Return wrapper for cipher functions to cast cipher function text input into the specified format."""
 
     def _wrapper(cipher_fn: CipherFunction):
-        def cipher_fn_wrapper(key: int, text: int, *args: Any, **kwargs: Any) -> Any:
+        def cipher_fn_wrapper(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
             return cipher_fn(key, formatter(text), *args, **kwargs)
 
         return cipher_fn_wrapper
