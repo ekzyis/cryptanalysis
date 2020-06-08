@@ -26,7 +26,7 @@ Usage:
     feal decrypt [options] KEY CIPHERTEXT
 
     -n=N, --round-number=N  Number of rounds. Must be even. [default: 32]
-    -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
+    -o=[bin,hex,dec]        Specifies the output format. [default: dec]
     -m=[ecb,none]           Specifies the mode of operation [default: none]
     -x=[utf8,none]          Specifies the encoding of the cipher-/plaintext. [default: none]
 
