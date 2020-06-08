@@ -49,9 +49,7 @@ from ciphers.modi.ecb import ecb
 from util.bitseq import bitseq32, bitseq8, bitseq64
 from util.encode import decode_wrapper, encode_wrapper
 from ciphers.modi.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper
-from util.concat_bits import concat_bits
 from util.rot import rot_left_bits
-from util.split import split
 from util.types import CipherFunction, Formatter
 
 
@@ -154,10 +152,10 @@ def fk(a: Bits, b: Bits) -> Bits:
     return sum([fk0, fk1, fk2, fk3])
 
 
-def _encrypt_preprocessing(subkeys: Sequence[int], text: int) -> int:
-    p = text ^ concat_bits(*subkeys, n=16)
-    l0, r0 = split(2, 32, p)
-    p ^= l0
+def _encrypt_preprocessing(subkeys: Sequence[Bits], text: Bits) -> Bits:
+    p = text ^ sum(subkeys)
+    l0 = p[:32]
+    p ^= bitseq64(l0)
     return p
 
 
@@ -168,8 +166,8 @@ def _decrypt_preprocessing(subkeys: Sequence[Bits], text: Bits) -> Bits:
     return p
 
 
-def _encrypt_iterative_calculation(l0: int, r0: int, sk: Sequence[int], n: int = 32) \
-        -> Tuple[Sequence[int], Sequence[int]]:
+def _encrypt_iterative_calculation(l0: Bits, r0: Bits, sk: Sequence[Bits], n: int = 32) \
+        -> Tuple[Sequence[Bits], Sequence[Bits]]:
     l, r = [l0], [r0]
     for i in range(1, n + 1):
         r.append(l[i - 1] ^ f(r[i - 1], sk[i - 1]))
@@ -186,27 +184,24 @@ def _decrypt_iterative_calculation(ln: Bits, rn: Bits, sk: Sequence[Bits], n: in
     return l, r
 
 
-def encrypt(key: int, text: int, *args: Any, **kwargs: Any) -> int:
+def encrypt(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
     """Encrypt the text with the given key using FEAL-NX encryption.
 
     Raises error if text is longer than 64-bit or key is longer than 128-bit.
     Raises error if text or key is not a number.
     """
     n = kwargs.setdefault('n', 32)
-    if type(text) is not int:
-        raise ValueError("Plaintext must be a number")
-    if type(key) is not int:
-        raise ValueError("Key must be a number")
-    if text >= 2 ** 64:
+    if len(text) != 64:
         raise ValueError("Plaintext must be 64-bit")
-    if key >= 2 ** 128:
+    if len(key) != 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    l0, r0 = split(2, 32, _encrypt_preprocessing(sk[n:n + 4], text))
+    preproc = _encrypt_preprocessing(sk[n:n + 4], text)
+    l0, r0 = preproc[:32], preproc[32:]
     l, r = _encrypt_iterative_calculation(l0, r0, sk, n)
     ln, rn = l[n], r[n]
-    c = concat_bits(rn, ln, n=32) ^ rn
-    c ^= concat_bits(sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7], n=16)
+    c = (rn + ln) ^ bitseq64(rn)
+    c ^= sum([sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7]])
     return c
 
 
