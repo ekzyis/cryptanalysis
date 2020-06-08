@@ -15,17 +15,7 @@ class TestFEALOptionOutputFormat(unittest.TestCase):
     @default_decrypt_args('-o', 'bin')
     def test_integration_feal_decrypt_output_format_bin(self):
         p = feal()
-        self.assertEqual(p, '0b0')
-
-    @default_encrypt_args('-o', 'oct')
-    def test_integration_feal_encrypt_output_format_oct(self):
-        c = feal()
-        self.assertEqual(c, '0o1162332511347575502770')
-
-    @default_decrypt_args('-o', 'oct')
-    def test_integration_feal_decrypt_output_format_oct(self):
-        p = feal()
-        self.assertEqual(p, '0o0')
+        self.assertEqual(p, '0b0000000000000000000000000000000000000000000000000000000000000000')
 
     @default_encrypt_args('-o', 'dec')
     def test_integration_feal_encrypt_output_format_dec(self):
@@ -45,14 +35,14 @@ class TestFEALOptionOutputFormat(unittest.TestCase):
     @default_decrypt_args('-o', 'hex')
     def test_integration_feal_decrypt_output_format_hex(self):
         p = feal()
-        self.assertEqual(p, '0x0')
+        self.assertEqual(p, '0x0000000000000000')
 
     @default_encrypt_args('-o', 'invalid')
     def test_integration_feal_encrypt_output_format_invalid_raises_error(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(KeyError):
             feal()
 
     @default_decrypt_args('-o', 'invalid')
     def test_integration_feal_decrypt_output_format_invalid_raises_error(self):
-        with self.assertRaises(ValueError):
+        with self.assertRaises(KeyError):
             feal()

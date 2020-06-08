@@ -306,7 +306,9 @@ def _feal_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
     utf8_mode: bool = args['-x'] == 'utf8'
     blocksize: int = args['blocksize']
 
-    _format: Mapping[str, Formatter] = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
+    _format: Mapping[str, Formatter] = {
+        'bin': lambda b: '0b' + b.bin, 'dec': lambda b: str(b.uint), 'hex': lambda b: '0x' + b.hex
+    }
     # This should not be able to cause an KeyError because docopt already checked that all enum arguments are valid
     formatter = _format[args['-o']]
     output_format_wrapper = output_wrapper(formatter)
