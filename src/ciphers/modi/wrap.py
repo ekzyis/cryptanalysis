@@ -11,141 +11,13 @@ The only difference is that that now one can use larger strings since `ecb` will
 and pass them individually to `encrypt` and then return the concatentation of the encrypted blocks
 - which is exactly what ECB mode does.
 """
-from typing import Tuple, Any, Mapping, Dict, Callable
+from typing import Any, Callable
 
-from ciphers.modi.ecb import ecb
 from util.bitseq import fhex, bitseq_from_str
-from util.encode import encode_wrapper, decode_wrapper
-from util.types import CipherFunction, BlockCipherOptions, Formatter
+from util.types import CipherFunction, Formatter
 
 
-def wrap_block_cipher_functions(encrypt: CipherFunction, decrypt: CipherFunction,
-                                args: BlockCipherOptions) -> Tuple[CipherFunction, CipherFunction]:
-    """Return the correctly wrapped encryption and decryption functions for block ciphers."""
-    """When parsing arguments, the following execution order has to be ensured:
-        ===========================================================================
-        `feal -x utf8 -m ecb encrypt k m`
-         |
-         | (k: int, m: str)
-         |
-         -> [ENCODE]: ENCODE MESSAGE
-                |
-                | (k: int, encoded_m: int)
-                |
-                -> [ECB]: SPLIT MESSAGE
-                     |
-                     | (k: int, m_blocks: [int])
-                     |
-                     -------------------------------
-                     |        |    ...    |        |
-                     |        |           |        | (k: int, m_block: int)
-                     v        v           v        v
-                 [ENCRYPT][ENCRYPT]   [ENCRYPT][ENCRYPT]
-                     |        |           |        |
-                     |        |           |        | (k: int, encrypted_m_block: int)
-                     v        v           v        v
-                     -------------------------------
-                                    |
-                                    | (encrypted_m_blocks: [int])
-                                    v
-                            [ECB]: CONCAT ENCRYPTED BLOCKS
-                                    |
-         ----------------------------
-         |
-         | (encrypted_message: int)
-         v
-         OUTPUT
-        ===========================================================================
-         `feal -x utf8 -m ecb ecb decrypt k m`
-         |
-         | (k: int, m: int)
-         |
-         --------> [ECB]: SPLIT MESSAGE
-                     |
-                     | (k: int, m_blocks: [int]
-                     |
-                     -------------------------------
-                     |        |    ...    |        |
-                     |        |           |        | (k: int, m_block: int)
-                     v        v           v        v
-                 [DECRYPT][DECRYPT]   [DECRYPT][DECRYPT]
-                     |         |           |       |
-                     |         |           |       |
-                     v         v           v       v
-                     -------------------------------
-                               |
-                               | (decrypted_m_blocks: [int]
-                               v
-                       [ECB]: CONCAT DECRYPTED BLOCKS
-                               |
-            --------------------
-            |
-            | (decrypted_message: int)
-         [DECODE]
-            |
-         ----
-         |
-         v
-         OUTPUT
-        ===========================================================================
-        """
-
-    n = int(args['--round-number'])
-    ecb_mode: bool = args['-m'] == 'ecb'
-    utf8_mode: bool = args['-x'] == 'utf8'
-    blocksize: int = args['blocksize']
-
-    # Check if enum arguments are valid
-    if args['-x'] not in ['utf8', 'none']:
-        raise ValueError("Encoding must be utf8 or none.")
-    if args['-m'] not in ['ecb', 'none']:
-        raise ValueError("Mode must be ecb or none.")
-    if n % 2 == 1:
-        raise ValueError("Round number must be even.")
-
-    w_encrypt, w_decrypt = encrypt, decrypt
-    if ecb_mode and utf8_mode:
-        w_encrypt = encode_wrapper(ecb(encrypt, blocksize))
-        w_decrypt = text_int_wrapper(decode_wrapper(ecb(decrypt, blocksize)))
-    elif ecb_mode and not utf8_mode:
-        w_encrypt = text_int_wrapper(ecb(encrypt, blocksize))
-        w_decrypt = text_int_wrapper(ecb(decrypt, blocksize))
-    elif not ecb_mode and utf8_mode:
-        w_encrypt = encode_wrapper(encrypt)
-        w_decrypt = decode_wrapper(text_int_wrapper(decrypt))
-    elif not ecb_mode and not utf8_mode:
-        w_encrypt = text_int_wrapper(encrypt)
-        w_decrypt = text_int_wrapper(decrypt)
-
-    w_encrypt, w_decrypt = wrap_cipher_functions_with_formatter(w_encrypt, w_decrypt, args)
-
-    return w_encrypt, w_decrypt
-
-
-def wrap_cipher_functions_with_formatter(encrypt: CipherFunction, decrypt: CipherFunction, args: Dict[str, str]) \
-        -> Tuple[CipherFunction, CipherFunction]:
-    """Wrap the cipher functions with the correct formatter."""
-    utf8_mode: bool = args['-x'] == 'utf8'
-
-    # Check if enum arguments are valid
-    if args['-x'] not in ['utf8', 'none']:
-        raise ValueError("Encoding must be utf8 or none.")
-    if args['-o'] not in ['bin', 'oct', 'dec', 'hex']:
-        raise ValueError("Output format must be bin, oct, dec or hex.")
-
-    # Only format the output if during decryption when not using encoding since encoding would format the output
-    #   itself already
-    _format: Mapping[str, Formatter] = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
-    # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
-    formatter = _format[args['-o']]
-    w_encrypt, w_decrypt = format_output_wrapper(formatter)(encrypt), decrypt
-    if not utf8_mode:
-        w_decrypt = format_output_wrapper(formatter)(decrypt)
-
-    return w_encrypt, w_decrypt
-
-
-def format_output_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
+def output_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
     """Return wrapper for cipher functions to cast the output into the specified format."""
 
     def _wrapper(cipher_fn: CipherFunction):
@@ -157,22 +29,7 @@ def format_output_wrapper(formatter: Formatter) -> Callable[[CipherFunction], Ci
     return _wrapper
 
 
-def text_int_wrapper(cipher_fn: CipherFunction) -> CipherFunction:
-    """Return wrapper for cipher functions which casts text input to numbers."""
-    return format_input_wrapper(lambda text: int(text, 0))(cipher_fn)
-
-
-def fhex_wrapper(cipher_fn: CipherFunction) -> CipherFunction:
-    """Return wrapper which runs fhex on the output."""
-    return format_output_wrapper(fhex)(cipher_fn)
-
-
-def text_input_to_bitseq_wrapper(cipher_fn: CipherFunction) -> CipherFunction:
-    """Return wrapper which casts the text input into a bitstring."""
-    return format_input_wrapper(bitseq_from_str)(cipher_fn)
-
-
-def format_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
+def text_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
     """Return wrapper for cipher functions to cast cipher function text input into the specified format."""
 
     def _wrapper(cipher_fn: CipherFunction):
@@ -182,3 +39,25 @@ def format_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], Cip
         return cipher_fn_wrapper
 
     return _wrapper
+
+
+text_input_to_int_wrapper = text_input_wrapper(lambda text: int(text, 0))
+
+fhex_output_wrapper = output_wrapper(fhex)
+
+text_input_to_bitseq_wrapper = text_input_wrapper(bitseq_from_str)
+
+
+def key_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
+    """Return wrapper for cipher functions to cast key input into specified format."""
+
+    def _wrapper(cipher_fn: CipherFunction):
+        def cipher_fn_wrapper(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
+            return cipher_fn(formatter(key), text, *args, **kwargs)
+
+        return cipher_fn_wrapper
+
+    return _wrapper
+
+
+key_input_to_bitseq_wrapper = key_input_wrapper(bitseq_from_str)

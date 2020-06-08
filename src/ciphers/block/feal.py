@@ -37,17 +37,21 @@ Usage:
 
 import sys
 from pathlib import Path
-from typing import Sequence, Tuple, Any, Optional
+from typing import Sequence, Tuple, Any, Union, Dict, Mapping, Optional
 
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
+from ciphers.modi.ecb import ecb
+from util.encode import decode_wrapper, encode_wrapper
+
 sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
-from ciphers.modi.wrap import wrap_block_cipher_functions
+from ciphers.modi.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper
 from util.concat_bits import concat_bits
 from util.rot import rot_left
 from util.split import split
+from util.types import CipherFunction, Formatter
 
 
 def key_schedule(key: int, n: int = 32) -> Sequence[int]:
@@ -228,7 +232,115 @@ def decrypt(key: int, text: int, *args: Any, **kwargs: Any) -> int:
     return p
 
 
-def feal() -> Optional[int]:
+def _feal_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
+    """Wrap encrypt and decrypt cipher function with options wrapper to implement option-specific behaviour.
+
+    Returns wrapped encrypt when encrypting; wrapped decrypt when decrypting.
+    """
+    """When parsing arguments, the following execution order has to be ensured:
+        ===========================================================================
+        `feal -x utf8 -m ecb encrypt k m`
+         |
+         | (k: int, m: str)
+         |
+         -> [ENCODE]: ENCODE MESSAGE
+                |
+                | (k: int, encoded_m: int)
+                |
+                -> [ECB]: SPLIT MESSAGE
+                     |
+                     | (k: int, m_blocks: [int])
+                     |
+                     -------------------------------
+                     |        |    ...    |        |
+                     |        |           |        | (k: int, m_block: int)
+                     v        v           v        v
+                 [ENCRYPT][ENCRYPT]   [ENCRYPT][ENCRYPT]
+                     |        |           |        |
+                     |        |           |        | (k: int, encrypted_m_block: int)
+                     v        v           v        v
+                     -------------------------------
+                                    |
+                                    | (encrypted_m_blocks: [int])
+                                    v
+                            [ECB]: CONCAT ENCRYPTED BLOCKS
+                                    |
+         ----------------------------
+         |
+         | (encrypted_message: int)
+         v
+         OUTPUT
+        ===========================================================================
+         `feal -x utf8 -m ecb ecb decrypt k m`
+         |
+         | (k: int, m: int)
+         |
+         --------> [ECB]: SPLIT MESSAGE
+                     |
+                     | (k: int, m_blocks: [int]
+                     |
+                     -------------------------------
+                     |        |    ...    |        |
+                     |        |           |        | (k: int, m_block: int)
+                     v        v           v        v
+                 [DECRYPT][DECRYPT]   [DECRYPT][DECRYPT]
+                     |         |           |       |
+                     |         |           |       |
+                     v         v           v       v
+                     -------------------------------
+                               |
+                               | (decrypted_m_blocks: [int]
+                               v
+                       [ECB]: CONCAT DECRYPTED BLOCKS
+                               |
+            --------------------
+            |
+            | (decrypted_message: int)
+         [DECODE]
+            |
+         ----
+         |
+         v
+         OUTPUT
+        ===========================================================================
+    """
+
+    n = int(args['--round-number'])
+    if n % 2 == 1:
+        raise ValueError("Round number must be even.")
+    ecb_mode: bool = args['-m'] == 'ecb'
+    utf8_mode: bool = args['-x'] == 'utf8'
+    blocksize: int = args['blocksize']
+
+    _format: Mapping[str, Formatter] = {'bin': bin, 'oct': oct, 'dec': str, 'hex': hex}
+    # This should not be able to cause an KeyError because we already checked that all enum arguments are valid
+    formatter = _format[args['-o']]
+    output_format_wrapper = output_wrapper(formatter)
+    _encrypt, _decrypt = key_input_to_bitseq_wrapper(encrypt), key_input_to_bitseq_wrapper(decrypt)
+
+    if args['encrypt']:
+        if ecb_mode:
+            _encrypt = ecb(_encrypt, blocksize)
+        if utf8_mode:
+            _encrypt = encode_wrapper(_encrypt)
+        else:
+            _encrypt = text_input_to_bitseq_wrapper(_encrypt)
+        _encrypt = output_format_wrapper(_encrypt)
+        return _encrypt
+    elif args['decrypt']:
+        if ecb_mode:
+            _decrypt = ecb(_decrypt, blocksize)
+        _decrypt = text_input_to_bitseq_wrapper(_decrypt)
+        if utf8_mode:
+            _decrypt = decode_wrapper(_decrypt)
+        else:
+            _decrypt = output_format_wrapper(_decrypt)
+        return _decrypt
+    else:
+        raise ValueError("args must be a dict with key 'encrypt' or 'decrypt' set.")
+
+
+def feal() -> Optional[str]:
     """Execute FEAL-NX cipher with arguments given on command line.
 
     Gets arguments from docopt which parses sys.argv.
@@ -238,16 +350,11 @@ def feal() -> Optional[int]:
 
     # Wrap encrypt and decrypt functions depending on arguments given on cmdline
     args['blocksize'] = 64
-    _encrypt, _decrypt = wrap_block_cipher_functions(encrypt, decrypt, args)
-
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     n = int(args['--round-number'])
     k = int(args['KEY'], 0)
-    if args['encrypt']:
-        return _encrypt(k, text, n=n)
-    elif args['decrypt']:
-        return _decrypt(k, text, n=n)
-    return None
+    cfn = _feal_options_wrap(args)
+    return cfn(k, text, n=n)
 
 
 if __name__ == "__main__":
