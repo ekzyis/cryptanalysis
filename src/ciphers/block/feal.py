@@ -49,7 +49,7 @@ from ciphers.modi.ecb import ecb
 from util.bitseq import bitseq32, bitseq8, bitseq64
 from util.encode import decode_wrapper, encode_wrapper
 from ciphers.modi.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper, \
-    text_input_padder
+    text_input_padder, key_input_padder
 from util.rot import rot_left_bits
 from util.types import CipherFunction, Formatter
 
@@ -313,7 +313,10 @@ def _feal_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
     # This should not be able to cause an KeyError because docopt already checked that all enum arguments are valid
     formatter = _format[args['-o']]
     output_format_wrapper = output_wrapper(formatter)
+
+    feal_key_input_padder = key_input_padder(128)
     _encrypt, _decrypt = key_input_to_bitseq_wrapper(encrypt), key_input_to_bitseq_wrapper(decrypt)
+    _encrypt, _decrypt = feal_key_input_padder(_encrypt), feal_key_input_padder(_decrypt)
 
     if args['encrypt']:
         if ecb_mode:

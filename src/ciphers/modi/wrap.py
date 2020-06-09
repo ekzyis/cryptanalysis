@@ -81,4 +81,13 @@ def key_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], Cipher
     return _wrapper
 
 
+def key_input_padder(keysize: int) -> Callable[[CipherFunction], CipherFunction]:
+    """Return wrapper for cipher functions to left-pad key input with zeros to fit keysize.
+
+    If the key is too long, then an error will be raised anyway during en-/decryption because
+    the size does not match. This only helps for keys which are too small.
+    """
+    return key_input_wrapper(padder(keysize))
+
+
 key_input_to_bitseq_wrapper = key_input_wrapper(bitseq_from_str)
