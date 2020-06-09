@@ -22,25 +22,25 @@ from util.types import CipherFunction, Formatter
 def output_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
     """Return wrapper for cipher functions to cast the output into the specified format."""
 
-    def _wrapper(cipher_fn: CipherFunction):
-        def cipher_fn_wrapper(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
+    def _output_wrapper(cipher_fn: CipherFunction):
+        def cfn_output_wrapped(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
             return formatter(cipher_fn(key, text, *args, **kwargs))
 
-        return cipher_fn_wrapper
+        return cfn_output_wrapped
 
-    return _wrapper
+    return _output_wrapper
 
 
 def text_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
     """Return wrapper for cipher functions to cast cipher function text input into the specified format."""
 
-    def _wrapper(cipher_fn: CipherFunction):
-        def cipher_fn_wrapper(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
+    def _text_input_wrapper(cipher_fn: CipherFunction):
+        def cfn_text_input_wrapped(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
             return cipher_fn(key, formatter(text), *args, **kwargs)
 
-        return cipher_fn_wrapper
+        return cfn_text_input_wrapped
 
-    return _wrapper
+    return _text_input_wrapper
 
 
 text_input_to_int_wrapper = text_input_wrapper(lambda text: int(text, 0))
@@ -50,7 +50,7 @@ fhex_output_wrapper = output_wrapper(fhex)
 text_input_to_bitseq_wrapper = text_input_wrapper(bitseq_from_str)
 
 
-def padder(blocksize: int) -> Callable[[Bits], Bits]:
+def padder_wrapper(blocksize: int) -> Callable[[Bits], Bits]:
     """Return function which left-pads text input with zeros to fit blocksize."""
 
     def _padder(text: Bits):
@@ -66,19 +66,19 @@ def padder(blocksize: int) -> Callable[[Bits], Bits]:
 
 def text_input_padder(blocksize: int) -> Callable[[CipherFunction], CipherFunction]:
     """Return wrapper for cipher functions to left-pad text input with zeros to fit blocksize."""
-    return text_input_wrapper(padder(blocksize))
+    return text_input_wrapper(padder_wrapper(blocksize))
 
 
 def key_input_wrapper(formatter: Formatter) -> Callable[[CipherFunction], CipherFunction]:
     """Return wrapper for cipher functions to cast key input into specified format."""
 
-    def _wrapper(cipher_fn: CipherFunction):
-        def cipher_fn_wrapper(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
+    def _key_input_wrapper(cipher_fn: CipherFunction):
+        def cfn_key_input_wrapped(key: Any, text: Any, *args: Any, **kwargs: Any) -> Any:
             return cipher_fn(formatter(key), text, *args, **kwargs)
 
-        return cipher_fn_wrapper
+        return cfn_key_input_wrapped
 
-    return _wrapper
+    return _key_input_wrapper
 
 
 def key_input_padder(keysize: int) -> Callable[[CipherFunction], CipherFunction]:
@@ -87,7 +87,7 @@ def key_input_padder(keysize: int) -> Callable[[CipherFunction], CipherFunction]
     If the key is too long, then an error will be raised anyway during en-/decryption because
     the size does not match. This only helps for keys which are too small.
     """
-    return key_input_wrapper(padder(keysize))
+    return key_input_wrapper(padder_wrapper(keysize))
 
 
 key_input_to_bitseq_wrapper = key_input_wrapper(bitseq_from_str)
