@@ -39,7 +39,7 @@ This cipher was chosen since it "has acted as a catalyst in the discovery of dif
 
 Therefore, I hope I can use this cipher to gain more in-depth knowledge about linear cryptanalysis by attacking the cipher and playing around with the implementation.
 
-`src/ciphers/feal.py`:
+`src/ciphers/block/feal.py`:
 ```
 Usage:
     feal encrypt [options] KEY PLAINTEXT
