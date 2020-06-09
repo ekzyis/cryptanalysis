@@ -20,3 +20,13 @@ class TestSalsa20OptionEncoding(unittest.TestCase):
     def test_integration_salsa20_decrypt_encoding_utf8(self):
         p = salsa20()
         self.assertEqual(p, "secret")
+
+    @default_encrypt_args('-x', 'invalid')
+    def test_integration_salsa20_encrypt_encoding_raises_error_on_invalid_input(self, _):
+        with self.assertRaises(ValueError):
+            salsa20()
+
+    @default_decrypt_args('-x', 'invalid')
+    def test_integration_salsa20_decrypt_encoding_raises_error_on_invalid_input(self):
+        with self.assertRaises(ValueError):
+            salsa20()

@@ -19,3 +19,13 @@ class TestFEALOptionEncoding(unittest.TestCase):
     def test_integration_feal_decrypt_encoding_utf8(self):
         p = feal()
         self.assertEqual(p, "secret")
+
+    @default_encrypt_args('-x', 'invalid')
+    def test_integration_feal_encrypt_encoding_raises_error_on_invalid_input(self):
+        with self.assertRaises(ValueError):
+            feal()
+
+    @default_decrypt_args('-x', 'invalid')
+    def test_integration_feal_decrypt_encoding_raises_error_on_invalid_input(self):
+        with self.assertRaises(ValueError):
+            feal()
