@@ -31,7 +31,7 @@ from docopt import docopt  # type: ignore
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
-from ciphers.modi.wrap import fhex_output_wrapper, text_input_to_bitseq_wrapper, key_input_to_bitseq_wrapper
+from util.wrap import fhex_output_wrapper, text_input_to_bitseq_wrapper, key_input_to_bitseq_wrapper
 from util.encode import encode_wrapper, decode_wrapper
 from util.rot import rot_left_bits
 from util.bitseq import bitseq8, bitseq32, littleendian, bitseq64

@@ -48,7 +48,7 @@ sys.path.insert(0, str(Path(__file__).parent / '../..'))
 from ciphers.modi.ecb import ecb
 from util.bitseq import bitseq32, bitseq8, bitseq64
 from util.encode import decode_wrapper, encode_wrapper
-from ciphers.modi.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper, \
+from util.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper, \
     text_input_padder, key_input_padder
 from util.rot import rot_left_bits
 from util.types import CipherFunction, Formatter

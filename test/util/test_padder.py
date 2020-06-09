@@ -2,7 +2,7 @@ import unittest
 
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.modi.wrap import padder_wrapper
+from util.wrap import padder_wrapper
 from util.bitseq import bitseq8
 
 
