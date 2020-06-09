@@ -14,7 +14,7 @@ class TestFEALOptionEncoding(unittest.TestCase):
         c = feal()
         # "secret".encode('utf8').hex()         => 0x736563726574
         # feal encrypt 0xffff 0x736563726574    => 0xc6c0acf427106a8d
-        self.assertEqual(int(c), 0xc6c0acf427106a8d)
+        self.assertEqual(c, "0xc6c0acf427106a8d")
 
     @default_decrypt_args('-x', 'utf8', key=str(bitseq128(0xffff)), text="0xc6c0acf427106a8d")
     def test_integration_feal_decrypt_encoding_utf8(self):
