@@ -6,11 +6,11 @@ ECB works by splitting the input into blocks which are then en- or decrypted.
 The en- or decrypted blocks are then concatenated.
 """
 
-from math import ceil
 from typing import Any
 
-from util.concat_bits import concat_bits
-from util.split import split
+from bitstring import Bits
+
+from ciphers.modi.wrap import padder_wrapper
 from util.types import CipherFunction
 
 
@@ -24,12 +24,15 @@ def ecb(cipher_fn: CipherFunction, blocksize: int) -> CipherFunction:
     :param blocksize        Block size of cipher in bits on which we want to use ECB mode
     """
 
-    def _ecb(key: int, text: int, *args: Any, **kwargs: Any) -> int:
-        # calculate amount of blocks
-        n = ceil(text.bit_length() / blocksize)
-        in_blocks = split(n, blocksize, text)
+    def _ecb(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
+        # add padding
+        text = padder_wrapper(blocksize)(text)
+        # split text into blocks
+        in_blocks = [text[i:i + blocksize] for i in range(0, len(text), blocksize)]
+        # crypt each block independently
         out_blocks = [cipher_fn(key, b, *args, **kwargs) for b in in_blocks]
-        return concat_bits(*out_blocks, n=blocksize)
+        # concatenate blocks
+        return sum(out_blocks)
 
     return _ecb
 

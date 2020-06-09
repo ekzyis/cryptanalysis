@@ -26,7 +26,7 @@ Usage:
     feal decrypt [options] KEY CIPHERTEXT
 
     -n=N, --round-number=N  Number of rounds. Must be even. [default: 32]
-    -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
+    -o=[bin,hex,dec]        Specifies the output format. [default: hex]
     -m=[ecb,none]           Specifies the mode of operation [default: none]
     -x=[utf8,none]          Specifies the encoding of the cipher-/plaintext. [default: none]
 
@@ -37,33 +37,37 @@ Usage:
 
 import sys
 from pathlib import Path
-from typing import Sequence, Tuple, Any, Optional
+from typing import Sequence, Tuple, Any, Union, Dict, Mapping, Optional
 
+from bitstring import Bits
 from docopt import docopt  # type: ignore
 
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
-from ciphers.modi.wrap import wrap_block_cipher_functions
-from util.concat_bits import concat_bits
-from util.rot import rot_left
-from util.split import split
+from ciphers.modi.ecb import ecb
+from util.bitseq import bitseq32, bitseq8, bitseq64
+from util.encode import decode_wrapper, encode_wrapper
+from ciphers.modi.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper, \
+    text_input_padder, key_input_padder
+from util.rot import rot_left_bits
+from util.types import CipherFunction, Formatter
 
 
-def key_schedule(key: int, n: int = 32) -> Sequence[int]:
+def key_schedule(key: Bits, n: int = 32) -> Sequence[Bits]:
     """Return the subkeys created by the key scheduler of FEAL-NX.
 
     Creates the N+8 16-bit subkeys which are needed during en-/decryption.
     Raises error if key is not 128-bit.
     """
-    if key >= 2 ** 128:
+    if len(key) != 128:
         raise ValueError("Key for FEAL-NX key scheduler must be 128-bit")
-    kl, kr = split(2, 64, key)
+    kl, kr = key[:64], key[64:]
     # processing of right key kr
-    kr1, kr2 = split(2, 32, kr)
+    kr1, kr2 = kr[:32], kr[32:]
     # insert "filler" element such that the the first added element is at index 1
     #   since in the specification, indices for q start with 1
-    q = [0x0]
+    q = [bitseq32(0x0)]
     for r in range(1, (int(n / 2) + 5)):
         if r % 3 == 1:
             q.append(kr1 ^ kr2)
@@ -72,37 +76,38 @@ def key_schedule(key: int, n: int = 32) -> Sequence[int]:
         elif r % 3 == 0:
             q.append(kr2)
     # processing of left key kl
-    a0, b0 = split(2, 32, kl)
+    a0, b0 = kl[:32], kl[32:]
     a = [a0]
     b = [b0]
-    d = [0x0]
+    d = [bitseq32(0x0)]
     k = []
     for r in range(1, int(n / 2) + 5):
         d.append(a[r - 1])
         a.append(b[r - 1])
         b.append(fk(a[r - 1], b[r - 1] ^ d[r - 1] ^ q[r]))
-        br0, br1, br2, br3 = split(4, 8, b[r])
-        k.append(concat_bits(br0, br1, n=8))
-        k.append(concat_bits(br2, br3, n=8))
+        br = b[r]
+        br0, br1, br2, br3 = br[:8], br[8:16], br[16:24], br[24:32]
+        k.append(br0 + br1)
+        k.append(br2 + br3)
     return k
 
 
-def s0(a: int, b: int) -> int:
+def s0(a: Bits, b: Bits) -> Bits:
     """Return substitution value of S-Box 0."""
     return _s(a, b, 0)
 
 
-def s1(a: int, b: int) -> int:
+def s1(a: Bits, b: Bits) -> Bits:
     """Return substitution value of S-Box 1."""
     return _s(a, b, 1)
 
 
-def _s(a: int, b: int, i: int) -> int:
+def _s(a: Bits, b: Bits, i: int) -> Bits:
     """General substitution box implementation for FEAL-NX."""
-    return rot_left((a + b + i) % 256, 2, 8)
+    return rot_left_bits(bitseq8((a.uint + b.uint + i) & 0xFF), 2)
 
 
-def f(a: int, b: int) -> int:
+def f(a: Bits, b: Bits) -> Bits:
     """f-function of FEAL-NX.
 
     a must be 32-bit and b must be 16-bit long.
@@ -110,12 +115,12 @@ def f(a: int, b: int) -> int:
     See section 5.1 and figure 3 in
     https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
     """
-    if a >= 2 ** 32:
+    if len(a) != 32:
         raise ValueError("a key must be 32-bit")
-    if b >= 2 ** 16:
+    if len(b) != 16:
         raise ValueError("b key must be 16-bit")
-    a_k = split(n=4, size=8, bits=a)
-    b_k = split(n=2, size=8, bits=b)
+    a_k = a[0:8], a[8:16], a[16:24], a[24:32]
+    b_k = b[0:8], b[8:16], b[16:24], b[24:32]
     f1 = a_k[1] ^ b_k[0]
     f2 = a_k[2] ^ b_k[1]
     f1 ^= a_k[0]
@@ -124,10 +129,10 @@ def f(a: int, b: int) -> int:
     f2 = s0(f2, f1)
     f0 = s0(a_k[0], f1)
     f3 = s1(a_k[3], f2)
-    return concat_bits(f0, f1, f2, f3, n=8)
+    return sum([f0, f1, f2, f3])
 
 
-def fk(a: int, b: int) -> int:
+def fk(a: Bits, b: Bits) -> Bits:
     """f_k-function of FEAL-NX.
 
     Input keys must be 32-bit.
@@ -135,35 +140,35 @@ def fk(a: int, b: int) -> int:
     See section 5.2 and figure 4 in
     https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
     """
-    if a >= 2 ** 32 or b >= 2 ** 32:
+    if len(a) != 32 or len(b) != 32:
         raise ValueError("Input keys must be 32-bit")
-    a_k = split(n=4, size=8, bits=a)
-    b_k = split(n=4, size=8, bits=b)
+    a_k = a[0:8], a[8:16], a[16:24], a[24:32]
+    b_k = b[0:8], b[8:16], b[16:24], b[24:32]
     fk1 = a_k[1] ^ a_k[0]
     fk2 = a_k[2] ^ a_k[3]
     fk1 = s1(fk1, fk2 ^ b_k[0])
     fk2 = s0(fk2, fk1 ^ b_k[1])
     fk0 = s0(a_k[0], fk1 ^ b_k[2])
     fk3 = s1(a_k[3], fk2 ^ b_k[3])
-    return concat_bits(fk0, fk1, fk2, fk3, n=8)
+    return sum([fk0, fk1, fk2, fk3])
 
 
-def _encrypt_preprocessing(subkeys: Sequence[int], text: int) -> int:
-    p = text ^ concat_bits(*subkeys, n=16)
-    l0, r0 = split(2, 32, p)
-    p ^= l0
+def _encrypt_preprocessing(subkeys: Sequence[Bits], text: Bits) -> Bits:
+    p = text ^ sum(subkeys)
+    l0 = p[:32]
+    p ^= bitseq64(l0)
     return p
 
 
-def _decrypt_preprocessing(subkeys: Sequence[int], text: int) -> int:
-    p = text ^ concat_bits(*subkeys, n=16)
-    rn, ln = split(2, 32, p)
-    p = concat_bits(rn, ln, n=32) ^ rn
+def _decrypt_preprocessing(subkeys: Sequence[Bits], text: Bits) -> Bits:
+    p = text ^ sum(subkeys)
+    rn = p[:32]
+    p ^= bitseq64(rn)
     return p
 
 
-def _encrypt_iterative_calculation(l0: int, r0: int, sk: Sequence[int], n: int = 32) \
-        -> Tuple[Sequence[int], Sequence[int]]:
+def _encrypt_iterative_calculation(l0: Bits, r0: Bits, sk: Sequence[Bits], n: int = 32) \
+        -> Tuple[Sequence[Bits], Sequence[Bits]]:
     l, r = [l0], [r0]
     for i in range(1, n + 1):
         r.append(l[i - 1] ^ f(r[i - 1], sk[i - 1]))
@@ -171,8 +176,8 @@ def _encrypt_iterative_calculation(l0: int, r0: int, sk: Sequence[int], n: int =
     return l, r
 
 
-def _decrypt_iterative_calculation(ln: int, rn: int, sk: Sequence[int], n: int = 32) \
-        -> Tuple[Sequence[int], Sequence[int]]:
+def _decrypt_iterative_calculation(ln: Bits, rn: Bits, sk: Sequence[Bits], n: int = 32) \
+        -> Tuple[Sequence[Bits], Sequence[Bits]]:
     l, r = [0] * n + [ln], [0] * n + [rn]
     for i in reversed(range(1, n + 1)):
         l[i - 1] = r[i] ^ f(l[i], sk[i - 1])
@@ -180,74 +185,190 @@ def _decrypt_iterative_calculation(ln: int, rn: int, sk: Sequence[int], n: int =
     return l, r
 
 
-def encrypt(key: int, text: int, *args: Any, **kwargs: Any) -> int:
+def encrypt(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
     """Encrypt the text with the given key using FEAL-NX encryption.
 
     Raises error if text is longer than 64-bit or key is longer than 128-bit.
     Raises error if text or key is not a number.
     """
     n = kwargs.setdefault('n', 32)
-    if type(text) is not int:
-        raise ValueError("Plaintext must be a number")
-    if type(key) is not int:
-        raise ValueError("Key must be a number")
-    if text >= 2 ** 64:
+    if len(text) != 64:
         raise ValueError("Plaintext must be 64-bit")
-    if key >= 2 ** 128:
+    if len(key) != 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    l0, r0 = split(2, 32, _encrypt_preprocessing(sk[n:n + 4], text))
+    preproc = _encrypt_preprocessing(sk[n:n + 4], text)
+    l0, r0 = preproc[:32], preproc[32:]
     l, r = _encrypt_iterative_calculation(l0, r0, sk, n)
     ln, rn = l[n], r[n]
-    c = concat_bits(rn, ln, n=32) ^ rn
-    c ^= concat_bits(sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7], n=16)
+    c = (rn + ln) ^ bitseq64(rn)
+    c ^= sum([sk[n + 4], sk[n + 5], sk[n + 6], sk[n + 7]])
     return c
 
 
-def decrypt(key: int, text: int, *args: Any, **kwargs: Any) -> int:
+def decrypt(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
     """Decrypt the ciphertext with the given key using FEAL-NX decryption.
 
     Raises error if text is longer than 64-bit or key is longer than 128-bit.
     Raises error if text or key is not a number.
     """
     n = kwargs.setdefault('n', 32)
-    if type(text) is not int:
-        raise ValueError("Ciphertext must be a number")
-    if type(key) is not int:
-        raise ValueError("Key must be a number")
-    if text >= 2 ** 64:
+    if len(text) != 64:
         raise ValueError("Ciphertext must be 64-bit")
-    if key >= 2 ** 128:
+    if len(key) != 128:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
-    rn, ln = split(2, 32, _decrypt_preprocessing(sk[n + 4:n + 8], text))
+    preproc = _decrypt_preprocessing(sk[n + 4:n + 8], text)
+    rn, ln = preproc[:32], preproc[32:]
     l, r = _decrypt_iterative_calculation(ln, rn, sk, n)
     l0, r0 = l[0], r[0]
-    p = concat_bits(l0, r0, n=32) ^ l0
-    p ^= concat_bits(sk[n], sk[n + 1], sk[n + 2], sk[n + 3], n=16)
+    p = (l0 + r0) ^ bitseq64(l0)
+    p ^= sum([sk[n], sk[n + 1], sk[n + 2], sk[n + 3]])
     return p
 
 
-def feal() -> Optional[int]:
+def _feal_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
+    """Wrap encrypt and decrypt cipher function with options wrapper to implement option-specific behaviour.
+
+    Returns wrapped encrypt when encrypting; wrapped decrypt when decrypting.
+    """
+    """When parsing arguments, the following execution order has to be ensured:
+        ===========================================================================
+        `feal -x utf8 -m ecb encrypt k m`
+         |
+         | (k: int, m: str)
+         |
+         -> [ENCODE]: ENCODE MESSAGE
+                |
+                | (k: int, encoded_m: int)
+                |
+                -> [ECB]: SPLIT MESSAGE
+                     |
+                     | (k: int, m_blocks: [int])
+                     |
+                     -------------------------------
+                     |        |    ...    |        |
+                     |        |           |        | (k: int, m_block: int)
+                     v        v           v        v
+                 [ENCRYPT][ENCRYPT]   [ENCRYPT][ENCRYPT]
+                     |        |           |        |
+                     |        |           |        | (k: int, encrypted_m_block: int)
+                     v        v           v        v
+                     -------------------------------
+                                    |
+                                    | (encrypted_m_blocks: [int])
+                                    v
+                            [ECB]: CONCAT ENCRYPTED BLOCKS
+                                    |
+         ----------------------------
+         |
+         | (encrypted_message: int)
+         v
+         OUTPUT
+        ===========================================================================
+         `feal -x utf8 -m ecb ecb decrypt k m`
+         |
+         | (k: int, m: int)
+         |
+         --------> [ECB]: SPLIT MESSAGE
+                     |
+                     | (k: int, m_blocks: [int]
+                     |
+                     -------------------------------
+                     |        |    ...    |        |
+                     |        |           |        | (k: int, m_block: int)
+                     v        v           v        v
+                 [DECRYPT][DECRYPT]   [DECRYPT][DECRYPT]
+                     |         |           |       |
+                     |         |           |       |
+                     v         v           v       v
+                     -------------------------------
+                               |
+                               | (decrypted_m_blocks: [int]
+                               v
+                       [ECB]: CONCAT DECRYPTED BLOCKS
+                               |
+            --------------------
+            |
+            | (decrypted_message: int)
+         [DECODE]
+            |
+         ----
+         |
+         v
+         OUTPUT
+        ===========================================================================
+    """
+
+    n = int(args['--round-number'])
+    if n % 2 == 1:
+        raise ValueError("Round number must be even.")
+    ecb_mode: bool = args['-m'] == 'ecb'
+    utf8_mode: bool = args['-x'] == 'utf8'
+    blocksize: int = args['blocksize']
+
+    _format: Mapping[str, Formatter] = {
+        'bin': lambda b: '0b' + b.bin, 'dec': lambda b: str(b.uint), 'hex': lambda b: '0x' + b.hex
+    }
+    # This should not be able to cause an KeyError because docopt already checked that all enum arguments are valid
+    formatter = _format[args['-o']]
+    output_format_wrapper = output_wrapper(formatter)
+
+    feal_key_input_padder = key_input_padder(128)
+    _encrypt, _decrypt = feal_key_input_padder(encrypt), feal_key_input_padder(decrypt)
+    _encrypt, _decrypt = key_input_to_bitseq_wrapper(_encrypt), key_input_to_bitseq_wrapper(_decrypt)
+
+    if args['encrypt']:
+        if ecb_mode:
+            _encrypt = ecb(_encrypt, blocksize)
+        if utf8_mode:
+            _encrypt = text_input_padder(blocksize)(_encrypt)
+            _encrypt = encode_wrapper(_encrypt)
+        else:
+            _encrypt = text_input_to_bitseq_wrapper(_encrypt)
+        _encrypt = output_format_wrapper(_encrypt)
+        return _encrypt
+    elif args['decrypt']:
+        if ecb_mode:
+            _decrypt = ecb(_decrypt, blocksize)
+        _decrypt = text_input_to_bitseq_wrapper(_decrypt)
+        if utf8_mode:
+            _decrypt = decode_wrapper(_decrypt)
+        else:
+            _decrypt = output_format_wrapper(_decrypt)
+        return _decrypt
+    else:
+        raise ValueError("args must be a dict with key 'encrypt' or 'decrypt' set.")
+
+
+def validate(args):
+    """Validates the arguments passed on the command line."""
+    if int(args['--round-number']) % 2 != 0:
+        raise ValueError("round number must be even.")
+    if args['-o'] not in ['bin', 'hex', 'dec']:
+        raise ValueError("output format must be bin, hex or dec")
+    if args['-m'] not in ['ecb', 'none']:
+        raise ValueError("mode of operation must be ecb or none")
+    if args['-x'] not in ['utf8', 'none']:
+        raise ValueError("encoding must be utf8 or none")
+
+
+def feal() -> Optional[str]:
     """Execute FEAL-NX cipher with arguments given on command line.
 
     Gets arguments from docopt which parses sys.argv.
     See http://docopt.org/ if you are not familiar with docopt argument parsing.
     """
     args = docopt(__doc__)
+    validate(args)
 
     # Wrap encrypt and decrypt functions depending on arguments given on cmdline
     args['blocksize'] = 64
-    _encrypt, _decrypt = wrap_block_cipher_functions(encrypt, decrypt, args)
-
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     n = int(args['--round-number'])
-    k = int(args['KEY'], 0)
-    if args['encrypt']:
-        return _encrypt(k, text, n=n)
-    elif args['decrypt']:
-        return _decrypt(k, text, n=n)
-    return None
+    k = args['KEY']
+    cfn = _feal_options_wrap(args)
+    return cfn(k, text, n=n)
 
 
 if __name__ == "__main__":

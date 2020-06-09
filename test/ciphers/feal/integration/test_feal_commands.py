@@ -10,9 +10,9 @@ class TestFEALCommands(unittest.TestCase):
     @default_encrypt_args()
     def test_integration_feal_encrypt(self):
         c = feal()
-        self.assertEqual(int(c), 0x9C9B54973DF685F8)
+        self.assertEqual(c, "0x9c9b54973df685f8")
 
     @default_decrypt_args()
     def test_integration_feal_decrypt(self):
         p = feal()
-        self.assertEqual(int(p), 0x0)
+        self.assertEqual(p, "0x0000000000000000")

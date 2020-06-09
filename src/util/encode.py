@@ -17,9 +17,9 @@ def encode(text: str, encoding: str = 'utf8') -> Bits:
 def decode(b: Union[Bits, int], encoding: str = 'utf8') -> str:
     """Return the string which the given bitstring represents in the given encoding."""
     if type(b) is int:
-        return bytes.fromhex(hex(b)[2:]).decode(encoding)
+        return bytes.fromhex(hex(b)[2:]).decode(encoding).lstrip('\x00')
     elif type(b) is Bits:
-        return bytes.fromhex(b.hex).decode(encoding)
+        return bytes.fromhex(b.hex).decode(encoding).lstrip('\x00')
     else:
         raise ValueError("input must be of type int or bitstring.Bit")
 

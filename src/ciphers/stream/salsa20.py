@@ -31,10 +31,10 @@ from docopt import docopt  # type: ignore
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
-from ciphers.modi.wrap import fhex_wrapper, text_input_to_bitseq_wrapper
+from ciphers.modi.wrap import fhex_output_wrapper, text_input_to_bitseq_wrapper, key_input_to_bitseq_wrapper
 from util.encode import encode_wrapper, decode_wrapper
 from util.rot import rot_left_bits
-from util.bitseq import bitseq_from_str, bitseq8, bitseq32, littleendian, bitseq64
+from util.bitseq import bitseq8, bitseq32, littleendian, bitseq64
 from util.types import CipherFunction
 
 __SALSA_20_ROUNDS__: int = 20
@@ -215,13 +215,7 @@ def _salsa20_options_wrap(args: Dict[str, Union[str, int]]) \
     Returns wrapped encrypt when encrypting; wrapped decrypt when decrypting."""
 
     # the key must always be casted into a bitstring
-    def key_wrapper(cfn: CipherFunction) -> CipherFunction:
-        def cipher_fn_wrapper(key: str, text_: Any, *args_: Any, **kwargs: Any) -> Any:
-            return cfn(bitseq_from_str(key), text_, *args_, **kwargs)
-
-        return cipher_fn_wrapper
-
-    _encrypt, _decrypt = key_wrapper(encrypt), key_wrapper(decrypt)
+    _encrypt, _decrypt = key_input_to_bitseq_wrapper(encrypt), key_input_to_bitseq_wrapper(decrypt)
     if args['encrypt']:
         if args['-x'] == 'utf8':
             # the text must be encoded before encryption
@@ -232,7 +226,7 @@ def _salsa20_options_wrap(args: Dict[str, Union[str, int]]) \
             text_wrapper = text_input_to_bitseq_wrapper
         _encrypt = text_wrapper(_encrypt)
         # output full hex string
-        _encrypt = fhex_wrapper(_encrypt)
+        _encrypt = fhex_output_wrapper(_encrypt)
         return _encrypt
     elif args['decrypt']:
         # the text must always be cast into a bitstring
@@ -242,7 +236,7 @@ def _salsa20_options_wrap(args: Dict[str, Union[str, int]]) \
             _decrypt = decode_wrapper(_decrypt)
         else:
             # output full hex string
-            _decrypt = fhex_wrapper(_decrypt)
+            _decrypt = fhex_output_wrapper(_decrypt)
         return _decrypt
     else:
         raise ValueError("args must be a dict with key 'encrypt' or 'decrypt' set.")
