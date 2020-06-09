@@ -59,3 +59,13 @@ class TestSalsa20OptionRound(unittest.TestCase):
     @default_decrypt_args('-r', '8')
     def test_integration_salsa20_decrypt_rounds_8(self):
         pass
+
+    @default_encrypt_args('-r', '7')
+    def test_integration_salsa20_encrypt_round_raises_error_on_invalid_input(self, _):
+        with self.assertRaises(ValueError):
+            salsa20()
+
+    @default_decrypt_args('-r', '7')
+    def test_integration_salsa20_decrypt_round_raises_error_on_invalid_input(self):
+        with self.assertRaises(ValueError):
+            salsa20()
