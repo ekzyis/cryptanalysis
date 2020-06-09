@@ -60,7 +60,7 @@ Usage:
 
 Reference paper for specification: https://cr.yp.to/snuffle/spec.pdf
 
-`src/ciphers/stream/salsa20.py`
+`src/ciphers/stream/salsa20.py`:
 ```
 Usage:
     salsa20 encrypt [options] KEY PLAINTEXT
