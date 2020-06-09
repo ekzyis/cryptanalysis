@@ -12,6 +12,7 @@ For example, I always wondered how one can encrypt messages larger than the bloc
 
 Therefore, I have chosen to implement the following ciphers:
 - FEAL-NX
+- Salsa20
 
 ### General setup
 
@@ -48,6 +49,24 @@ Usage:
     -n=N, --round-number=N  Number of rounds. Must be even. [default: 32]
     -o=[bin,hex,dec]        Specifies the output format. [default: hex]
     -m=[ecb,none]           Specifies the mode of operation [default: none]
+    -x=[utf8,none]          Specifies the encoding of the cipher-/plaintext. [default: none]
+
+    KEY                     The key which should be used for en-/decryption.
+    PLAINTEXT               The text to encrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
+    CIPHERTEXT              The text to decrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
+```
+
+### Salsa20
+
+Reference paper for specification: https://cr.yp.to/snuffle/spec.pdf
+
+`src/ciphers/stream/salsa20.py`
+```
+Usage:
+    salsa20 encrypt [options] KEY PLAINTEXT
+    salsa20 decrypt [options] KEY CIPHERTEXT
+
+    -r=[8,12,20]            Number of rounds. [default: 20]
     -x=[utf8,none]          Specifies the encoding of the cipher-/plaintext. [default: none]
 
     KEY                     The key which should be used for en-/decryption.
