@@ -39,10 +39,10 @@ class TestFEALOptionOutputFormat(unittest.TestCase):
 
     @default_encrypt_args('-o', 'invalid')
     def test_integration_feal_encrypt_output_format_invalid_raises_error(self):
-        with self.assertRaises(KeyError):
+        with self.assertRaises(ValueError):
             feal()
 
     @default_decrypt_args('-o', 'invalid')
     def test_integration_feal_decrypt_output_format_invalid_raises_error(self):
-        with self.assertRaises(KeyError):
+        with self.assertRaises(ValueError):
             feal()
