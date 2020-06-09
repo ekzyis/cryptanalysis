@@ -341,6 +341,18 @@ def _feal_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
         raise ValueError("args must be a dict with key 'encrypt' or 'decrypt' set.")
 
 
+def validate(args):
+    """Validates the arguments passed on the command line."""
+    if int(args['--round-number']) % 2 != 0:
+        raise ValueError("round number must be even.")
+    if args['-o'] not in ['bin', 'hex', 'dec']:
+        raise ValueError("output format must be bin, hex or dec")
+    if args['-m'] not in ['ecb', 'none']:
+        raise ValueError("mode of operation must be ecb or none")
+    if args['-x'] not in ['utf8', 'none']:
+        raise ValueError("encoding must be utf8 or none")
+
+
 def feal() -> Optional[str]:
     """Execute FEAL-NX cipher with arguments given on command line.
 
@@ -348,6 +360,7 @@ def feal() -> Optional[str]:
     See http://docopt.org/ if you are not familiar with docopt argument parsing.
     """
     args = docopt(__doc__)
+    validate(args)
 
     # Wrap encrypt and decrypt functions depending on arguments given on cmdline
     args['blocksize'] = 64
