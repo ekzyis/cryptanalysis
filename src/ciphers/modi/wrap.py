@@ -51,9 +51,14 @@ text_input_to_bitseq_wrapper = text_input_wrapper(bitseq_from_str)
 
 
 def padder_wrapper(blocksize: int) -> Callable[[Bits], Bits]:
-    """Return function which left-pads text input with zeros to fit blocksize."""
+    """Return function which left-pads text input with zeros to fit blocksize.
+
+    Wrapper raises error if input is not a bitstring.
+    """
 
     def _padder(text: Bits):
+        if not isinstance(text, Bits):
+            raise ValueError("padder input must be a bitstring.")
         # add padding
         pad_amount = (blocksize - len(text) % blocksize) % blocksize
         if pad_amount != 0:
