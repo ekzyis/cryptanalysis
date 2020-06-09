@@ -241,6 +241,14 @@ def _salsa20_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
         raise ValueError("args must be a dict with key 'encrypt' or 'decrypt' set.")
 
 
+def validate(args):
+    """Validates the arguments passed on the command line."""
+    if int(args['-r']) not in [8, 12, 20]:
+        raise ValueError("round number must be 8, 12 or 20.")
+    if args['-x'] not in ['utf8', 'none']:
+        raise ValueError("encoding must be utf8 or none")
+
+
 def salsa20() -> Optional[str]:
     """Execute Salsa20 cipher with arguments given on command line.
 
@@ -248,6 +256,7 @@ def salsa20() -> Optional[str]:
     See http://docopt.org/ if you are not familiar with docopt argument parsing.
     """
     args = docopt(__doc__)
+    validate(args)
 
     text = args['PLAINTEXT'] or args['CIPHERTEXT']
     k = args['KEY']
