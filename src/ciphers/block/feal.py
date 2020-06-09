@@ -316,7 +316,7 @@ def _feal_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
 
     feal_key_input_padder = key_input_padder(128)
     _encrypt, _decrypt = feal_key_input_padder(encrypt), feal_key_input_padder(decrypt)
-    _encrypt, _decrypt = key_input_to_bitseq_wrapper(_encrypt), key_input_to_bitseq_wrapper(_encrypt)
+    _encrypt, _decrypt = key_input_to_bitseq_wrapper(_encrypt), key_input_to_bitseq_wrapper(_decrypt)
 
     if args['encrypt']:
         if ecb_mode:
