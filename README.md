@@ -45,8 +45,10 @@ Usage:
     feal encrypt [options] KEY PLAINTEXT
     feal decrypt [options] KEY CIPHERTEXT
 
-    -n=N, --round-number=N  Number of rounds [default: 32]
-    -o=[bin,hex,oct,dec]    Specifies the output format. [default: dec]
+    -n=N, --round-number=N  Number of rounds. Must be even. [default: 32]
+    -o=[bin,hex,dec]        Specifies the output format. [default: hex]
+    -m=[ecb,none]           Specifies the mode of operation [default: none]
+    -x=[utf8,none]          Specifies the encoding of the cipher-/plaintext. [default: none]
 
     KEY                     The key which should be used for en-/decryption.
     PLAINTEXT               The text to encrypt. Must be a number. Can be a code literal such as 0b1011, 0o71, 0xF32C.
