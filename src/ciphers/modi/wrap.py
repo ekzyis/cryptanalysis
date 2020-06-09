@@ -65,7 +65,7 @@ def padder(blocksize: int) -> Callable[[Bits], Bits]:
 
 
 def text_input_padder(blocksize: int) -> Callable[[CipherFunction], CipherFunction]:
-    """Return wrapper for ciphers function to left-pad text input with zeros to fit blocksize."""
+    """Return wrapper for cipher functions to left-pad text input with zeros to fit blocksize."""
     return text_input_wrapper(padder(blocksize))
 
 
