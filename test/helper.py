@@ -59,7 +59,7 @@ class BitsTestCase(unittest.TestCase):
         def assert_fn_raises_if_arguments_not_of_given_lengths(fn, correct_args, error):
             for i, arg in enumerate(correct_args):
                 assert_fn_raises_if_argument_not_of_given_length(
-                    fn=fn, correct_args=correct_args, arg_index_to_check=i, length=len(arg), error=error
+                    fn=fn, correct_args=correct_args, arg_index_to_check=i, error=error
                 )
 
         self.assertBit = assert_bit
