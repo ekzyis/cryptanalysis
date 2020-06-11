@@ -39,7 +39,7 @@ class BitsTestCase(unittest.TestCase):
             self.assertEqual(b.uint, value)
             self.assertEqual(len(b), length)
 
-        def assert_fn_raises_if_argument_not_of_given_length(fn, correct_args, arg_index_to_check, error):
+        def _assert_fn_raises_if_argument_not_of_given_length(fn, correct_args, arg_index_to_check, error):
             length = len(correct_args[arg_index_to_check])
             with self.assertRaises(error):
                 x = bitseq(0x0, bit=length + 1)
@@ -56,12 +56,16 @@ class BitsTestCase(unittest.TestCase):
             except ValueError:
                 self.fail("{} raised unexpected ValueError".format(fn.__name__))
 
-        def assert_fn_raises_if_arguments_not_of_given_lengths(fn, correct_args, error):
-            for i, arg in enumerate(correct_args):
-                assert_fn_raises_if_argument_not_of_given_length(
-                    fn=fn, correct_args=correct_args, arg_index_to_check=i, error=error
+        def assert_fn_raises_if_arguments_not_of_given_lengths(fn, correct_args, error, arg_index_to_check=None):
+            if arg_index_to_check is None:
+                for i, arg in enumerate(correct_args):
+                    _assert_fn_raises_if_argument_not_of_given_length(
+                        fn=fn, correct_args=correct_args, arg_index_to_check=i, error=error
+                    )
+            else:
+                _assert_fn_raises_if_argument_not_of_given_length(
+                    fn=fn, correct_args=correct_args, arg_index_to_check=arg_index_to_check, error=error
                 )
 
         self.assertBit = assert_bit
-        self.assert_fn_raises_if_argument_not_of_given_length = assert_fn_raises_if_argument_not_of_given_length
         self.assert_fn_raises_if_arguments_not_of_given_lengths = assert_fn_raises_if_arguments_not_of_given_lengths
