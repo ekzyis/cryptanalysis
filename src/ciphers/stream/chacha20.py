@@ -48,4 +48,7 @@ def quarterround_state(state: Bits, i, j, k, l) -> Bits:
     Returns a 512-bit value.
     State must be 512-bit.
     """
-    pass
+    entry = [state[index:index + 32] for index in range(0, len(state), 32)]
+    q = quarterround(sum([entry[i], entry[j], entry[k], entry[l]]))
+    entry[i], entry[j], entry[k], entry[l] = [q[index:index + 32] for index in range(0, len(q), 32)]
+    return sum(entry)
