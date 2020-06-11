@@ -1,35 +1,17 @@
-import unittest
-
 # noinspection PyUnresolvedReferences
 import test.context
 # noinspection PyProtectedMember
 from ciphers.block.feal import decrypt, _decrypt_preprocessing, _decrypt_iterative_calculation
-from util.bitseq import bitseq128, bitseq, bitseq64, bitseq16, bitseq32
+from test.helper import BitsTestCase
+from util.bitseq import bitseq128, bitseq64, bitseq16, bitseq32
 
 
-class TestFEALDecrypt(unittest.TestCase):
+class TestFEALDecrypt(BitsTestCase):
 
-    def test_feal_decrypt_raises_value_error_if_text_larger_than_64_bit(self):
-        k = bitseq128(0x0)
-        with self.assertRaises(ValueError):
-            m = bitseq(0x0, bit=65)
-            decrypt(k, m)
-        try:
-            m = bitseq64(0x0)
-            decrypt(k, m)
-        except ValueError:
-            self.fail("decrypt raised unexpected ValueError")
-
-    def test_feal_decrypt_raises_value_error_if_key_larger_than_128_bit(self):
-        m = bitseq64(0x0)
-        with self.assertRaises(ValueError):
-            k = bitseq(0x0, bit=129)
-            decrypt(k, m)
-        try:
-            k = bitseq128(0x0)
-            decrypt(k, m)
-        except ValueError:
-            self.fail("decrypt raised unexpected ValueError")
+    def test_feal_decrypt_raises_value_error_if_text_not_64_bit_or_key_not_128_bit(self):
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=decrypt, correct_args=[bitseq128(0x0), bitseq64(0x0)], error=ValueError
+        )
 
     def test_feal_decrypt_matches_specification_in_paper(self):
         """Checks that the FEAL decryption decrypts the given ciphertext."""
