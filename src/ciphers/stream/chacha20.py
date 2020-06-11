@@ -15,6 +15,9 @@ designed as an implementation guide for ChaCha20. I have taken the test vectors 
 """
 from bitstring import Bits
 
+from util.bitseq import bitseq32
+from util.rot import rot_left_bits
+
 
 def quarterround(y: Bits) -> Bits:
     """Calculate the ChaCha20 quarterround value of the input as specified in the paper.
@@ -22,4 +25,16 @@ def quarterround(y: Bits) -> Bits:
     Returns a 128-bit value.
     Raises error if input is not 128-bit.
     """
-    pass
+
+    def _quarterround_step(x1, x2, x3, shift):
+        x1 = bitseq32(x1.uint + x2.uint & 0xFFFFFFFF)
+        x3 ^= x1
+        x3 = rot_left_bits(x3, shift)
+        return x1, x2, x3
+
+    a, b, c, d = y[0:32], y[32:64], y[64:96], y[96:128]
+    a, b, d = _quarterround_step(a, b, d, 16)
+    c, d, b = _quarterround_step(c, d, b, 12)
+    a, b, d = _quarterround_step(a, b, d, 8)
+    c, d, b = _quarterround_step(c, d, b, 7)
+    return a + b + c + d
