@@ -39,7 +39,8 @@ class BitsTestCase(unittest.TestCase):
             self.assertEqual(b.uint, value)
             self.assertEqual(len(b), length)
 
-        def assert_fn_raises_if_argument_not_of_given_length(fn, correct_args, arg_index_to_check, length, error):
+        def assert_fn_raises_if_argument_not_of_given_length(fn, correct_args, arg_index_to_check, error):
+            length = len(correct_args[arg_index_to_check])
             with self.assertRaises(error):
                 x = bitseq(0x0, bit=length + 1)
                 args = correct_args.copy()
