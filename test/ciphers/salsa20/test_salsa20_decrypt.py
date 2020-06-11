@@ -1,12 +1,11 @@
-import unittest
-
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.salsa20 import decrypt
-from util.bitseq import bitseq32, bitseq, bitseq64
+from test.helper import BitsTestCase
+from util.bitseq import bitseq32, bitseq, bitseq64, bitseq256, bitseq128
 
 
-class TestSalsa20Decrypt(unittest.TestCase):
+class TestSalsa20Decrypt(BitsTestCase):
 
     def test_salsa20_decrypt(self):
         k = bitseq32(
@@ -42,23 +41,11 @@ class TestSalsa20Decrypt(unittest.TestCase):
         self.assertEqual(p, bitseq(0x0, bit=4096))
 
     def test_salsa20_decrypt_raises_value_error_if_key_not_256_bit(self):
-        m = bitseq64(0x0, 0x0)
-        with self.assertRaises(ValueError):
-            k1 = bitseq(0x0, bit=257)
-            decrypt(k1, m)
-        try:
-            k2 = bitseq(0x0, bit=256)
-            decrypt(k2, m)
-        except ValueError:
-            self.fail("decrypt raised unexpected ValueError")
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=decrypt, correct_args=[bitseq256(0x0), bitseq128(0x0)], arg_index_to_check=0, error=ValueError
+        )
 
-    def test_salsa20_decrypt_raises_value_error_if_text_is_64_bit_or_smaller(self):
-        k = bitseq64(0x0, 0x0, 0x0, 0x0)
-        with self.assertRaises(ValueError):
-            m1 = bitseq(0x0, bit=64)
-            decrypt(k, m1)
-        try:
-            m2 = bitseq(0x0, bit=65)
-            decrypt(k, m2)
-        except ValueError:
-            self.fail("decrypt raised unexpected ValueError")
+    def test_salsa20_decrypt_raises_value_error_if_text_smaller_than_or_equal_to_64_bit(self):
+        self.assert_fn_raises_if_arguments_smaller_than_given_lengths(
+            fn=decrypt, correct_args=[bitseq256(0x0), bitseq64(0x0)], arg_index_to_check=1, error=ValueError
+        )

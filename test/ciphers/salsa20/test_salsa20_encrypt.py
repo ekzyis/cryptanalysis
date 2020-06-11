@@ -1,15 +1,15 @@
-import unittest
 from functools import reduce
 from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.salsa20 import expansion, encrypt
-from util.bitseq import bitseq32, bitseq64, littleendian, bitseq128, bitseq
+from test.helper import BitsTestCase
+from util.bitseq import bitseq32, bitseq64, littleendian, bitseq128, bitseq, bitseq256
 
 
 @mock.patch('random.randint', return_value=0x0)
-class TestSalsa20Encrypt(unittest.TestCase):
+class TestSalsa20Encrypt(BitsTestCase):
     """Test if encryption returns the same results as the test data.
 
     Test data obtained from:
@@ -229,12 +229,6 @@ class TestSalsa20Encrypt(unittest.TestCase):
         self.assertEqual(encrypt(k, m), bitseq64(0x0) + (m ^ sum(stream)))
 
     def test_salsa20_encrypt_raises_value_error_if_key_not_256_bit(self, _):
-        m = bitseq64(0x0)
-        with self.assertRaises(ValueError):
-            k1 = bitseq(0x0, bit=257)
-            encrypt(k1, m)
-        try:
-            k2 = bitseq(0x0, bit=256)
-            encrypt(k2, m)
-        except ValueError:
-            self.fail("encrypt raised unexpected ValueError")
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=encrypt, correct_args=[bitseq256(0x0), bitseq64(0x0)], arg_index_to_check=0, error=ValueError
+        )

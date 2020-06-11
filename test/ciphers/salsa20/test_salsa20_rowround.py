@@ -1,12 +1,11 @@
-import unittest
-
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.salsa20 import rowround
-from util.bitseq import bitseq32, bitseq
+from test.helper import BitsTestCase
+from util.bitseq import bitseq32, bitseq512
 
 
-class TestSalsa20RowRound(unittest.TestCase):
+class TestSalsa20RowRound(BitsTestCase):
     def test_salsa20_rowround(self):
         y1 = bitseq32((0x1, 0x0, 0x0, 0x0) * 4)
         z1 = bitseq32(
@@ -31,11 +30,6 @@ class TestSalsa20RowRound(unittest.TestCase):
         self.assertEqual(rowround(y2), z2)
 
     def test_salsa20_rowround_raises_value_error_if_input_not_512_bit(self):
-        with self.assertRaises(ValueError):
-            x1 = bitseq((0x0,) * 513, bit=1)
-            rowround(x1)
-        try:
-            x2 = bitseq((0x0,) * 512, bit=1)
-            rowround(x2)
-        except ValueError:
-            self.fail("rowround raised unexpected ValueError")
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=rowround, correct_args=[bitseq512(0x0)], error=ValueError
+        )

@@ -1,12 +1,11 @@
-import unittest
-
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.salsa20 import salsa20_hash
-from util.bitseq import bitseq, bitseq8
+from test.helper import BitsTestCase
+from util.bitseq import bitseq, bitseq8, bitseq512
 
 
-class TestSalsa20CSalsa20Hash(unittest.TestCase):
+class TestSalsa20CSalsa20Hash(BitsTestCase):
     def test_salsa20_salsa20_hash(self):
         x1 = bitseq(0x0, bit=512)
         z1 = bitseq(0x0, bit=512)
@@ -39,11 +38,6 @@ class TestSalsa20CSalsa20Hash(unittest.TestCase):
         self.assertEqual(salsa20_hash(x3), z3)
 
     def test_salsa20_salsa20_hash_raises_value_error_if_input_not_512_bit(self):
-        with self.assertRaises(ValueError):
-            x1 = bitseq(0x0, bit=513)
-            salsa20_hash(x1)
-        try:
-            x2 = bitseq(0x0, bit=512)
-            salsa20_hash(x2)
-        except ValueError:
-            self.fail("salsa20 raised unexpected ValueError")
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=salsa20_hash, correct_args=[bitseq512(0x0)], error=ValueError
+        )
