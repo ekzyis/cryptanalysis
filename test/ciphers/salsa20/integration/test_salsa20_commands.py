@@ -4,14 +4,14 @@ import unittest
 import test.context
 from ciphers.stream.salsa20 import salsa20
 from test.ciphers.salsa20.integration.patchers import default_decrypt_args, default_encrypt_args
-from test.helper import timeit
 from util.bitseq import bitseq, bitseq64, fhex
 
 
 class TestSalsa20Commands(unittest.TestCase):
 
+    @unittest.skip(reason="Takes too long to complete.")
     @default_encrypt_args()
-    @timeit
+    # @timeit
     def test_integration_salsa20_encrypt(self, _):
         c = bitseq64(
             0x0,
@@ -37,8 +37,9 @@ class TestSalsa20Commands(unittest.TestCase):
         )
         self.assertEqual(salsa20(), fhex(c))
 
+    @unittest.skip(reason="Takes too long to complete.")
     @default_decrypt_args()
-    @timeit
+    # @timeit
     def test_integration_salsa20_decrypt(self):
         p = bitseq(0x0, bit=4096)
         self.assertEqual(salsa20(), fhex(p))
