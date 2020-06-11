@@ -25,6 +25,8 @@ def quarterround(y: Bits) -> Bits:
     Returns a 128-bit value.
     Raises error if input is not 128-bit.
     """
+    if len(y) != 128:
+        raise ValueError("Input must be 64-bit")
 
     def _quarterround_step(x1, x2, x3, shift):
         x1 = bitseq32(x1.uint + x2.uint & 0xFFFFFFFF)
