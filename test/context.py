@@ -22,7 +22,7 @@ def setUpClass(cls):
 
 @classmethod
 def tearDownClass(cls):
-    print("\n%s.%s: %.3fs" % (cls.__module__, cls.__name__, time() - cls.startTime))
+    print("\n%s: %.3fs" % (cls.__module__, time() - cls.startTime))
 
 
 unittest.TestCase.setUpClass = setUpClass
