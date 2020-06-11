@@ -38,3 +38,12 @@ def quarterround(y: Bits) -> Bits:
     a, b, d = _quarterround_step(a, b, d, 8)
     c, d, b = _quarterround_step(c, d, b, 7)
     return a + b + c + d
+
+
+def quarterround_state(state: Bits, i, j, k, l) -> Bits:
+    """Calculate the quarterround value of the state with the given indices.
+
+    Returns a 512-bit value.
+    State must be 512-bit.
+    """
+    pass
