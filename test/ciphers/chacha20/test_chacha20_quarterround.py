@@ -1,16 +1,20 @@
-import unittest
-
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.chacha20 import quarterround, quarterround_state
-from util.bitseq import bitseq32
+from test.helper import BitsTestCase
+from util.bitseq import bitseq32, bitseq128
 
 
-class TestChaCha20Quarterround(unittest.TestCase):
+class TestChaCha20Quarterround(BitsTestCase):
     def test_chacha20_quarterround(self):
         self.assertEqual(
             quarterround(bitseq32(0x11111111, 0x01020304, 0x9b8d6f43, 0x01234567)),
             bitseq32(0xea2a92f4, 0xcb1cf8ce, 0x4581472e, 0x5881c4bb)
+        )
+
+    def test_chacha20_quarterround_raises_value_error_if_input_not_128_bit(self):
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=quarterround, correct_args=[bitseq128(0x0)], error=ValueError
         )
 
     def test_chacha20_quarterround_on_state(self):
