@@ -13,7 +13,7 @@ from time import time
 src_dir = Path(__file__).parent / '../src'
 sys.path.insert(0, str(src_dir))
 
-__SHOW_TEST_EXECUTION_TIME__ = True
+__SHOW_TEST_EXECUTION_TIME__ = False
 
 if __SHOW_TEST_EXECUTION_TIME__:
     # monkey patch unittest.TestCase such that it shows execution time of all test methods
