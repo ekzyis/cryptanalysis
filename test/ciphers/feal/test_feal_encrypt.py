@@ -7,7 +7,7 @@ from ciphers.block.feal import encrypt, _encrypt_preprocessing, _encrypt_iterati
 from util.bitseq import bitseq128, bitseq64, bitseq, bitseq16, bitseq32
 
 
-class TestFEALCipherEncrypt(unittest.TestCase):
+class TestFEALEncrypt(unittest.TestCase):
 
     def test_feal_encrypt_raises_value_error_if_text_larger_than_64_bit(self):
         k = bitseq128(0x0)

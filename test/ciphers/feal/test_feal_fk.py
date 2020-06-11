@@ -6,7 +6,7 @@ from ciphers.block.feal import fk
 from util.bitseq import bitseq32, bitseq
 
 
-class TestFEALCipherFk(unittest.TestCase):
+class TestFEALFk(unittest.TestCase):
 
     def test_feal_fk_matches_specification_in_paper(self):
         # i/o values taken from p.7, section 5.2 of

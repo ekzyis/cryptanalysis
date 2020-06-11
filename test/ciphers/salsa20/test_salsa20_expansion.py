@@ -4,7 +4,7 @@ from ciphers.stream.salsa20 import expansion
 from util.bitseq import bitseq, bitseq8
 
 
-class TestSalsa20CipherExpansion(unittest.TestCase):
+class TestSalsa20Expansion(unittest.TestCase):
     def test_salsa20_expansion_with_32_byte_k(self):
         k = bitseq8(*[x for x in range(1, 17)], *[x for x in range(201, 217)])
         n = bitseq8(*[x for x in range(101, 117)])

@@ -6,7 +6,7 @@ from ciphers.stream.salsa20 import quarterround
 from util.bitseq import bitseq32, bitseq
 
 
-class TestSalsa20CipherQuarterround(unittest.TestCase):
+class TestSalsa20Quarterround(unittest.TestCase):
     def test_salsa20_quarterround(self):
         x1 = bitseq32((0x0,) * 4)
         self.assertEqual(x1, x1)

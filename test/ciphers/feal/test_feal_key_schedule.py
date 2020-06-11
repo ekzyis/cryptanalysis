@@ -6,7 +6,7 @@ from ciphers.block.feal import key_schedule
 from util.bitseq import bitseq128, bitseq
 
 
-class TestFEALCipherKeySchedule(unittest.TestCase):
+class TestFEALKeySchedule(unittest.TestCase):
 
     def test_feal_key_schedule_matches_specification_in_paper(self):
         # i/o values taken from p.10, section 6.3.1 of

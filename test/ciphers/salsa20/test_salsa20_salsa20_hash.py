@@ -6,7 +6,7 @@ from ciphers.stream.salsa20 import salsa20_hash
 from util.bitseq import bitseq, bitseq8
 
 
-class TestSalsa20CipherSalsa20(unittest.TestCase):
+class TestSalsa20CSalsa20Hash(unittest.TestCase):
     def test_salsa20_salsa20_hash(self):
         x1 = bitseq(0x0, bit=512)
         z1 = bitseq(0x0, bit=512)

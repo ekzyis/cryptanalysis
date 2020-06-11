@@ -9,7 +9,7 @@ from util.bitseq import bitseq32, bitseq64, littleendian, bitseq128, bitseq
 
 
 @mock.patch('random.randint', return_value=0x0)
-class TestSalsa20CipherEncrypt(unittest.TestCase):
+class TestSalsa20Encrypt(unittest.TestCase):
     """Test if encryption returns the same results as the test data.
 
     Test data obtained from:

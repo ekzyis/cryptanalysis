@@ -6,7 +6,7 @@ from ciphers.block.feal import s1
 from util.bitseq import bitseq8
 
 
-class TestFEALCipherS(unittest.TestCase):
+class TestFEALS(unittest.TestCase):
 
     def test_feal_s1_matches_specification_in_paper(self):
         # i/o values taken from p.8, section 5.3 of

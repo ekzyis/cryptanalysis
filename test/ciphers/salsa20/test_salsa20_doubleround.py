@@ -6,7 +6,7 @@ from ciphers.stream.salsa20 import doubleround
 from util.bitseq import bitseq32, bitseq
 
 
-class TestSalsa20CipherDoubleRound(unittest.TestCase):
+class TestSalsa20DoubleRound(unittest.TestCase):
     def test_salsa20_doubleround(self):
         x1 = bitseq32(
             (0x1, 0x0, 0x0, 0x0),

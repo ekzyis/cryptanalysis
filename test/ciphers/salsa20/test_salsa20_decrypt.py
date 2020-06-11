@@ -6,7 +6,7 @@ from ciphers.stream.salsa20 import decrypt
 from util.bitseq import bitseq32, bitseq, bitseq64
 
 
-class TestSalsa20CipherDecrypt(unittest.TestCase):
+class TestSalsa20Decrypt(unittest.TestCase):
 
     def test_salsa20_decrypt(self):
         k = bitseq32(

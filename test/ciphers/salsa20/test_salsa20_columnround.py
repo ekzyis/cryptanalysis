@@ -6,7 +6,7 @@ from ciphers.stream.salsa20 import columnround
 from util.bitseq import bitseq32, bitseq
 
 
-class TestSalsa20CipherColumnRound(unittest.TestCase):
+class TestSalsa20ColumnRound(unittest.TestCase):
     def test_salsa20_columnround(self):
         x1 = bitseq32((0x1, 0x0, 0x0, 0x0) * 4)
         y1 = bitseq32(

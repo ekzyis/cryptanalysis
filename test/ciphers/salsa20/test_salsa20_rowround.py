@@ -6,7 +6,7 @@ from ciphers.stream.salsa20 import rowround
 from util.bitseq import bitseq32, bitseq
 
 
-class TestSalsa20CipherRowRound(unittest.TestCase):
+class TestSalsa20RowRound(unittest.TestCase):
     def test_salsa20_rowround(self):
         y1 = bitseq32((0x1, 0x0, 0x0, 0x0) * 4)
         z1 = bitseq32(
