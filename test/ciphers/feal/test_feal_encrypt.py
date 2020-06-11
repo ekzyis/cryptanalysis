@@ -1,35 +1,17 @@
-import unittest
-
 # noinspection PyUnresolvedReferences
 import test.context
 # noinspection PyProtectedMember
 from ciphers.block.feal import encrypt, _encrypt_preprocessing, _encrypt_iterative_calculation
-from util.bitseq import bitseq128, bitseq64, bitseq, bitseq16, bitseq32
+from test.helper import BitsTestCase
+from util.bitseq import bitseq128, bitseq64, bitseq16, bitseq32
 
 
-class TestFEALEncrypt(unittest.TestCase):
+class TestFEALEncrypt(BitsTestCase):
 
-    def test_feal_encrypt_raises_value_error_if_text_larger_than_64_bit(self):
-        k = bitseq128(0x0)
-        with self.assertRaises(ValueError):
-            m = bitseq(0x0, bit=65)
-            encrypt(k, m)
-        try:
-            m = bitseq64(0x0)
-            encrypt(k, m)
-        except ValueError:
-            self.fail("encrypt raised unexpected ValueError")
-
-    def test_feal_encrypt_raises_value_error_if_key_larger_than_128_bit(self):
-        m = bitseq64(0x0)
-        with self.assertRaises(ValueError):
-            k = bitseq(0x0, bit=129)
-            encrypt(k, m)
-        try:
-            k = bitseq128(0x0)
-            encrypt(k, m)
-        except ValueError:
-            self.fail("encrypt raised unexpected ValueError")
+    def test_feal_encrypt_raises_value_error_if_text_not_64_bit_or_key_not_128_bit(self):
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=encrypt, correct_args=[bitseq128(0x0), bitseq64(0x0)], error=ValueError
+        )
 
     def test_feal_encrypt_matches_specification_in_paper(self):
         # input key taken from p.8, section 6.2 and

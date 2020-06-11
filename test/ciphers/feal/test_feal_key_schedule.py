@@ -1,12 +1,11 @@
-import unittest
-
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.block.feal import key_schedule
-from util.bitseq import bitseq128, bitseq
+from test.helper import BitsTestCase
+from util.bitseq import bitseq128
 
 
-class TestFEALKeySchedule(unittest.TestCase):
+class TestFEALKeySchedule(BitsTestCase):
 
     def test_feal_key_schedule_matches_specification_in_paper(self):
         # i/o values taken from p.10, section 6.3.1 of
@@ -55,12 +54,7 @@ class TestFEALKeySchedule(unittest.TestCase):
         self.assertEqual(out[38], "0xAD32")
         self.assertEqual(out[39], "0x683A")
 
-    def test_feal_key_schedule_raises_value_error_if_key_is_larger_than_128_bit(self):
-        with self.assertRaises(ValueError):
-            k = bitseq(0x0, bit=129)
-            key_schedule(k)
-        try:
-            k = bitseq128(0x0)
-            key_schedule(k)
-        except ValueError:
-            self.fail("key_schedule raised unexpected ValueError")
+    def test_feal_key_schedule_raises_value_error_if_key_not_128_bit(self):
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=key_schedule, correct_args=[bitseq128(0x0)], error=ValueError
+        )

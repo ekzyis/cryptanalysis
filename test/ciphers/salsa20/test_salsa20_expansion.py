@@ -1,10 +1,9 @@
-import unittest
-
 from ciphers.stream.salsa20 import expansion
-from util.bitseq import bitseq, bitseq8
+from test.helper import BitsTestCase
+from util.bitseq import bitseq8, bitseq256, bitseq128
 
 
-class TestSalsa20Expansion(unittest.TestCase):
+class TestSalsa20Expansion(BitsTestCase):
     def test_salsa20_expansion_with_32_byte_k(self):
         k = bitseq8(*[x for x in range(1, 17)], *[x for x in range(201, 217)])
         n = bitseq8(*[x for x in range(101, 117)])
@@ -27,24 +26,7 @@ class TestSalsa20Expansion(unittest.TestCase):
         )
         self.assertEqual(expansion(k, n), z)
 
-    def test_salsa20_expansion_raises_value_error_if_key_not_256_bit(self):
-        n = bitseq(0x0, bit=128)
-        with self.assertRaises(ValueError):
-            x1 = bitseq((0x0,) * 257, bit=1)
-            expansion(x1, n)
-        try:
-            x2 = bitseq((0x0,) * 256, bit=1)
-            expansion(x2, n)
-        except ValueError:
-            self.fail("expansion raised unexpected ValueError")
-
-    def test_salsa20_expansion_raises_value_error_if_nonce_not_128_bit(self):
-        k = bitseq(0x0, bit=256)
-        with self.assertRaises(ValueError):
-            n1 = bitseq((0x0,) * 129, bit=1)
-            expansion(k, n1)
-        try:
-            n2 = bitseq((0x0,) * 128, bit=1)
-            expansion(k, n2)
-        except ValueError:
-            self.fail("expansion raised unexpected ValueError")
+    def test_salsa20_expansion_raises_value_error_if_key_not_256_bit_or_nonce_not_128_bit(self):
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=expansion, correct_args=[bitseq256(0x0), bitseq128(0x0)], error=ValueError
+        )

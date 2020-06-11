@@ -1,12 +1,11 @@
-import unittest
-
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.salsa20 import quarterround
-from util.bitseq import bitseq32, bitseq
+from test.helper import BitsTestCase
+from util.bitseq import bitseq32, bitseq128
 
 
-class TestSalsa20Quarterround(unittest.TestCase):
+class TestSalsa20Quarterround(BitsTestCase):
     def test_salsa20_quarterround(self):
         x1 = bitseq32((0x0,) * 4)
         self.assertEqual(x1, x1)
@@ -36,11 +35,6 @@ class TestSalsa20Quarterround(unittest.TestCase):
         self.assertEqual(quarterround(x7), y7)
 
     def test_salsa20_quarterround_raises_value_error_if_input_not_128_bit(self):
-        with self.assertRaises(ValueError):
-            x1 = bitseq((0x0,) * 129, bit=1)
-            quarterround(x1)
-        try:
-            x2 = bitseq((0x0,) * 128, bit=1)
-            quarterround(x2)
-        except ValueError:
-            self.fail("quarterround raised unexpected ValueError")
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=quarterround, correct_args=[bitseq128(0x0)], error=ValueError
+        )
