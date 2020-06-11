@@ -1,21 +1,12 @@
-import unittest
-
 from bitstring import Bits
 
 # noinspection PyUnresolvedReferences
 import test.context
+from test.helper import BitsTestCase
 from util.bitseq import littleendian
 
 
-class TestLittleEndian(unittest.TestCase):
-
-    def setUp(self):
-        def assert_bit(b: Bits, value: int, length: int):
-            """Custom bit assertion function."""
-            self.assertEqual(b.uint, value)
-            self.assertEqual(len(b), length)
-
-        self.assertBit = assert_bit
+class TestLittleEndian(BitsTestCase):
 
     def test_littleendian(self):
         b1 = littleendian(Bits("0x12345678"))

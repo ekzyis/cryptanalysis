@@ -1,21 +1,12 @@
-import unittest
-
 from bitstring import Bits
 
 # noinspection PyUnresolvedReferences
 import test.context
+from test.helper import BitsTestCase
 from util.bitseq import bitseq
 
 
-class TestBitSeq(unittest.TestCase):
-
-    def setUp(self):
-        def assert_bit(b: Bits, value: int, length: int):
-            """Custom bit assertion function."""
-            self.assertEqual(b.uint, value)
-            self.assertEqual(len(b), length)
-
-        self.assertBit = assert_bit
+class TestBitSeq(BitsTestCase):
 
     def test_bitseq_returns_bitstring_Bits_instance(self):
         b = bitseq(0x1, 0x2, 0x3, 0x4, bit=4)
