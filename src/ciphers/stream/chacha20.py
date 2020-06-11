@@ -13,3 +13,13 @@ Description of ChaCha20 from the specification paper used as a reference for thi
 It should be noted that at https://www.rfc-editor.org/rfc/rfc7539.txt, one can find a paper which is specifically
 designed as an implementation guide for ChaCha20. I have taken the test vectors for my implementation from there.
 """
+from bitstring import Bits
+
+
+def quarterround(y: Bits) -> Bits:
+    """Calculate the ChaCha20 quarterround value of the input as specified in the paper.
+
+    Returns a 128-bit value.
+    Raises error if input is not 128-bit.
+    """
+    pass
