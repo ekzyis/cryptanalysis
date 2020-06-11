@@ -16,8 +16,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
     https://github.com/das-labor/legacy/blob/master/microcontroller-2/crypto-lib/testvectors/salsa20-full-verified.test-vectors
     """
 
-    @unittest.skip(reason="Takes over a second to complete.")
-    # @timeit
     def test_salsa20_encrypt_256_bit_key_1(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 0."""
         k = bitseq32(
@@ -59,7 +57,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         m = bitseq(0x0, bit=4096)
         self.assertEqual(encrypt(k, m), bitseq64(0x0) + (m ^ sum(stream)))
 
-    # @timeit
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_512_bytes_plaintext(self, _):
         k = bitseq32(
             (0x80000000, 0x0, 0x0, 0x0),
@@ -110,7 +107,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         )
         self.assertEqual(encrypt(k, m), bitseq64(0x0) + (m ^ stream))
 
-    # @timeit
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_256_bytes_plaintext(self, _):
         k = bitseq32(
             (0x80000000, 0x0, 0x0, 0x0),
@@ -141,7 +137,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         )
         self.assertEqual(encrypt(k, m), bitseq64(0x0) + (m ^ stream))
 
-    # @timeit
     def test_salsa20_encrypt_256_bit_key_1_with_non_zero_8_bytes_plaintext(self, _):
         k = bitseq32(
             (0x80000000, 0x0, 0x0, 0x0),
@@ -151,8 +146,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         stream = bitseq64(0xe3be8fdd8beca2e3)
         self.assertEqual(encrypt(k, m), bitseq64(0x0) + (m ^ stream))
 
-    @unittest.skip(reason="Takes over a second to complete.")
-    # @timeit
     def test_salsa20_encrypt_256_bit_key_2(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 9."""
         k = bitseq32(
@@ -194,8 +187,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         m = bitseq(0x0, bit=4096)
         self.assertEqual(encrypt(k, m), bitseq64(0x0) + (m ^ sum(stream)))
 
-    @unittest.skip(reason="Takes over a second to complete.")
-    # @timeit
     def test_salsa20_encrypt_256_bit_key_3(self, _):
         """Key size: 256 bits, IV size: 64 bits, Test vectors -- set 1, vector# 18."""
         k = bitseq32(
@@ -237,7 +228,6 @@ class TestSalsa20CipherEncrypt(unittest.TestCase):
         m = bitseq(0x0, bit=4096)
         self.assertEqual(encrypt(k, m), bitseq64(0x0) + (m ^ sum(stream)))
 
-    # @timeit
     def test_salsa20_encrypt_raises_value_error_if_key_not_256_bit(self, _):
         m = bitseq64(0x0)
         with self.assertRaises(ValueError):
