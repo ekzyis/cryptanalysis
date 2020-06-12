@@ -1,7 +1,7 @@
 # noinspection PyUnresolvedReferences
 import test.context
 from test.helper import BitsTestCase
-from util.bitseq import bitseq16, bitseq32, bitseq_split, bitseq8
+from util.bitseq import bitseq16, bitseq32, bitseq_split, bitseq8, littleendian
 
 
 class TestBitseqSplit(BitsTestCase):
@@ -58,3 +58,10 @@ class TestBitseqSplit(BitsTestCase):
         b = self.b
         with self.assertRaises(ValueError):
             bitseq_split(-1, b)
+
+    def test_bitseq_with_formatter(self):
+        b = bitseq32(0x01020304, 0x1f2f3f4f, 0x0a0b0c0d)
+        self.assertEqual(
+            bitseq_split(32, b, formatter=littleendian),
+            [bitseq32(0x04030201), bitseq32(0x4f3f2f1f), bitseq32(0x0d0c0b0a)]
+        )
