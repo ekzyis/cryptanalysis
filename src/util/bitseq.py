@@ -14,7 +14,21 @@ def bitseq_split(size: int, b: Bits, n=None) -> Union[Bits, Sequence[Bits]]:
     Raises error if n is None and size is greater than the length.
     Raises error if combination of n and size would lead to "oversplitting", for example when trying to split a
     64-bitstring into 3 32-bitstrings."""
-    pass
+    if size <= 0:
+        raise ValueError("size must be greater than 0")
+    if n is None:
+        if size > len(b):
+            raise ValueError("size {} would lead to oversplitting of {}".format(size, b))
+        return [b[i:i + size] for i in range(0, len(b), size)]
+    else:
+        if n <= 0:
+            raise ValueError("n must be greater than 0")
+        if size * n > len(b):
+            raise ValueError("size {} with n {} would lead to oversplitting of {}".format(size, n, b))
+        split = [b[i:i + size] for i in range(0, len(b), size)][:n]
+        if n == 1:
+            return split[0]
+        return split
 
 
 def fhex(b: Bits) -> str:
