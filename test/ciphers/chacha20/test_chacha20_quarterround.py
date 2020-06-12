@@ -1,3 +1,9 @@
+"""Tests for ChaCha20 quarterround function.
+
+Tests vectors taken from:
+    https://tools.ietf.org/html/rfc7539
+"""
+
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.chacha20 import quarterround, quarterround_state
