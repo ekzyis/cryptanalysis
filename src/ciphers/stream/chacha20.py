@@ -17,10 +17,12 @@ Description of ChaCha20 from the specification paper used as a reference for thi
     analogous modifications of the 12-round and 20-round ciphers Salsa20/12 and Salsa20/20."
     - Daniel J. Bernstein, https://cr.yp.to/chacha/chacha-20080120.pdf
 """
-from bitstring import Bits
+from bitstring import Bits, pack
 
 from util.bitseq import bitseq32
 from util.rot import rot_left_bits
+
+__CHACHA_20_ROUNDS__ = 20
 
 
 def quarterround(y: Bits) -> Bits:
@@ -58,5 +60,25 @@ def quarterround_state(state: Bits, i, j, k, l) -> Bits:
     return sum(entry)
 
 
-def chacha20_hash(x_: Bits) -> Bits:
-    pass
+def chacha20_hash(state_: Bits) -> Bits:
+    """Calculate the chacha20 hash value."""
+    # copy old state
+    state = Bits(state_)
+    for i in range(int(__CHACHA_20_ROUNDS__ / 2)):
+        # column round
+        state = quarterround_state(state, 0, 4, 8, 12)
+        state = quarterround_state(state, 1, 5, 9, 13)
+        state = quarterround_state(state, 2, 6, 10, 14)
+        state = quarterround_state(state, 3, 7, 11, 15)
+        # diagonal round
+        state = quarterround_state(state, 0, 5, 10, 15)
+        state = quarterround_state(state, 1, 6, 11, 12)
+        state = quarterround_state(state, 2, 7, 8, 13)
+        state = quarterround_state(state, 3, 4, 9, 14)
+    original_state_bitseq32 = [state_[i:i + 32] for i in range(0, len(state_), 32)]
+    new_state_bitseq32 = [state[i:i + 32] for i in range(0, len(state), 32)]
+    state = sum(
+        [bitseq32(xi.uint + zi.uint & 0xFFFFFFFF) for xi, zi in zip(original_state_bitseq32, new_state_bitseq32)]
+    )
+    state = pack("<16L", *[state[i:i + 32].uint for i in range(0, len(state), 32)])
+    return state
