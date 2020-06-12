@@ -188,7 +188,7 @@ def encrypt(k: Bits, text: Bits) -> Bits:
         raise ValueError("key must be 256-bit.")
 
     random.seed(time())
-    iv = bitseq64(random.randint(0, 2 ** 64))
+    iv = bitseq64(random.randrange(2 ** 64))
     c = xcrypt(k, text, iv=iv)
     return iv + c
 
