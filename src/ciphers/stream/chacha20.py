@@ -2,6 +2,13 @@
 
 """ChaCha20/r implementation.
 
+Specification:
+    https://cr.yp.to/chacha/chacha-20080120.pdf
+
+Test vectors:
+    https://tools.ietf.org/html/rfc7539 (IETF implementation; uses 96-bit nonce and 32-bit counter)
+    https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-00 (original implementation)
+
 Description of ChaCha20 from the specification paper used as a reference for this implementation:
 
     "ChaCha8 is a 256-bit stream cipher based on the 8-round cipher Salsa20/8.
@@ -9,10 +16,6 @@ Description of ChaCha20 from the specification paper used as a reference for thi
     resistance to cryptanalysis, while preserving—and often improving—time per round. ChaCha12 and ChaCha20 are
     analogous modifications of the 12-round and 20-round ciphers Salsa20/12 and Salsa20/20."
     - Daniel J. Bernstein, https://cr.yp.to/chacha/chacha-20080120.pdf
-
-Test vectors:
-    https://tools.ietf.org/html/rfc7539 (IETF implementation; uses 96-bit nonce and 32-bit counter)
-    https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-00 (original implementation)
 """
 from bitstring import Bits
 
