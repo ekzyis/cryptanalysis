@@ -4,6 +4,7 @@
 
 Specification:
     https://cr.yp.to/snuffle/spec.pdf
+    https://cr.yp.to/chacha/chacha-20080128.pdf (visualization of state as matrix)
 
 Test vectors:
     https://cr.yp.to/snuffle/spec.pdf
@@ -132,6 +133,16 @@ def salsa20_hash(x_: Bits) -> Bits:
 
 def expansion(k: Bits, n: Bits) -> Bits:
     """Expand the key and the nonce into a 64-byte sequence.
+
+    The hash function can be seen as working on following matrix where each entry is 32-bit (a 4-byte word).
+
+          constant  key       key       key
+          key       constant  input     input
+          input     input     constant  key
+          key       key       key       constant
+
+    The constants are part of the constant words sigma or tau.
+    The input is the nonce (attacker-controlled input).
 
     Returns a 64-byte sequence.
     Raises error if key is not 256-bit or nonce is not 128-bit.
