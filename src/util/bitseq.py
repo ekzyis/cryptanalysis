@@ -1,9 +1,20 @@
 """Utility functions to create bitstrings."""
-from typing import Union, Tuple
+from typing import Union, Tuple, Sequence
 
 from bitstring import Bits
 
 from util.count_int_str_bits import count_int_str_bits
+
+
+def bitseq_split(size: int, b: Bits, n=None) -> Union[Bits, Sequence[Bits]]:
+    """Split the bitstring into n bitstrings of given size.
+
+    If n is None, try to split the full bitstring.
+    If n == 1, returns a single bitstring (no list).
+    Raises error if n is None and size is greater than the length.
+    Raises error if combination of n and size would lead to "oversplitting", for example when trying to split a
+    64-bitstring into 3 32-bitstrings."""
+    pass
 
 
 def fhex(b: Bits) -> str:
