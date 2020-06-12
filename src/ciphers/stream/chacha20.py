@@ -56,3 +56,7 @@ def quarterround_state(state: Bits, i, j, k, l) -> Bits:
     q = quarterround(sum([entry[i], entry[j], entry[k], entry[l]]))
     entry[i], entry[j], entry[k], entry[l] = [q[index:index + 32] for index in range(0, len(q), 32)]
     return sum(entry)
+
+
+def chacha20_hash(x_: Bits) -> Bits:
+    pass
