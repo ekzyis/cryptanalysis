@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-"""
-FEAL-NX Implementation.
+"""FEAL-NX Implementation.
 
 Specification:
     https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
