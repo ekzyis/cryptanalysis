@@ -39,7 +39,7 @@ sys.path.insert(0, str(Path(__file__).parent / '../..'))
 from util.wrap import fhex_output_wrapper, text_input_to_bitseq_wrapper, key_input_to_bitseq_wrapper
 from util.encode import encode_wrapper, decode_wrapper
 from util.rot import rot_left_bits
-from util.bitseq import bitseq8, bitseq32, littleendian, bitseq64
+from util.bitseq import bitseq8, bitseq32, littleendian, bitseq64, bitseq_split, bitseq_add
 from util.types import CipherFunction
 
 __SALSA_20_ROUNDS__: int = 20
@@ -53,12 +53,11 @@ def quarterround(y: Bits) -> Bits:
     """
     if len(y) != 128:
         raise ValueError("Input must be 128-bit.")
-
-    y0, y1, y2, y3 = y[0:32], y[32:64], y[64:96], y[96:128]
-    z1 = y1 ^ rot_left_bits((bitseq32(y0.uint + y3.uint & 0xFFFFFFFF)), 7)
-    z2 = y2 ^ rot_left_bits((bitseq32(z1.uint + y0.uint & 0xFFFFFFFF)), 9)
-    z3 = y3 ^ rot_left_bits((bitseq32(z2.uint + z1.uint & 0xFFFFFFFF)), 13)
-    z0 = y0 ^ rot_left_bits((bitseq32(z3.uint + z2.uint & 0xFFFFFFFF)), 18)
+    y0, y1, y2, y3 = bitseq_split(32, y)
+    z1 = y1 ^ rot_left_bits(bitseq_add(y0, y3), 7)
+    z2 = y2 ^ rot_left_bits(bitseq_add(z1, y0), 9)
+    z3 = y3 ^ rot_left_bits(bitseq_add(z2, z1), 13)
+    z0 = y0 ^ rot_left_bits(bitseq_add(z3, z2), 18)
     return z0 + z1 + z2 + z3
 
 
@@ -70,16 +69,16 @@ def rowround(y_: Bits) -> Bits:
     """
     if len(y_) != 512:
         raise ValueError("Input must be 512-bit.")
-    y = [y_[i:i + 32] for i in range(0, 512, 32)]
+    y = bitseq_split(32, y_)
     z = [None] * 16
     q = quarterround(bitseq32(y[0], y[1], y[2], y[3]))
-    z[0], z[1], z[2], z[3] = [q[i:i + 32] for i in range(0, 128, 32)]
+    z[0], z[1], z[2], z[3] = bitseq_split(32, q)
     q = quarterround(bitseq32(y[5], y[6], y[7], y[4]))
-    z[5], z[6], z[7], z[4] = [q[i:i + 32] for i in range(0, 128, 32)]
+    z[5], z[6], z[7], z[4] = bitseq_split(32, q)
     q = quarterround(bitseq32(y[10], y[11], y[8], y[9]))
-    z[10], z[11], z[8], z[9] = [q[i:i + 32] for i in range(0, 128, 32)]
+    z[10], z[11], z[8], z[9] = bitseq_split(32, q)
     q = quarterround(bitseq32(y[15], y[12], y[13], y[14]))
-    z[15], z[12], z[13], z[14] = [q[i:i + 32] for i in range(0, 128, 32)]
+    z[15], z[12], z[13], z[14] = bitseq_split(32, q)
     return bitseq32(*z)
 
 
@@ -91,16 +90,16 @@ def columnround(x_: Bits) -> Bits:
     """
     if len(x_) != 512:
         raise ValueError("Input must be 512-bit.")
-    x = [x_[i:i + 32] for i in range(0, 512, 32)]
+    x = bitseq_split(32, x_)
     y = [None] * 16
     q = quarterround(bitseq32(x[0], x[4], x[8], x[12]))
-    y[0], y[4], y[8], y[12] = [q[i:i + 32] for i in range(0, 128, 32)]
+    y[0], y[4], y[8], y[12] = bitseq_split(32, q)
     q = quarterround(bitseq32(x[5], x[9], x[13], x[1]))
-    y[5], y[9], y[13], y[1] = [q[i:i + 32] for i in range(0, 128, 32)]
+    y[5], y[9], y[13], y[1] = bitseq_split(32, q)
     q = quarterround(bitseq32(x[10], x[14], x[2], x[6]))
-    y[10], y[14], y[2], y[6] = [q[i:i + 32] for i in range(0, 128, 32)]
+    y[10], y[14], y[2], y[6] = bitseq_split(32, q)
     q = quarterround(bitseq32(x[15], x[3], x[7], x[11]))
-    y[15], y[3], y[7], y[11] = [q[i:i + 32] for i in range(0, 128, 32)]
+    y[15], y[3], y[7], y[11] = bitseq_split(32, q)
     return bitseq32(*y)
 
 
@@ -124,11 +123,11 @@ def salsa20_hash(x_: Bits) -> Bits:
         raise ValueError("Input must be 512-bit.")
 
     # view each 4-byte sequence as a word in little-endian form.
-    x = pack("<16L", *[x_[i:i + 32].uint for i in range(0, 512, 32)])
+    x = sum(bitseq_split(32, x_, formatter=littleendian))
     z = reduce(lambda a, _: doubleround(a), range(int(__SALSA_20_ROUNDS__ / 2)), x)
-    x_bitseq32 = [x[i:i + 32] for i in range(0, 512, 32)]
-    z_bitseq32 = [z[i:i + 32] for i in range(0, 512, 32)]
-    return sum([littleendian(bitseq32(xi.uint + zi.uint & 0xFFFFFFFF)) for xi, zi in zip(x_bitseq32, z_bitseq32)])
+    x_bitseq32 = bitseq_split(32, x)
+    z_bitseq32 = bitseq_split(32, z)
+    return sum([littleendian(bitseq_add(xi, zi)) for xi, zi in zip(x_bitseq32, z_bitseq32)])
 
 
 def expansion(k: Bits, n: Bits) -> Bits:
@@ -152,7 +151,7 @@ def expansion(k: Bits, n: Bits) -> Bits:
     if len(k) != 128:
         if len(k) != 256:
             raise ValueError("k must be 128 or 256-bit.")
-        k0, k1 = k[:128], k[128:]
+        k0, k1 = bitseq_split(128, k)
         sigma = [bitseq8(101, 120, 112, 97), bitseq8(110, 100, 32, 51),
                  bitseq8(50, 45, 98, 121), bitseq8(116, 101, 32, 107)]
         return salsa20_hash(sigma[0] + k0 + sigma[1] + n + sigma[2] + k1 + sigma[3])
