@@ -39,7 +39,7 @@ sys.path.insert(0, str(Path(__file__).parent / '../..'))
 from util.wrap import fhex_output_wrapper, text_input_to_bitseq_wrapper, key_input_to_bitseq_wrapper
 from util.encode import encode_wrapper, decode_wrapper
 from util.rot import rot_left_bits
-from util.bitseq import bitseq8, bitseq32, littleendian, bitseq64, bitseq_split
+from util.bitseq import bitseq8, bitseq32, littleendian, bitseq64, bitseq_split, bitseq_add
 from util.types import CipherFunction
 
 __SALSA_20_ROUNDS__: int = 20
@@ -54,10 +54,10 @@ def quarterround(y: Bits) -> Bits:
     if len(y) != 128:
         raise ValueError("Input must be 128-bit.")
     y0, y1, y2, y3 = bitseq_split(32, y)
-    z1 = y1 ^ rot_left_bits((bitseq32(y0.uint + y3.uint & 0xFFFFFFFF)), 7)
-    z2 = y2 ^ rot_left_bits((bitseq32(z1.uint + y0.uint & 0xFFFFFFFF)), 9)
-    z3 = y3 ^ rot_left_bits((bitseq32(z2.uint + z1.uint & 0xFFFFFFFF)), 13)
-    z0 = y0 ^ rot_left_bits((bitseq32(z3.uint + z2.uint & 0xFFFFFFFF)), 18)
+    z1 = y1 ^ rot_left_bits(bitseq_add(y0, y3), 7)
+    z2 = y2 ^ rot_left_bits(bitseq_add(z1, y0), 9)
+    z3 = y3 ^ rot_left_bits(bitseq_add(z2, z1), 13)
+    z0 = y0 ^ rot_left_bits(bitseq_add(z3, z2), 18)
     return z0 + z1 + z2 + z3
 
 
@@ -127,7 +127,7 @@ def salsa20_hash(x_: Bits) -> Bits:
     z = reduce(lambda a, _: doubleround(a), range(int(__SALSA_20_ROUNDS__ / 2)), x)
     x_bitseq32 = bitseq_split(32, x)
     z_bitseq32 = bitseq_split(32, z)
-    return sum([littleendian(bitseq32(xi.uint + zi.uint & 0xFFFFFFFF)) for xi, zi in zip(x_bitseq32, z_bitseq32)])
+    return sum([littleendian(bitseq_add(xi, zi)) for xi, zi in zip(x_bitseq32, z_bitseq32)])
 
 
 def expansion(k: Bits, n: Bits) -> Bits:
