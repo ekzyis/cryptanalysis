@@ -48,7 +48,7 @@ from docopt import docopt  # type: ignore
 sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
 from ciphers.modi.ecb import ecb
-from util.bitseq import bitseq32, bitseq8, bitseq64
+from util.bitseq import bitseq32, bitseq8, bitseq64, bitseq_split
 from util.encode import decode_wrapper, encode_wrapper
 from util.wrap import key_input_to_bitseq_wrapper, text_input_to_bitseq_wrapper, output_wrapper, \
     text_input_padder, key_input_padder
@@ -64,9 +64,9 @@ def key_schedule(key: Bits, n: int = 32) -> Sequence[Bits]:
     """
     if len(key) != 128:
         raise ValueError("Key for FEAL-NX key scheduler must be 128-bit")
-    kl, kr = key[:64], key[64:]
+    kl, kr = bitseq_split(64, key)
     # processing of right key kr
-    kr1, kr2 = kr[:32], kr[32:]
+    kr1, kr2 = bitseq_split(32, kr)
     # insert "filler" element such that the the first added element is at index 1
     #   since in the specification, indices for q start with 1
     q = [bitseq32(0x0)]
@@ -78,7 +78,7 @@ def key_schedule(key: Bits, n: int = 32) -> Sequence[Bits]:
         elif r % 3 == 0:
             q.append(kr2)
     # processing of left key kl
-    a0, b0 = kl[:32], kl[32:]
+    a0, b0 = bitseq_split(32, kl)
     a = [a0]
     b = [b0]
     d = [bitseq32(0x0)]
@@ -88,7 +88,7 @@ def key_schedule(key: Bits, n: int = 32) -> Sequence[Bits]:
         a.append(b[r - 1])
         b.append(fk(a[r - 1], b[r - 1] ^ d[r - 1] ^ q[r]))
         br = b[r]
-        br0, br1, br2, br3 = br[:8], br[8:16], br[16:24], br[24:32]
+        br0, br1, br2, br3 = bitseq_split(8, br)
         k.append(br0 + br1)
         k.append(br2 + br3)
     return k
@@ -121,8 +121,8 @@ def f(a: Bits, b: Bits) -> Bits:
         raise ValueError("a key must be 32-bit")
     if len(b) != 16:
         raise ValueError("b key must be 16-bit")
-    a_k = a[0:8], a[8:16], a[16:24], a[24:32]
-    b_k = b[0:8], b[8:16], b[16:24], b[24:32]
+    a_k = bitseq_split(8, a)
+    b_k = bitseq_split(8, b)
     f1 = a_k[1] ^ b_k[0]
     f2 = a_k[2] ^ b_k[1]
     f1 ^= a_k[0]
@@ -144,8 +144,8 @@ def fk(a: Bits, b: Bits) -> Bits:
     """
     if len(a) != 32 or len(b) != 32:
         raise ValueError("Input keys must be 32-bit")
-    a_k = a[0:8], a[8:16], a[16:24], a[24:32]
-    b_k = b[0:8], b[8:16], b[16:24], b[24:32]
+    a_k = bitseq_split(8, a)
+    b_k = bitseq_split(8, b)
     fk1 = a_k[1] ^ a_k[0]
     fk2 = a_k[2] ^ a_k[3]
     fk1 = s1(fk1, fk2 ^ b_k[0])
@@ -200,7 +200,7 @@ def encrypt(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
     preproc = _encrypt_preprocessing(sk[n:n + 4], text)
-    l0, r0 = preproc[:32], preproc[32:]
+    l0, r0 = bitseq_split(32, preproc)
     l, r = _encrypt_iterative_calculation(l0, r0, sk, n)
     ln, rn = l[n], r[n]
     c = (rn + ln) ^ bitseq64(rn)
@@ -221,7 +221,7 @@ def decrypt(key: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
         raise ValueError("Key must be 128-bit")
     sk = key_schedule(key, n)
     preproc = _decrypt_preprocessing(sk[n + 4:n + 8], text)
-    rn, ln = preproc[:32], preproc[32:]
+    rn, ln = bitseq_split(32, preproc)
     l, r = _decrypt_iterative_calculation(ln, rn, sk, n)
     l0, r0 = l[0], r[0]
     p = (l0 + r0) ^ bitseq64(l0)
