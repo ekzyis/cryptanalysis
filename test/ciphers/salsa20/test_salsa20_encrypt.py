@@ -8,7 +8,7 @@ from test.helper import BitsTestCase
 from util.bitseq import bitseq32, bitseq64, littleendian, bitseq128, bitseq, bitseq256
 
 
-@mock.patch('random.randint', return_value=0x0)
+@mock.patch('random.randrange', return_value=0x0)
 class TestSalsa20Encrypt(BitsTestCase):
     """Test if encryption returns the same results as the test data.
 

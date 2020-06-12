@@ -41,10 +41,10 @@ default_ciphertext: str = fhex(
 
 
 def default_encrypt_args(*add_args, **add_kwargs):
-    """Salsa20 default encryption arguments decorator, consisting of random.randint and sys.argv patch."""
+    """Salsa20 default encryption arguments decorator, consisting of IV and sys.argv patch."""
 
     def test_wrapper(fn):
-        @mock.patch('random.randint', return_value=0x0)
+        @mock.patch('random.randrange', return_value=0x0)
         def wrapper(*unittest_args):
             return sysv_patcher('salsa20', 'encrypt', key=key, text=default_plaintext)(*add_args, **add_kwargs)(fn)(
                 *unittest_args)
