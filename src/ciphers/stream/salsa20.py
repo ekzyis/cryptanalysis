@@ -7,6 +7,7 @@ Specification:
 
 Test vectors:
     https://cr.yp.to/snuffle/spec.pdf
+    https://github.com/das-labor/legacy/blob/master/microcontroller-2/crypto-lib/testvectors/salsa20-full-verified.test-vectors
 
 Usage:
     salsa20 encrypt [options] KEY PLAINTEXT
