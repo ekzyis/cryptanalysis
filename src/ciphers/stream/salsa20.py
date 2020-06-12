@@ -2,8 +2,11 @@
 
 """Salsa20/r implementation.
 
-The specification found at https://cr.yp.to/snuffle/spec.pdf is used as a reference
-for this implementation.
+Specification:
+    https://cr.yp.to/snuffle/spec.pdf
+
+Test vectors:
+    https://cr.yp.to/snuffle/spec.pdf
 
 Usage:
     salsa20 encrypt [options] KEY PLAINTEXT

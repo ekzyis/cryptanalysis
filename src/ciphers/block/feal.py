@@ -3,8 +3,11 @@
 """
 FEAL-NX Implementation.
 
-The specification found at https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf is used as a reference
-for this implementation.
+Specification:
+    https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
+
+Test vectors:
+    https://info.isl.ntt.co.jp/crypt/archive/dl/feal/call-3e.pdf
 
 It follows a short description of the cipher and its implementation:
 
