@@ -15,9 +15,10 @@ def bitseq_add(b1: Bits, b2: Bits) -> Bits:
     return bitseq((b1.uint + b2.uint) & 2 ** len(b1) - 1, bit=len(b1))
 
 
-def bitseq_split(size: int, b: Bits, n=None) -> Union[Bits, Sequence[Bits]]:
+def bitseq_split(size: int, b: Bits, n=None, formatter=lambda b: b) -> Union[Bits, Sequence[Bits]]:
     """Split the bitstring into n bitstrings of given size.
 
+    Formatter argument formats the indidivual blocks. This can for example be useful to convert them into little-endian.
     If n is None, try to split the full bitstring.
     If n == 1, returns a single bitstring (no list).
     Raises error if n is None and size is greater than the length.
@@ -28,13 +29,13 @@ def bitseq_split(size: int, b: Bits, n=None) -> Union[Bits, Sequence[Bits]]:
     if n is None:
         if size > len(b):
             raise ValueError("size {} would lead to oversplitting of {}".format(size, b))
-        return [b[i:i + size] for i in range(0, len(b), size)]
+        return [formatter(b[i:i + size]) for i in range(0, len(b), size)]
     else:
         if n <= 0:
             raise ValueError("n must be greater than 0")
         if size * n > len(b):
             raise ValueError("size {} with n {} would lead to oversplitting of {}".format(size, n, b))
-        split = [b[i:i + size] for i in range(0, len(b), size)][:n]
+        split = [formatter(b[i:i + size]) for i in range(0, len(b), size)][:n]
         if n == 1:
             return split[0]
         return split
