@@ -123,7 +123,7 @@ def salsa20_hash(x_: Bits) -> Bits:
         raise ValueError("Input must be 512-bit.")
 
     # view each 4-byte sequence as a word in little-endian form.
-    x = pack("<16L", *[x_[i:i + 32].uint for i in range(0, 512, 32)])
+    x = sum(bitseq_split(32, x_, formatter=littleendian))
     z = reduce(lambda a, _: doubleround(a), range(int(__SALSA_20_ROUNDS__ / 2)), x)
     x_bitseq32 = bitseq_split(32, x)
     z_bitseq32 = bitseq_split(32, z)
