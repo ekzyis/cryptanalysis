@@ -1,14 +1,14 @@
 from functools import reduce
-from unittest import mock
 
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.salsa20 import expansion, encrypt
+from test.ciphers.salsa20.integration.patchers import iv_patch
 from test.helper import BitsTestCase
 from util.bitseq import bitseq32, bitseq64, littleendian, bitseq128, bitseq, bitseq256
 
 
-@mock.patch('random.randrange', return_value=0x0)
+@iv_patch
 class TestSalsa20Encrypt(BitsTestCase):
     """Test if encryption returns the same results as the test data.
 
