@@ -10,8 +10,9 @@ Description of ChaCha20 from the specification paper used as a reference for thi
     analogous modifications of the 12-round and 20-round ciphers Salsa20/12 and Salsa20/20."
     - Daniel J. Bernstein, https://cr.yp.to/chacha/chacha-20080120.pdf
 
-It should be noted that at https://www.rfc-editor.org/rfc/rfc7539.txt, one can find a paper which is specifically
-designed as an implementation guide for ChaCha20. I have taken the test vectors for my implementation from there.
+Test vectors:
+    https://tools.ietf.org/html/rfc7539 (IETF implementation; uses 96-bit nonce and 32-bit counter)
+    https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-00 (original implementation)
 """
 from bitstring import Bits
 
