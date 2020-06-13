@@ -9,4 +9,4 @@ def iv_patch(*args, **kwargs):
 
 def initial_counter(value):
     """Patch for initial counter."""
-    return mock.patch('src.ciphers.stream.chacha20.initial_counter', return_value=value)
+    return mock.patch('ciphers.stream.chacha20.initial_counter', return_value=value)
