@@ -3,7 +3,7 @@ import test.context
 from ciphers.stream.chacha20 import encrypt
 from test.ciphers.chacha20.patchers import iv, initial_counter
 from test.helper import BitsTestCase
-from util.bitseq import bitseq8, bitseq, bitseq256, bitseq512
+from util.bitseq import bitseq8, bitseq, bitseq256, bitseq512, bitseq64
 
 
 class TestChaCha20Encrypt(BitsTestCase):
@@ -49,6 +49,7 @@ class TestChaCha20Encrypt(BitsTestCase):
         k = bitseq256(0x0)
         m = bitseq512(0x0, 0x0)
         c = encrypt(k, m, version='djb')
+        iv_ = bitseq64(0x0)
         key_block_1 = bitseq8(
             0x89, 0x67, 0x09, 0x52, 0x60, 0x83, 0x64, 0xfd,
             0x00, 0xb2, 0xf9, 0x09, 0x36, 0xf0, 0x31, 0xc8,
@@ -69,7 +70,7 @@ class TestChaCha20Encrypt(BitsTestCase):
             0x2f, 0x41, 0xf6, 0x7a, 0x75, 0x2e, 0x66, 0xad,
             0x34, 0x11, 0x98, 0x4c, 0x78, 0x7e, 0x30, 0xad,
         )
-        self.assertEqual(c, key_block_1 + key_block_2)
+        self.assertEqual(c, iv_ + key_block_1 + key_block_2)
 
     def test_chacha20_encrypt_raises_error_if_key_not_256_bit(self):
         k = bitseq(0x0, bit=257)
