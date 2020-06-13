@@ -2,7 +2,7 @@
 import test.context
 from ciphers.stream.chacha20 import quarterround, quarterround_state
 from test.helper import BitsTestCase
-from util.bitseq import bitseq32, bitseq128
+from util.bitseq import bitseq32, bitseq128, bitseq512
 
 
 class TestChaCha20Quarterround(BitsTestCase):
@@ -31,3 +31,8 @@ class TestChaCha20Quarterround(BitsTestCase):
             0x5c971061, 0xccc07c79, 0x2098d9d6, 0x91dbd320
         )
         self.assertEqual(quarterround_state(state, 2, 7, 8, 13), new_state)
+
+    def test_chacha20_quarterround_state_raises_value_error_if_state_not_512_bit(self):
+        self.assert_fn_raises_if_arguments_not_of_given_lengths(
+            fn=quarterround_state, correct_args=[bitseq512(0x0), 0, 0, 0, 0], arg_index_to_check=0, error=ValueError
+        )

@@ -62,6 +62,8 @@ def quarterround_state(state: Bits, i, j, k, l) -> Bits:
     Returns a 512-bit value.
     State must be 512-bit.
     """
+    if len(state) != 512:
+        raise ValueError("state must be 512-bit.")
     entry = bitseq_split(32, state)
     q = quarterround(sum([entry[i], entry[j], entry[k], entry[l]]))
     entry[i], entry[j], entry[k], entry[l] = bitseq_split(32, q)
