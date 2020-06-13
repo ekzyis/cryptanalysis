@@ -3,10 +3,11 @@
 """ChaCha20/r implementation.
 
 Specification:
-    https://cr.yp.to/chacha/chacha-20080128.pdf
+    https://cr.yp.to/chacha/chacha-20080128.pdf (original implementation)
+    https://tools.ietf.org/html/rfc7539 (IETF implementation; uses 96-bit nonce and 32-bit counter)
 
 Test vectors:
-    https://tools.ietf.org/html/rfc7539 (IETF implementation; uses 96-bit nonce and 32-bit counter)
+    https://tools.ietf.org/html/rfc7539
     https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-00 (original implementation)
 
 Description of ChaCha20 from the specification paper used as a reference for this implementation:
