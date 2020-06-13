@@ -2,11 +2,11 @@
 import test.context
 from ciphers.stream.chacha20 import chacha20_hash
 from test.helper import BitsTestCase
-from util.bitseq import bitseq8, bitseq32, littleendian, bitseq_split
+from util.bitseq import bitseq8, bitseq32, littleendian, bitseq_split, bitseq256, bitseq64
 
 
 class TestChaCha20ChaCha20Hash(BitsTestCase):
-    def test_chacha20_chacha20_hash(self):
+    def test_chacha20_chacha20_hash_1(self):
         """Test for ChaCha20 Block Function IETF version with 96-bit nonce and 32-bit counter."""
         constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         key = bitseq8(*[x for x in range(32)])
@@ -31,5 +31,57 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
                 0xc7d1f4c7, 0x33c06803, 0x0422aa9a, 0xc3d46c4e,
                 0xd2826446, 0x079faa09, 0x14c2d705, 0xd98b02a2,
                 0xb5129cd1, 0xde164eb9, 0xcbd083e8, 0xa2503c4e,
+            )
+        )
+
+    def test_chacha20_chacha20_hash_2(self):
+        """Test #1 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter."""
+        constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
+        key = bitseq256(0x0)
+        nonce = bitseq64(0x0)
+        counter = bitseq64(0x0)
+        le = littleendian
+        state = bitseq32(
+            *bitseq_split(32, constant, formatter=le),
+            *bitseq_split(32, key, formatter=le),
+            *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
+        )
+        self.assertEqual(
+            chacha20_hash(state),
+            bitseq8(
+                0x76, 0xb8, 0xe0, 0xad, 0xa0, 0xf1, 0x3d, 0x90,
+                0x40, 0x5d, 0x6a, 0xe5, 0x53, 0x86, 0xbd, 0x28,
+                0xbd, 0xd2, 0x19, 0xb8, 0xa0, 0x8d, 0xed, 0x1a,
+                0xa8, 0x36, 0xef, 0xcc, 0x8b, 0x77, 0x0d, 0xc7,
+                0xda, 0x41, 0x59, 0x7c, 0x51, 0x57, 0x48, 0x8d,
+                0x77, 0x24, 0xe0, 0x3f, 0xb8, 0xd8, 0x4a, 0x37,
+                0x6a, 0x43, 0xb8, 0xf4, 0x15, 0x18, 0xa1, 0x1c,
+                0xc3, 0x87, 0xb6, 0x69, 0xb2, 0xee, 0x65, 0x86,
+            )
+        )
+
+    def test_chacha20_chacha20_hash_3(self):
+        """Test #2 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter."""
+        constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
+        key = bitseq256(0x0)
+        nonce = bitseq64(0x0)
+        counter = bitseq64(0x1)
+        le = littleendian
+        state = bitseq32(
+            *bitseq_split(32, constant, formatter=le),
+            *bitseq_split(32, key, formatter=le),
+            *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
+        )
+        self.assertEqual(
+            chacha20_hash(state),
+            bitseq8(
+                0x9f, 0x07, 0xe7, 0xbe, 0x55, 0x51, 0x38, 0x7a,
+                0x98, 0xba, 0x97, 0x7c, 0x73, 0x2d, 0x08, 0x0d,
+                0xcb, 0x0f, 0x29, 0xa0, 0x48, 0xe3, 0x65, 0x69,
+                0x12, 0xc6, 0x53, 0x3e, 0x32, 0xee, 0x7a, 0xed,
+                0x29, 0xb7, 0x21, 0x76, 0x9c, 0xe6, 0x4e, 0x43,
+                0xd5, 0x71, 0x33, 0xb0, 0x74, 0xd8, 0x39, 0xd5,
+                0x31, 0xed, 0x1f, 0x28, 0x51, 0x0a, 0xfb, 0x45,
+                0xac, 0xe1, 0x0a, 0x1f, 0x4b, 0x79, 0x4d, 0x6f,
             )
         )
