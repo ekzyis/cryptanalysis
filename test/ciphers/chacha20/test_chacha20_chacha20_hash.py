@@ -5,6 +5,16 @@ from test.helper import BitsTestCase
 from util.bitseq import bitseq8, bitseq32, littleendian, bitseq_split, bitseq256, bitseq64
 
 
+def create_djb_state(key, counter, nonce):
+    le = littleendian
+    constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
+    return bitseq32(
+        *bitseq_split(32, constant, formatter=le),
+        *bitseq_split(32, key, formatter=le),
+        *bitseq_split(32, counter, formatter=le), *bitseq_split(32, nonce, formatter=le)
+    )
+
+
 class TestChaCha20ChaCha20Hash(BitsTestCase):
     def test_chacha20_chacha20_hash_1(self):
         """Test for ChaCha20 Block Function IETF version with 96-bit nonce and 32-bit counter."""
@@ -36,16 +46,10 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
 
     def test_chacha20_chacha20_hash_2(self):
         """Test #1 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter."""
-        constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
         counter = bitseq64(0x0)
-        le = littleendian
-        state = bitseq32(
-            *bitseq_split(32, constant, formatter=le),
-            *bitseq_split(32, key, formatter=le),
-            *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
-        )
+        state = create_djb_state(key, counter, nonce)
         self.assertEqual(
             chacha20_hash(state),
             bitseq8(
@@ -62,16 +66,10 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
 
     def test_chacha20_chacha20_hash_3(self):
         """Test #2 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter."""
-        constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
         counter = bitseq64(0x1)
-        le = littleendian
-        state = bitseq32(
-            *bitseq_split(32, constant, formatter=le),
-            *bitseq_split(32, key, formatter=le),
-            *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
-        )
+        state = create_djb_state(key, counter, nonce)
         self.assertEqual(
             chacha20_hash(state),
             bitseq8(
