@@ -16,7 +16,7 @@ def create_djb_state(key, counter, nonce):
 
 
 class TestChaCha20ChaCha20Hash(BitsTestCase):
-    def test_chacha20_chacha20_hash_1(self):
+    def test_chacha20_chacha20_hash_IETF_1_counter_1(self):
         """Test for ChaCha20 Block Function IETF version with 96-bit nonce and 32-bit counter."""
         constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         key = bitseq8(*[x for x in range(32)])
@@ -44,7 +44,7 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
             )
         )
 
-    def test_chacha20_chacha20_hash_2(self):
+    def test_chacha20_chacha20_hash_DJB_1_counter_0(self):
         """Test #1 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter."""
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
@@ -64,7 +64,7 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
             )
         )
 
-    def test_chacha20_chacha20_hash_3(self):
+    def test_chacha20_chacha20_DJB_1_counter_1(self):
         """Test #2 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter."""
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
@@ -84,7 +84,7 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
             )
         )
 
-    def test_chacha20_chacha20_hash_4(self):
+    def test_chacha20_chacha20_DJB_2_counter_0(self):
         """Test #3 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter."""
         key = bitseq8(
             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
