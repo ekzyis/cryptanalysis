@@ -86,7 +86,7 @@ def chacha20_hash(state_: Bits) -> Bits:
     original_state_bitseq32 = bitseq_split(32, state_)
     new_state_bitseq32 = bitseq_split(32, state)
     state = sum([bitseq_add(xi, zi) for xi, zi in zip(original_state_bitseq32, new_state_bitseq32)])
-    return state
+    return sum(bitseq_split(32, state, formatter=littleendian))
 
 
 def expansion(k: Bits, n: Bits) -> Bits:
