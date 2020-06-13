@@ -10,6 +10,7 @@ class TestChaCha20Encrypt(BitsTestCase):
     @iv_patch(return_value=0x4a00000000)
     @initial_counter(1)
     def test_chacha20_encrypt(self, *_):
+        """2.4.2 Example and Test Vector for the ChaCha20 Cipher @ https://tools.ietf.org/html/rfc7539."""
         k = bitseq8(*[i for i in range(32)])
         m = bitseq8(
             0x4c, 0x61, 0x64, 0x69, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x47, 0x65, 0x6e, 0x74, 0x6c,
