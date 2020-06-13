@@ -150,7 +150,9 @@ def xcrypt(k: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
         return bitseq(cnt, bit=__CHACHA_20_COUNTER_LENGTH__) + sum(bitseq_split(32, iv, formatter=littleendian))
 
     stream_blocks_needed = ceil(len(text) / 512)
-    stream = sum([expansion(k, create_nonce(counter)) for counter in range(initial_counter(), stream_blocks_needed, 1)])
+    start = initial_counter()
+    end = stream_blocks_needed + start
+    stream = sum([expansion(k, create_nonce(counter)) for counter in range(start, end, 1)])
     return text ^ stream[:len(text)]
 
 
