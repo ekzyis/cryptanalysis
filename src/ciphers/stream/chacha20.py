@@ -17,15 +17,20 @@ Description of ChaCha20 from the specification paper used as a reference for thi
     analogous modifications of the 12-round and 20-round ciphers Salsa20/12 and Salsa20/20."
     - Daniel J. Bernstein, https://cr.yp.to/chacha/chacha-20080120.pdf
 """
+import random
+from math import ceil
+from time import time
 from typing import Any
 
-from bitstring import Bits
+from bitstring import Bits, pack
 
-from util.bitseq import bitseq_split, bitseq_add
+from util.bitseq import bitseq_split, bitseq_add, bitseq, bitseq32, littleendian
 from util.rot import rot_left_bits
 
 __CHACHA_20_ROUNDS__ = 20
 __CHACHA_20_INITIAL_COUNTER__ = 0
+__CHACHA_20_NONCE_LENGTH__ = 96
+__CHACHA_20_COUNTER_LENGTH__ = 32
 
 
 def quarterround(y: Bits) -> Bits:
@@ -100,7 +105,21 @@ def expansion(k: Bits, n: Bits) -> Bits:
     Returns a 64-byte sequence.
     Raises error if key is not 256-bit or nonce is not 128-bit.
     """
-    pass
+    if len(n) != __CHACHA_20_NONCE_LENGTH__ + __CHACHA_20_COUNTER_LENGTH__:
+        raise ValueError("n must be {}-bit.".format(
+            __CHACHA_20_NONCE_LENGTH__ + __CHACHA_20_COUNTER_LENGTH__
+        ))
+    if len(k) != 256:
+        raise ValueError("key must be 256-bit.")
+    constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
+    counter, nonce = n[:__CHACHA_20_COUNTER_LENGTH__], n[__CHACHA_20_COUNTER_LENGTH__:]
+    le = littleendian
+    state = bitseq32(
+        *bitseq_split(32, constant, formatter=le),
+        *bitseq_split(32, k, formatter=le),
+        counter, *bitseq_split(32, nonce, formatter=le)
+    )
+    return chacha20_hash(state)
 
 
 def initial_counter() -> int:
@@ -120,7 +139,19 @@ def xcrypt(k: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
     The nonce for the expansion function should never be reused with the same key!
     Else, this happens: https://crypto.stackexchange.com/a/108/80458
     """
-    pass
+    if 'iv' not in kwargs:
+        raise TypeError("xcrypt needs initialization vector as keyword argument")
+    iv = kwargs['iv']
+    if len(iv) != __CHACHA_20_NONCE_LENGTH__:
+        raise ValueError("IV must be {}-bit".format(__CHACHA_20_NONCE_LENGTH__))
+
+    def create_nonce(cnt: int) -> Bits:
+        # counter comes first; iv in littleendian
+        return bitseq(cnt, bit=__CHACHA_20_COUNTER_LENGTH__) + pack('<1L', *bitseq_split(32, iv))
+
+    stream_blocks_needed = ceil(len(text) / 512)
+    stream = sum([expansion(k, create_nonce(counter)) for counter in range(initial_counter(), stream_blocks_needed, 1)])
+    return text ^ stream[:len(text)]
 
 
 def encrypt(k: Bits, text: Bits) -> Bits:
@@ -130,4 +161,9 @@ def encrypt(k: Bits, text: Bits) -> Bits:
     encrypted again with the same key and IV.
     Raises error if key is not 256-bit.
     """
-    pass
+    if len(k) != 256:
+        raise ValueError("key must be 256-bit.")
+    random.seed(time())
+    iv = bitseq(random.randrange(2 ** __CHACHA_20_NONCE_LENGTH__), bit=__CHACHA_20_NONCE_LENGTH__)
+    c = xcrypt(k, text, iv=iv)
+    return iv + c
