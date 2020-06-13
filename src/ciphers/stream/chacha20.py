@@ -19,6 +19,7 @@ Description of ChaCha20 from the specification paper used as a reference for thi
 """
 import random
 from math import ceil
+from pprint import pprint
 from time import time
 from typing import Any, Callable, Tuple
 
@@ -147,6 +148,8 @@ def expansion(version: str) -> Callable[[Bits, Bits], Bits]:
             *bitseq_split(32, k, formatter=le),
             *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
         )
+        pprint(state)
+        pprint(chacha20_hash(state))
         return chacha20_hash(state)
 
     return _expansion
