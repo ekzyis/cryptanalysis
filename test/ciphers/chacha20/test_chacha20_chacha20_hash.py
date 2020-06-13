@@ -27,9 +27,9 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
         self.assertEqual(
             chacha20_hash(state),
             bitseq32(
-                0xe4e7f110, 0x15593bd1, 0x1fdd0f50, 0xc47120a3,
-                0xc7f4d1c7, 0x0368c033, 0x9aaa2204, 0x4e6cd4c3,
-                0x466482d2, 0x09aa9f07, 0x05d7c214, 0xa2028bd9,
-                0xd19c12b5, 0xb94e16de, 0xe883d0cb, 0x4e3c50a2
+                0x10f1e7e4, 0xd13b5915, 0x500fdd1f, 0xa32071c4,
+                0xc7d1f4c7, 0x33c06803, 0x0422aa9a, 0xc3d46c4e,
+                0xd2826446, 0x079faa09, 0x14c2d705, 0xd98b02a2,
+                0xb5129cd1, 0xde164eb9, 0xcbd083e8, 0xa2503c4e,
             )
         )
