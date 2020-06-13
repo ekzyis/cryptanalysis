@@ -22,7 +22,7 @@ from math import ceil
 from time import time
 from typing import Any
 
-from bitstring import Bits, pack
+from bitstring import Bits
 
 from util.bitseq import bitseq_split, bitseq_add, bitseq, bitseq32, littleendian
 from util.rot import rot_left_bits
@@ -147,7 +147,7 @@ def xcrypt(k: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
 
     def create_nonce(cnt: int) -> Bits:
         # counter comes first; iv in littleendian
-        return bitseq(cnt, bit=__CHACHA_20_COUNTER_LENGTH__) + pack('<1L', *bitseq_split(32, iv))
+        return bitseq(cnt, bit=__CHACHA_20_COUNTER_LENGTH__) + sum(bitseq_split(32, iv, formatter=littleendian))
 
     stream_blocks_needed = ceil(len(text) / 512)
     stream = sum([expansion(k, create_nonce(counter)) for counter in range(initial_counter(), stream_blocks_needed, 1)])
