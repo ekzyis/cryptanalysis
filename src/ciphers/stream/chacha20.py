@@ -19,7 +19,7 @@ Description of ChaCha20 from the specification paper used as a reference for thi
 """
 from bitstring import Bits
 
-from util.bitseq import bitseq_split, bitseq_add, littleendian
+from util.bitseq import bitseq_split, bitseq_add
 from util.rot import rot_left_bits
 
 __CHACHA_20_ROUNDS__ = 20
@@ -77,5 +77,5 @@ def chacha20_hash(state_: Bits) -> Bits:
         state = quarterround_state(state, 3, 4, 9, 14)
     original_state_bitseq32 = bitseq_split(32, state_)
     new_state_bitseq32 = bitseq_split(32, state)
-    state = sum([littleendian(bitseq_add(xi, zi)) for xi, zi in zip(original_state_bitseq32, new_state_bitseq32)])
+    state = sum([bitseq_add(xi, zi) for xi, zi in zip(original_state_bitseq32, new_state_bitseq32)])
     return state
