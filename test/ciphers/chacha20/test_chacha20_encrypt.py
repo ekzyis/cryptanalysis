@@ -41,7 +41,7 @@ class TestChaCha20Encrypt(BitsTestCase):
         )
 
     @iv(0x0)
-    def test_chacha20_encrypt_original(self, *_):
+    def test_chacha20_encrypt_djb(self, *_):
         """3. Test vectors for ChaCha @ https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-00.
         Rounds: 20
         Original version of ChaCha20 with 64-bit nonce, 64-bit counter.
