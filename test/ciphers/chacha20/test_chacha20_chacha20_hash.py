@@ -2,7 +2,7 @@
 import test.context
 from ciphers.stream.chacha20 import chacha20_hash
 from test.helper import BitsTestCase
-from util.bitseq import bitseq8, bitseq32, littleendian
+from util.bitseq import bitseq8, bitseq32, littleendian, bitseq_split
 
 
 class TestChaCha20ChaCha20Hash(BitsTestCase):
@@ -20,9 +20,9 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
           counter   nonce     nonce     nonce
         """
         state = bitseq32(
-            *[le(constant[i:i + 32]) for i in range(0, len(constant), 32)],
-            *[le(key[i:i + 32]) for i in range(0, len(key), 32)],
-            counter, le(nonce[0:32]), le(nonce[32:64]), nonce[64:96]
+            *bitseq_split(32, constant, formatter=le),
+            *bitseq_split(32, key, formatter=le),
+            counter, *bitseq_split(32, nonce, formatter=le)
         )
         self.assertEqual(
             chacha20_hash(state),
