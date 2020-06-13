@@ -17,9 +17,9 @@ Description of ChaCha20 from the specification paper used as a reference for thi
     analogous modifications of the 12-round and 20-round ciphers Salsa20/12 and Salsa20/20."
     - Daniel J. Bernstein, https://cr.yp.to/chacha/chacha-20080120.pdf
 """
-from bitstring import Bits, pack
+from bitstring import Bits
 
-from util.bitseq import bitseq32
+from util.bitseq import bitseq_split, bitseq_add, littleendian
 from util.rot import rot_left_bits
 
 __CHACHA_20_ROUNDS__ = 20
@@ -35,12 +35,12 @@ def quarterround(y: Bits) -> Bits:
         raise ValueError("Input must be 64-bit")
 
     def _quarterround_step(x1, x2, x3, shift):
-        x1 = bitseq32(x1.uint + x2.uint & 0xFFFFFFFF)
+        x1 = bitseq_add(x1, x2)
         x3 ^= x1
         x3 = rot_left_bits(x3, shift)
         return x1, x2, x3
 
-    a, b, c, d = y[0:32], y[32:64], y[64:96], y[96:128]
+    a, b, c, d = bitseq_split(32, y)
     a, b, d = _quarterround_step(a, b, d, 16)
     c, d, b = _quarterround_step(c, d, b, 12)
     a, b, d = _quarterround_step(a, b, d, 8)
@@ -54,9 +54,9 @@ def quarterround_state(state: Bits, i, j, k, l) -> Bits:
     Returns a 512-bit value.
     State must be 512-bit.
     """
-    entry = [state[index:index + 32] for index in range(0, len(state), 32)]
+    entry = bitseq_split(32, state)
     q = quarterround(sum([entry[i], entry[j], entry[k], entry[l]]))
-    entry[i], entry[j], entry[k], entry[l] = [q[index:index + 32] for index in range(0, len(q), 32)]
+    entry[i], entry[j], entry[k], entry[l] = bitseq_split(32, q)
     return sum(entry)
 
 
@@ -75,10 +75,7 @@ def chacha20_hash(state_: Bits) -> Bits:
         state = quarterround_state(state, 1, 6, 11, 12)
         state = quarterround_state(state, 2, 7, 8, 13)
         state = quarterround_state(state, 3, 4, 9, 14)
-    original_state_bitseq32 = [state_[i:i + 32] for i in range(0, len(state_), 32)]
-    new_state_bitseq32 = [state[i:i + 32] for i in range(0, len(state), 32)]
-    state = sum(
-        [bitseq32(xi.uint + zi.uint & 0xFFFFFFFF) for xi, zi in zip(original_state_bitseq32, new_state_bitseq32)]
-    )
-    state = pack("<16L", *[state[i:i + 32].uint for i in range(0, len(state), 32)])
+    original_state_bitseq32 = bitseq_split(32, state_)
+    new_state_bitseq32 = bitseq_split(32, state)
+    state = sum([littleendian(bitseq_add(xi, zi)) for xi, zi in zip(original_state_bitseq32, new_state_bitseq32)])
     return state
