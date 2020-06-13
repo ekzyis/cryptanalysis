@@ -12,7 +12,7 @@ def bitseq_add(b1: Bits, b2: Bits) -> Bits:
     Raises error if the bitstrings are not of same length."""
     if len(b1) != len(b2):
         raise ValueError("Bitstrings must be of same length for addition.")
-    return bitseq((b1.uint + b2.uint) & 2 ** len(b1) - 1, bit=len(b1))
+    return bitseq((b1.uint + b2.uint) % 2 ** len(b1), bit=len(b1))
 
 
 def bitseq_split(size: int, b: Bits, n=None, formatter=lambda b: b) -> Union[Bits, Sequence[Bits]]:
