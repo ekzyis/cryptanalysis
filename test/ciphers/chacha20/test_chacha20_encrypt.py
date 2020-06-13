@@ -9,8 +9,11 @@ from util.bitseq import bitseq8, bitseq, bitseq256, bitseq512
 class TestChaCha20Encrypt(BitsTestCase):
     @iv(0x4a00000000)
     @initial_counter(1)
-    def test_chacha20_encrypt_1(self, *_):
-        """2.4.2 Example and Test Vector for the ChaCha20 Cipher @ https://tools.ietf.org/html/rfc7539."""
+    def test_chacha20_encrypt_ietf(self, *_):
+        """2.4.2 Example and Test Vector for the ChaCha20 Cipher @ https://tools.ietf.org/html/rfc7539.
+        Rounds: 20
+        IETF version of ChaCha20 with 96-bit nonce, 32-bit counter.
+        """
         k = bitseq8(*[i for i in range(32)])
         m = bitseq8(
             0x4c, 0x61, 0x64, 0x69, 0x65, 0x73, 0x20, 0x61, 0x6e, 0x64, 0x20, 0x47, 0x65, 0x6e, 0x74, 0x6c,
@@ -38,9 +41,10 @@ class TestChaCha20Encrypt(BitsTestCase):
         )
 
     @iv(0x0)
-    def test_chacha20_encrypt_2(self, *_):
+    def test_chacha20_encrypt_original(self, *_):
         """3. Test vectors for ChaCha @ https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-00.
         Rounds: 20
+        Original version of ChaCha20 with 64-bit nonce, 64-bit counter.
         """
         k = bitseq256(0x0)
         m = bitseq512(0x0, 0x0)
