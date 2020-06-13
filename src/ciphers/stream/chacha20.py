@@ -20,7 +20,7 @@ Description of ChaCha20 from the specification paper used as a reference for thi
 import random
 from math import ceil
 from time import time
-from typing import Any
+from typing import Any, Callable, Tuple
 
 from bitstring import Bits
 
@@ -29,8 +29,6 @@ from util.rot import rot_left_bits
 
 __CHACHA_20_ROUNDS__ = 20
 __CHACHA_20_INITIAL_COUNTER__ = 0
-__CHACHA_20_NONCE_LENGTH__ = 96
-__CHACHA_20_COUNTER_LENGTH__ = 32
 
 
 def quarterround(y: Bits) -> Bits:
@@ -91,37 +89,67 @@ def chacha20_hash(state_: Bits) -> Bits:
     return sum(bitseq_split(32, state, formatter=littleendian))
 
 
-def expansion(k: Bits, n: Bits) -> Bits:
-    """Expand the key and the nonce into a 64-byte sequence.
+def validate_version(fn: Callable):
+    """Decorator to validate the version argument."""
 
-    The hash function can be seen as working on following matrix where each entry is 32-bit (a 4-byte word).
+    def validate_version_wrapper(version: str):
+        if version not in ['djb', 'ietf']:
+            raise ValueError("version must be djb or ietf.")
+        return fn(version)
 
-          constant  constant  constant  constant
-          key       key       key       key
-          key       key       key       key
-          counter   nonce     nonce     nonce
+    return validate_version_wrapper
 
-    The constants are part of the constant words sigma or tau.
-    The input is the nonce (attacker-controlled input).
 
-    Returns a 64-byte sequence.
-    Raises error if key is not 256-bit or nonce is not 128-bit.
-    """
-    if len(n) != __CHACHA_20_NONCE_LENGTH__ + __CHACHA_20_COUNTER_LENGTH__:
-        raise ValueError("n must be {}-bit.".format(
-            __CHACHA_20_NONCE_LENGTH__ + __CHACHA_20_COUNTER_LENGTH__
-        ))
-    if len(k) != 256:
-        raise ValueError("key must be 256-bit.")
-    constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
-    counter, nonce = n[:__CHACHA_20_COUNTER_LENGTH__], n[__CHACHA_20_COUNTER_LENGTH__:]
-    le = littleendian
-    state = bitseq32(
-        *bitseq_split(32, constant, formatter=le),
-        *bitseq_split(32, k, formatter=le),
-        counter, *bitseq_split(32, nonce, formatter=le)
-    )
-    return chacha20_hash(state)
+@validate_version
+def get_nonce_and_counter_length(version: str) -> Tuple[int, int]:
+    """Return the nonce and counter length depending on given ChaCha20 version."""
+    if version == 'djb':
+        __CHACHA_20_NONCE_LENGTH__ = 64
+        __CHACHA_20_COUNTER_LENGTH__ = 64
+    else:
+        __CHACHA_20_NONCE_LENGTH__ = 96
+        __CHACHA_20_COUNTER_LENGTH__ = 32
+    return __CHACHA_20_NONCE_LENGTH__, __CHACHA_20_COUNTER_LENGTH__
+
+
+@validate_version
+def expansion(version: str) -> Callable[[Bits, Bits], Bits]:
+    """Wrapper for ChaCha20 expansion function to implement the DJB and IETF version of ChaCha20."""
+    __CHACHA_20_NONCE_LENGTH__, __CHACHA_20_COUNTER_LENGTH__ = get_nonce_and_counter_length(version)
+
+    def _expansion(k: Bits, n: Bits) -> Bits:
+        """Expand the key and the nonce into a 64-byte sequence.
+
+        The hash function can be seen as working on following matrix where each entry is 32-bit (a 4-byte word).
+
+              constant  constant  constant  constant
+              key       key       key       key
+              key       key       key       key
+              counter   nonce     nonce     nonce
+
+        The constants are part of the constant words sigma or tau.
+        The input is the nonce (attacker-controlled input).
+
+        Returns a 64-byte sequence.
+        Raises error if key is not 256-bit or nonce is not 128-bit.
+        """
+        if len(n) != __CHACHA_20_NONCE_LENGTH__ + __CHACHA_20_COUNTER_LENGTH__:
+            raise ValueError("n must be {}-bit.".format(
+                __CHACHA_20_NONCE_LENGTH__ + __CHACHA_20_COUNTER_LENGTH__
+            ))
+        if len(k) != 256:
+            raise ValueError("key must be 256-bit.")
+        constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
+        counter, nonce = n[:__CHACHA_20_COUNTER_LENGTH__], n[__CHACHA_20_COUNTER_LENGTH__:]
+        le = littleendian
+        state = bitseq32(
+            *bitseq_split(32, constant, formatter=le),
+            *bitseq_split(32, k, formatter=le),
+            *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
+        )
+        return chacha20_hash(state)
+
+    return _expansion
 
 
 def initial_counter() -> int:
@@ -129,45 +157,60 @@ def initial_counter() -> int:
     return __CHACHA_20_INITIAL_COUNTER__
 
 
-def xcrypt(k: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
-    """En- or decrypt the message with the given key with ChaCha20.
+@validate_version
+def xcrypt(version: str) -> Callable[[Bits, Bits], Bits]:
+    """Wrapper for ChaCha20 xcrypt function to implement the DJB and IETF version of ChaCha20."""
+    __CHACHA_20_NONCE_LENGTH__, __CHACHA_20_COUNTER_LENGTH__ = get_nonce_and_counter_length(version)
 
-    En- and decryption use the same algorithm because the inverse of XOR is XOR thus this function is called 'xcrypt'.
+    def _xcrypt(k: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
+        """En- or decrypt the message with the given key with ChaCha20.
 
-    En-/Decryption is done by XOR'ing the plain-/ciphertext with the stream generated by the expansion function.
-    The nonce for the expansion function is dependent on current time thus ensuring that the same nonce
-    will never be used again with the same key.
+        En- and decryption use the same algorithm because the inverse of XOR is XOR thus this function is called 'xcrypt'.
 
-    The nonce for the expansion function should never be reused with the same key!
-    Else, this happens: https://crypto.stackexchange.com/a/108/80458
-    """
-    if 'iv' not in kwargs:
-        raise TypeError("xcrypt needs initialization vector as keyword argument")
-    iv = kwargs['iv']
-    if len(iv) != __CHACHA_20_NONCE_LENGTH__:
-        raise ValueError("IV must be {}-bit".format(__CHACHA_20_NONCE_LENGTH__))
+        En-/Decryption is done by XOR'ing the plain-/ciphertext with the stream generated by the expansion function.
+        The nonce for the expansion function is dependent on current time thus ensuring that the same nonce
+        will never be used again with the same key.
 
-    def create_nonce(cnt: int) -> Bits:
-        # counter comes first; iv in littleendian
-        return bitseq(cnt, bit=__CHACHA_20_COUNTER_LENGTH__) + iv
+        The nonce for the expansion function should never be reused with the same key!
+        Else, this happens: https://crypto.stackexchange.com/a/108/80458
+        """
+        if 'iv' not in kwargs:
+            raise TypeError("xcrypt needs initialization vector as keyword argument")
+        iv = kwargs['iv']
+        if len(iv) != __CHACHA_20_NONCE_LENGTH__:
+            raise ValueError("IV must be {}-bit".format(__CHACHA_20_NONCE_LENGTH__))
 
-    stream_blocks_needed = ceil(len(text) / 512)
-    start = initial_counter()
-    end = stream_blocks_needed + start
-    stream = sum([expansion(k, create_nonce(counter)) for counter in range(start, end, 1)])
-    return text ^ stream[:len(text)]
+        def create_nonce(cnt: int) -> Bits:
+            # counter comes first; iv in littleendian
+            return bitseq(cnt, bit=__CHACHA_20_COUNTER_LENGTH__) + iv
+
+        stream_blocks_needed = ceil(len(text) / 512)
+        start = initial_counter()
+        end = stream_blocks_needed + start
+        stream = sum([expansion(version)(k, create_nonce(counter)) for counter in range(start, end, 1)])
+        return text ^ stream[:len(text)]
+
+    return _xcrypt
 
 
-def encrypt(k: Bits, text: Bits) -> Bits:
+def encrypt(k: Bits, text: Bits, version: str = 'djb') -> Bits:
     """Encrypt the message with the given key with ChaCha20.
 
+    If version is set to 'djb', use the original implementation of Daniel J. Bernstein with
+      a 64-bit nonce and 64-bit counter.
+    If version is set to 'ietf', use the IETF implementation of ChaCha20 which
+      uses a 96-bit nonce and a 32-bit counter. See https://tools.ietf.org/html/rfc7539 - this was done because of the
+      recommendation in section 3.2 of RFC5116: https://tools.ietf.org/html/rfc5116#section-3.2
     Make initialization vector dependent of current time to make sure a message is never
     encrypted again with the same key and IV.
     Raises error if key is not 256-bit.
     """
     if len(k) != 256:
         raise ValueError("key must be 256-bit.")
+    if version not in ['djb', 'ietf']:
+        raise ValueError("version must be djb or ietf.")
+    __CHACHA_20_NONCE_LENGTH__, __CHACHA_20_COUNTER_LENGTH__ = get_nonce_and_counter_length(version)
     random.seed(time())
     iv = bitseq(random.randrange(2 ** __CHACHA_20_NONCE_LENGTH__), bit=__CHACHA_20_NONCE_LENGTH__)
-    c = xcrypt(k, text, iv=iv)
+    c = xcrypt(version)(k, text, iv=iv)
     return iv + c
