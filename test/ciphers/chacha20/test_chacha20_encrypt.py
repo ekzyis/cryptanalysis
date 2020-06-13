@@ -1,13 +1,13 @@
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.chacha20 import encrypt
-from test.ciphers.chacha20.patchers import iv_patch, initial_counter
+from test.ciphers.chacha20.patchers import iv, initial_counter
 from test.helper import BitsTestCase
 from util.bitseq import bitseq8, bitseq
 
 
 class TestChaCha20Encrypt(BitsTestCase):
-    @iv_patch(return_value=0x4a00000000)
+    @iv(0x4a00000000)
     @initial_counter(1)
     def test_chacha20_encrypt(self, *_):
         """2.4.2 Example and Test Vector for the ChaCha20 Cipher @ https://tools.ietf.org/html/rfc7539."""

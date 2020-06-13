@@ -2,9 +2,9 @@
 from unittest import mock
 
 
-def iv_patch(*args, **kwargs):
+def iv(value):
     """Patch for Initialization vector."""
-    return mock.patch('random.randrange', *args, **kwargs)
+    return mock.patch('random.randrange', return_value=value)
 
 
 def initial_counter(value):
