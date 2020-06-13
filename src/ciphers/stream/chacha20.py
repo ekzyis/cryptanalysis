@@ -147,7 +147,7 @@ def xcrypt(k: Bits, text: Bits, *args: Any, **kwargs: Any) -> Bits:
 
     def create_nonce(cnt: int) -> Bits:
         # counter comes first; iv in littleendian
-        return bitseq(cnt, bit=__CHACHA_20_COUNTER_LENGTH__) + sum(bitseq_split(32, iv, formatter=littleendian))
+        return bitseq(cnt, bit=__CHACHA_20_COUNTER_LENGTH__) + iv
 
     stream_blocks_needed = ceil(len(text) / 512)
     start = initial_counter()
