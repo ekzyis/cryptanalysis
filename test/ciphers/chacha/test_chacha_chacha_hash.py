@@ -21,7 +21,7 @@ class TestChaChaChaChaHash(BitsTestCase):
         constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         key = bitseq8(*[x for x in range(32)])
         nonce = bitseq8(0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x4a, 0x00, 0x00, 0x00, 0x00)  # 96-bit nonce
-        counter = bitseq8(0x00, 0x00, 0x00, 0x01)  # 32-bit counter
+        counter = bitseq32(0x01)  # 32-bit counter
         le = littleendian
         """
           constant  constant  constant  constant
