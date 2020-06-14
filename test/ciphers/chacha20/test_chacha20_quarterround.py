@@ -1,6 +1,6 @@
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.stream.chacha20 import quarterround, quarterround_state
+from ciphers.stream.chacha import quarterround, quarterround_state
 from test.helper import BitsTestCase
 from util.bitseq import bitseq32, bitseq128, bitseq512
 

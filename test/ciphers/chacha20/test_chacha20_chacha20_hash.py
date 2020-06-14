@@ -1,6 +1,6 @@
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.stream.chacha20 import chacha20_hash
+from ciphers.stream.chacha import chacha_hash
 from test.helper import BitsTestCase
 from util.bitseq import bitseq8, bitseq32, littleendian, bitseq_split, bitseq256, bitseq64
 
@@ -16,8 +16,8 @@ def create_djb_state(key, counter, nonce):
 
 
 class TestChaCha20ChaCha20Hash(BitsTestCase):
-    def test_chacha20_chacha20_hash_IETF_1_counter_1(self):
-        """Test for ChaCha20 Block Function IETF version with 96-bit nonce and 32-bit counter."""
+    def test_chacha_chacha_hash_IETF_1_counter_1(self):
+        """Test for ChaCha Block Function IETF version with 96-bit nonce and 32-bit counter."""
         constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         key = bitseq8(*[x for x in range(32)])
         nonce = bitseq8(0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x4a, 0x00, 0x00, 0x00, 0x00)  # 96-bit nonce
@@ -35,7 +35,7 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
             counter, *bitseq_split(32, nonce, formatter=le)
         )
         self.assertEqual(
-            chacha20_hash(state),
+            chacha_hash(state),
             bitseq32(
                 0x10f1e7e4, 0xd13b5915, 0x500fdd1f, 0xa32071c4,
                 0xc7d1f4c7, 0x33c06803, 0x0422aa9a, 0xc3d46c4e,
@@ -44,14 +44,14 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
             )
         )
 
-    def test_chacha20_chacha20_hash_DJB_1_counter_0(self):
-        """Test #1 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
+    def test_chacha_chacha_hash_DJB_1_counter_0(self):
+        """Test #1 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
         counter = bitseq64(0x0)
         state = create_djb_state(key, counter, nonce)
         self.assertEqual(
-            chacha20_hash(state),
+            chacha_hash(state),
             bitseq8(
                 0x76, 0xb8, 0xe0, 0xad, 0xa0, 0xf1, 0x3d, 0x90,
                 0x40, 0x5d, 0x6a, 0xe5, 0x53, 0x86, 0xbd, 0x28,
@@ -64,14 +64,14 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
             )
         )
 
-    def test_chacha20_chacha20_DJB_1_counter_1(self):
-        """Test #1 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter set to 1."""
+    def test_chacha_chacha_DJB_1_counter_1(self):
+        """Test #1 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 1."""
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
         counter = bitseq64(0x1)
         state = create_djb_state(key, counter, nonce)
         self.assertEqual(
-            chacha20_hash(state),
+            chacha_hash(state),
             bitseq8(
                 0x9f, 0x07, 0xe7, 0xbe, 0x55, 0x51, 0x38, 0x7a,
                 0x98, 0xba, 0x97, 0x7c, 0x73, 0x2d, 0x08, 0x0d,
@@ -84,8 +84,8 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
             )
         )
 
-    def test_chacha20_chacha20_DJB_2_counter_0(self):
-        """Test #2 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
+    def test_chacha_chacha_DJB_2_counter_0(self):
+        """Test #2 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
         key = bitseq8(
             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -96,7 +96,7 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
         counter = bitseq64(0x0)
         state = create_djb_state(key, counter, nonce)
         self.assertEqual(
-            chacha20_hash(state),
+            chacha_hash(state),
             bitseq8(
                 0xc5, 0xd3, 0x0a, 0x7c, 0xe1, 0xec, 0x11, 0x93,
                 0x78, 0xc8, 0x4f, 0x48, 0x7d, 0x77, 0x5a, 0x85,
@@ -109,8 +109,8 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
             )
         )
 
-    def test_chacha20_chacha20_DJB_2_counter_1(self):
-        """Test #2 for ChaCha20 Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
+    def test_chacha_chacha_DJB_2_counter_1(self):
+        """Test #2 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
         key = bitseq8(
             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -121,7 +121,7 @@ class TestChaCha20ChaCha20Hash(BitsTestCase):
         counter = bitseq64(0x1)
         state = create_djb_state(key, counter, nonce)
         self.assertEqual(
-            chacha20_hash(state),
+            chacha_hash(state),
             bitseq8(
                 0x10, 0xf6, 0x56, 0xe6, 0xd1, 0xfd, 0x55, 0x05,
                 0x3e, 0x50, 0xc4, 0x87, 0x5c, 0x99, 0x30, 0xa3,

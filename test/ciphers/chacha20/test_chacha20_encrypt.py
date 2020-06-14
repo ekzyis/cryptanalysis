@@ -1,6 +1,6 @@
 # noinspection PyUnresolvedReferences
 import test.context
-from ciphers.stream.chacha20 import encrypt
+from ciphers.stream.chacha import encrypt
 from test.ciphers.chacha20.patchers import iv, initial_counter
 from test.helper import BitsTestCase
 from util.bitseq import bitseq8, bitseq, bitseq256, bitseq512, bitseq64
