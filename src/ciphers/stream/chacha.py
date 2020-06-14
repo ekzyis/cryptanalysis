@@ -33,7 +33,7 @@ __CHACHA_INITIAL_COUNTER__ = 0
 
 
 def quarterround(y: Bits) -> Bits:
-    """Calculate the ChaCha20 quarterround value of the input as specified in the paper.
+    """Calculate the ChaCha quarterround value of the input as specified in the paper.
 
     Returns a 128-bit value.
     Raises error if input is not 128-bit.
@@ -70,7 +70,7 @@ def quarterround_state(state: Bits, i, j, k, l) -> Bits:
 
 
 def chacha_hash(state_: Bits) -> Bits:
-    """Calculate the chacha20 hash value."""
+    """Calculate the chacha hash value."""
     # copy old state
     state = Bits(state_)
     for i in range(int(__CHACHA_ROUNDS__ / 2)):

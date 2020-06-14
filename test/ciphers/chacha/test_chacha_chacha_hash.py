@@ -15,7 +15,7 @@ def create_djb_state(key, counter, nonce):
     )
 
 
-class TestChaCha20ChaCha20Hash(BitsTestCase):
+class TestChaChaChaChaHash(BitsTestCase):
     def test_chacha_chacha_hash_IETF_1_counter_1(self):
         """Test for ChaCha Block Function IETF version with 96-bit nonce and 32-bit counter."""
         constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)

@@ -1,15 +1,15 @@
 # noinspection PyUnresolvedReferences
 import test.context
 from ciphers.stream.chacha import encrypt
-from test.ciphers.chacha20.patchers import iv, initial_counter
+from test.ciphers.chacha.patchers import iv, initial_counter
 from test.helper import BitsTestCase
 from util.bitseq import bitseq8, bitseq, bitseq256, bitseq512, bitseq64
 
 
-class TestChaCha20Encrypt(BitsTestCase):
+class TestChaChaEncrypt(BitsTestCase):
     @iv(0x4a00000000)
     @initial_counter(1)
-    def test_chacha20_encrypt_ietf(self, *_):
+    def test_chacha_encrypt_ietf(self, *_):
         """2.4.2 Example and Test Vector for the ChaCha20 Cipher @ https://tools.ietf.org/html/rfc7539.
         Rounds: 20
         IETF version of ChaCha20 with 96-bit nonce, 32-bit counter.
@@ -42,7 +42,7 @@ class TestChaCha20Encrypt(BitsTestCase):
         )
 
     @iv(0x0)
-    def test_chacha20_encrypt_djb(self, *_):
+    def test_chacha_encrypt_djb(self, *_):
         """3. Test vectors for ChaCha @ https://tools.ietf.org/html/draft-strombergson-chacha-test-vectors-00.
         Rounds: 20
         Original version of ChaCha20 with 64-bit nonce, 64-bit counter.
@@ -73,7 +73,7 @@ class TestChaCha20Encrypt(BitsTestCase):
         )
         self.assertEqual(c, iv_ + key_block_1 + key_block_2)
 
-    def test_chacha20_encrypt_raises_error_if_key_not_256_bit(self):
+    def test_chacha_encrypt_raises_error_if_key_not_256_bit(self):
         k = bitseq(0x0, bit=257)
         m = bitseq(0x0, bit=1)
         with self.assertRaises(ValueError):
