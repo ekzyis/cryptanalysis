@@ -36,7 +36,7 @@ from docopt import docopt  # type: ignore
 # make sure that following imports can be resolved when executing this script from cmdline
 sys.path.insert(0, str(Path(__file__).parent / '../..'))
 
-from util.wrap import fhex_output_wrapper, text_input_to_bitseq_wrapper, key_input_to_bitseq_wrapper
+from util.wrap import fhex_output_wrapper, text_input_to_bitseq_wrapper, key_input_to_bitseq_wrapper, key_input_padder
 from util.encode import encode_wrapper, decode_wrapper
 from util.rot import rot_left_bits
 from util.bitseq import bitseq8, bitseq32, littleendian, bitseq64, bitseq_split, bitseq_add
@@ -227,8 +227,12 @@ def _salsa20_options_wrap(args: Dict[str, Union[str, int]]) -> CipherFunction:
 
     Returns wrapped encrypt when encrypting; wrapped decrypt when decrypting."""
 
+    # pad key
+    salsa20_key_input_padder = key_input_padder(256)
+    _encrypt, _decrypt = salsa20_key_input_padder(encrypt), salsa20_key_input_padder(decrypt)
+
     # the key must always be casted into a bitstring
-    _encrypt, _decrypt = key_input_to_bitseq_wrapper(encrypt), key_input_to_bitseq_wrapper(decrypt)
+    _encrypt, _decrypt = key_input_to_bitseq_wrapper(_encrypt), key_input_to_bitseq_wrapper(_decrypt)
     if args['encrypt']:
         if args['-x'] == 'utf8':
             # the text must be encoded before encryption
