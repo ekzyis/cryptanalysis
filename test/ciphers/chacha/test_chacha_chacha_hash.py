@@ -14,10 +14,13 @@ def create_state(key, counter, nonce):
         key       key       key       key
         counter   nonce     nonce     nonce
     """
+    # transform full counter bitstring into little-endian before splitting and formatting each chunk again
+    # see https://github.com/ekzyis/cryptography/issues/40
+    counter = littleendian(counter)
     return bitseq32(
         *bitseq_split(32, constant, formatter=le),
         *bitseq_split(32, key, formatter=le),
-        *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
+        *bitseq_split(32, counter, formatter=le), *bitseq_split(32, nonce, formatter=le)
     )
 
 
