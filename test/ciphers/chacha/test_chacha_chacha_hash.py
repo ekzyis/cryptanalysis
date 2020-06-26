@@ -5,13 +5,19 @@ from test.helper import BitsTestCase
 from util.bitseq import bitseq8, bitseq32, littleendian, bitseq_split, bitseq256, bitseq64
 
 
-def create_djb_state(key, counter, nonce):
+def create_state(key, counter, nonce):
     le = littleendian
     constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
+    """
+        constant  constant  constant  constant
+        key       key       key       key
+        key       key       key       key
+        counter   nonce     nonce     nonce
+    """
     return bitseq32(
         *bitseq_split(32, constant, formatter=le),
         *bitseq_split(32, key, formatter=le),
-        *bitseq_split(32, counter, formatter=le), *bitseq_split(32, nonce, formatter=le)
+        *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
     )
 
 
@@ -23,22 +29,10 @@ class TestChaChaChaChaHash(BitsTestCase):
         Nonce:      00:00:00:09:00:00:00:4a:00:00:00:00
         Counter:    00:00:00:01
         """
-        constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         key = bitseq8(*[x for x in range(32)])
         nonce = bitseq8(0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x4a, 0x00, 0x00, 0x00, 0x00)  # 96-bit nonce
         counter = bitseq32(0x01)  # 32-bit counter
-        le = littleendian
-        """
-          constant  constant  constant  constant
-          key       key       key       key
-          key       key       key       key
-          counter   nonce     nonce     nonce
-        """
-        state = bitseq32(
-            *bitseq_split(32, constant, formatter=le),
-            *bitseq_split(32, key, formatter=le),
-            counter, *bitseq_split(32, nonce, formatter=le)
-        )
+        state = create_state(key, counter, nonce)
         self.assertEqual(
             chacha_hash(state),
             bitseq32(
@@ -61,7 +55,7 @@ class TestChaChaChaChaHash(BitsTestCase):
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
         counter = bitseq64(0x0)
-        state = create_djb_state(key, counter, nonce)
+        state = create_state(key, counter, nonce)
         self.assertEqual(
             chacha_hash(state),
             bitseq8(
@@ -88,7 +82,7 @@ class TestChaChaChaChaHash(BitsTestCase):
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
         counter = bitseq64(0x1)
-        state = create_djb_state(key, counter, nonce)
+        state = create_state(key, counter, nonce)
         self.assertEqual(
             chacha_hash(state),
             bitseq8(
@@ -120,7 +114,7 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
         nonce = bitseq64(0x0)
         counter = bitseq64(0x0)
-        state = create_djb_state(key, counter, nonce)
+        state = create_state(key, counter, nonce)
         self.assertEqual(
             chacha_hash(state),
             bitseq8(
@@ -152,7 +146,7 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
         nonce = bitseq64(0x0)
         counter = bitseq64(0x1)
-        state = create_djb_state(key, counter, nonce)
+        state = create_state(key, counter, nonce)
         self.assertEqual(
             chacha_hash(state),
             bitseq8(
@@ -184,7 +178,7 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
         nonce = bitseq8(0x1a, 0xda, 0x31, 0xd5, 0xcf, 0x68, 0x82, 0x21)
         counter = bitseq64(0x0)
-        state = create_djb_state(key, counter, nonce)
+        state = create_state(key, counter, nonce)
         self.assertEqual(
             chacha_hash(state),
             bitseq8(
@@ -216,7 +210,7 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
         nonce = bitseq8(0x1a, 0xda, 0x31, 0xd5, 0xcf, 0x68, 0x82, 0x21)
         counter = bitseq64(0x1)
-        state = create_djb_state(key, counter, nonce)
+        state = create_state(key, counter, nonce)
         self.assertEqual(
             chacha_hash(state),
             bitseq8(
