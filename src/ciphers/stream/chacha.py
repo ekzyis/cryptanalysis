@@ -143,10 +143,11 @@ def expansion(version: str) -> Callable[[Bits, Bits], Bits]:
         constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         counter, nonce = n[:__CHACHA_20_COUNTER_LENGTH__], n[__CHACHA_20_COUNTER_LENGTH__:]
         le = littleendian
+        counter = le(counter)
         state = bitseq32(
             *bitseq_split(32, constant, formatter=le),
             *bitseq_split(32, k, formatter=le),
-            *bitseq_split(32, counter), *bitseq_split(32, nonce, formatter=le)
+            *bitseq_split(32, counter, formatter=le), *bitseq_split(32, nonce, formatter=le)
         )
         return chacha_hash(state)
 
