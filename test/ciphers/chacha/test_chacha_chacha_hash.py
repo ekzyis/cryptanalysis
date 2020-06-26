@@ -17,7 +17,12 @@ def create_djb_state(key, counter, nonce):
 
 class TestChaChaChaChaHash(BitsTestCase):
     def test_chacha_chacha_hash_IETF_1_counter_1(self):
-        """Test for ChaCha Block Function IETF version with 96-bit nonce and 32-bit counter."""
+        """Test for ChaCha Block Function IETF version with 96-bit nonce and 32-bit counter.
+
+        Key:        00:01:02:03:04:05:06:07:08:09:0a:0b:0c:0d:0e:0f:10:11:12:13:14:15:16:17:18:19:1a:1b:1c:1d:1e:1f
+        Nonce:      00:00:00:09:00:00:00:4a:00:00:00:00
+        Counter:    00:00:00:01
+        """
         constant = bitseq32(0x65787061, 0x6e642033, 0x322d6279, 0x7465206b)
         key = bitseq8(*[x for x in range(32)])
         nonce = bitseq8(0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x4a, 0x00, 0x00, 0x00, 0x00)  # 96-bit nonce
@@ -45,7 +50,14 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
 
     def test_chacha_chacha_hash_DJB_1_counter_0(self):
-        """Test #1 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
+        """Test #1 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 0.
+
+        TC1: All zero key and IV.
+
+        Key:        00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+        Nonce:      00:00:00:00:00:00:00:00
+        Counter:    00:00:00:00:00:00:00:00
+        """
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
         counter = bitseq64(0x0)
@@ -65,7 +77,14 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
 
     def test_chacha_chacha_hash_DJB_1_counter_1(self):
-        """Test #1 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 1."""
+        """Test #1 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 1.
+
+        TC1: All zero key and IV.
+
+        Key:        00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+        Nonce:      00:00:00:00:00:00:00:00
+        Counter:    00:00:00:00:00:00:00:01
+        """
         key = bitseq256(0x0)
         nonce = bitseq64(0x0)
         counter = bitseq64(0x1)
@@ -85,7 +104,14 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
 
     def test_chacha_chacha_hash_DJB_2_counter_0(self):
-        """Test #2 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
+        """Test #2 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 0.
+
+        TC2: Single bit in key set. All zero IV.
+
+        Key:        01:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+        Nonce:      00:00:00:00:00:00:00:00
+        Counter:    00:00:00:00:00:00:00:00
+        """
         key = bitseq8(
             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -110,7 +136,14 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
 
     def test_chacha_chacha_hash_DJB_2_counter_1(self):
-        """Test #2 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 0."""
+        """Test #2 for ChaCha Block function DJB version with 64-bit nonce and 64-bit counter set to 1.
+
+        TC2: Single bit in key set. All zero IV.
+
+        Key:        01:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00
+        Nonce:      00:00:00:00:00:00:00:00
+        Counter:    00:00:00:00:00:00:00:01
+        """
         key = bitseq8(
             0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -135,6 +168,14 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
 
     def test_chacha_chacha_hash_DJB_random_key_and_iv_counter_0(self):
+        """Test #3 for ChaCha Block Function DJB version with 64-bit nonce and 64-bit counter set 0.
+
+        TC8: Random key and IV.
+
+        Key:        c4:6e:c1:b1:8c:e8:a8:78:72:5a:37:e7:80:df:b7:35:1f:68:ed:2e:19:4c:79:fb:c6:ae:be:e1:a6:67:97:5d
+        Nonce:      1a:da:31:d5:cf:68:82:21
+        Counter:    00:00:00:00:00:00:00:00
+        """
         key = bitseq8(
             0xc4, 0x6e, 0xc1, 0xb1, 0x8c, 0xe8, 0xa8, 0x78,
             0x72, 0x5a, 0x37, 0xe7, 0x80, 0xdf, 0xb7, 0x35,
@@ -159,6 +200,14 @@ class TestChaChaChaChaHash(BitsTestCase):
         )
 
     def test_chacha_chacha_hash_DJB_random_key_and_iv_counter_1(self):
+        """Test #3 for ChaCha Block Function DJB version with 64-bit nonce and 64-bit counter set 1.
+
+        TC8: Random key and IV.
+
+        Key:        c4:6e:c1:b1:8c:e8:a8:78:72:5a:37:e7:80:df:b7:35:1f:68:ed:2e:19:4c:79:fb:c6:ae:be:e1:a6:67:97:5d
+        Nonce:      1a:da:31:d5:cf:68:82:21
+        Counter:    00:00:00:00:00:00:00:01
+        """
         key = bitseq8(
             0xc4, 0x6e, 0xc1, 0xb1, 0x8c, 0xe8, 0xa8, 0x78,
             0x72, 0x5a, 0x37, 0xe7, 0x80, 0xdf, 0xb7, 0x35,
