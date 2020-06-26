@@ -182,7 +182,7 @@ def xcrypt(version: str) -> Callable[[Bits, Bits], Bits]:
             raise ValueError("IV must be {}-bit".format(__CHACHA_NONCE_LENGTH__))
 
         def create_nonce(cnt: int) -> Bits:
-            # counter comes first; iv in littleendian
+            # counter comes first
             return bitseq(cnt, bit=__CHACHA_COUNTER_LENGTH__) + iv
 
         stream_blocks_needed = ceil(len(text) / 512)
