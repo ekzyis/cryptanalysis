@@ -96,3 +96,6 @@ class BitsTestCase(unittest.TestCase):
             assert_fn_raises_if_arguments_smaller_than_given_lengths
         self.assert_fn_raises_if_arguments_greater_than_given_lengths = \
             assert_fn_raises_if_arguments_greater_than_given_lengths
+
+    def shortDescription(self):
+        return self._testMethodDoc
